@@ -128,6 +128,14 @@
       <field name="geoBox" tagName="geoBox"/>
       <field name="_indexingError" tagName="idxError"/>
       <field name="_indexingErrorMsg" tagName="idxMsg"/>
+
+      <field name="orgName" tagName="organisation"/>
+      <field name="platform" tagName="platform"/>
+      <field name="longParamName" tagName="parameter"/>
+      <field name="tempExtentBegin" tagName="tempExtentBegin"/>
+      <field name="tempExtentEnd" tagName="tempExtentEnd"/>
+      <field name="geoPolygon" tagName="geoPolygon"/>
+
     </dumpFields>
   </search>
 
