@@ -26,6 +26,14 @@
 			<item name="type" plural="types" indexKey="type" translator="codelist:gmd:MD_ScopeCode"/>
 			<item name="createDateYear" plural="createDateYears" indexKey="createDateYear"
 				sortBy="value" sortOrder="desc" max="40"/>
+
+			<item name="organisationName" plural="organisationNames"
+				indexKey="orgName" order="freq" type="string" max="100" />
+			<item name="longParamName" plural="longParamNames"
+				indexKey="longParamName" order="freq" type="string" max="100"/>
+			<item name="platformName" plural="platformNames"
+				indexKey="platform" order="freq" type="string" max="100"/>
+ 
 		</hits>
 		<titles>
 			<item name="title" plural="titles" indexKey="title" sortBy="freq" sortOrder="desc" max="100"
@@ -46,5 +54,16 @@
 			<item name="createDateYear" plural="createDateYears" indexKey="createDateYear"
 				sortOrder="asc" max="40"/>
 		</results_with_summary>
+
+		<portal_summary>
+			<item name="organisationName" plural="organisationNames"
+				indexKey="orgName" order="freq" type="string" max="100" />
+			<item name="longParamName" plural="longParamNames"
+				indexKey="longParamName" order="freq" type="string" max="100"/>
+			<item name="platformName" plural="platformNames"
+				indexKey="platform" order="freq" type="string" max="100"/>
+		</portal_summary>
+
+
 	</def>
 </summary>
