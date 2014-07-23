@@ -890,6 +890,17 @@
   <!--     Maven repository is implicit and doesn't need to be specified. -->
   <!-- ================================================================== -->
   <repositories>
+
+	<!-- for marc4j -->
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>mapfish</id>
+      <name>Mapfish repository</name>
+      <url>http://dev.mapfish.org/maven/repository</url>
+    </repository>
+
     <repository>
       <snapshots>
         <enabled>false</enabled>
