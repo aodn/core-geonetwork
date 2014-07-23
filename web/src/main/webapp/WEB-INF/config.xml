@@ -1496,6 +1496,18 @@
             </output>
         </service>
 
+
+
+      <!-- Service to return search summary used by portal - NOTE: must have corresponding entry in user-profiles-overrides.xml to be useable -->
+		<service name="xml.search.summary">
+		  <class name=".services.main.XmlSearch">
+			<param name="maxSummaryKeys" value="100" />
+			<param name="maxHitsInSummary" value="100000" />
+			<param name="resultType" value="portal_summary" />
+		  </class>
+		</service>
+
+
 	</services>
 
 	<!-- ====================================================================== -->

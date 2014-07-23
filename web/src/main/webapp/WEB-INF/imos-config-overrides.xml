@@ -1,0 +1,8 @@
+<overrides>
+    <import file="/WEB-INF/server-props-overrides.xml"/>
+    <import file="/WEB-INF/anzmest-config-overrides.xml"/>
+    <import file="/WEB-INF/config-main-overrides.xml"/>
+    <import file="/WEB-INF/config-summary-overrides.xml"/>
+    <import file="/WEB-INF/config-lucene-overrides.xml"/>
+    <import file="/WEB-INF/config-security-mapping-overrides-imos.xml"/>
+</overrides>

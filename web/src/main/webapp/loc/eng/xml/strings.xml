@@ -1407,4 +1407,7 @@
   <signOut>Sign Out</signOut>
 	<rss-button>RSS</rss-button>
 	<print-button>Print</print-button>
+	<protocolChoice show="y" value="IMOS:AGGREGATION--aodaac">Data for Aggregration with AODAAC</protocolChoice>
+	<protocolChoice show="y" value="IMOS:AGGREGATION--bodaac">Data for Aggregration with BODAAC</protocolChoice>
+	<protocolChoice show="y" value="IMOS:AGGREGATION--gogoduck">Data for Aggregration with GoGoDuck</protocolChoice>
 </strings>
