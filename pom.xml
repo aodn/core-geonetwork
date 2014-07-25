@@ -891,7 +891,11 @@
   <!-- ================================================================== -->
   <repositories>
 
+<<<<<<< HEAD
 	<!-- for marc4j -->
+=======
+    <!-- for marc4j -->
+>>>>>>> 4976157... Changes to simplify build and deployment in eclipse
     <repository>
       <snapshots>
         <enabled>false</enabled>

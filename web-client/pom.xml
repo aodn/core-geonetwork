@@ -51,6 +51,40 @@
 				</includes>
       </resource>
     </resources>
+    <pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.m2e</groupId>
+                <artifactId>lifecycle-mapping</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <lifecycleMappingMetadata>
+                        <pluginExecutions>
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>
+                                        net.alchim31.maven
+                                    </groupId>
+                                    <artifactId>
+                                        yuicompressor-maven-plugin
+                                    </artifactId>
+                                    <versionRange>
+                                        [0.9,)
+                                    </versionRange>
+                                    <goals>
+                                        <goal>compress</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <execute></execute>
+                                </action>
+                            </pluginExecution>
+                        </pluginExecutions>
+                    </lifecycleMappingMetadata>
+                </configuration>
+            </plugin>
+        </plugins>
+    </pluginManagement>
     <plugins>
 
       <plugin>
