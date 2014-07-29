@@ -77,6 +77,7 @@
 		    <param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
 			<param name="conceptSchema" type="java.lang.String" value="http://geonetwork-opensource.org/regions"/>
 		</dimension>
+		<dimension name="Point of Contact" indexKey="metadataPOC"/>
 	</dimensions>
 </summary>
 >>>>>>> e60d242... Add indexing of categories

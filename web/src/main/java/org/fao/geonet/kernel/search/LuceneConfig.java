@@ -965,17 +965,7 @@ public class LuceneConfig {
 	 * @throws ClassNotFoundException 
 	 */
 	public Classifier getClassifier(Dimension dimension) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Classifier classifier;
-				
-		List<Object> defaultParams = new ArrayList<Object>();
-
-		classifier = (Classifier) loader.newInstance(
-			dimension.getClassifier(), 
-			defaultParams,
-			dimension.getParams()
-		);
-
-		return classifier;
+		return (Classifier) loader.newInstance(dimension.getClassifier(), dimension.getParams());
 	}
 
 	/**

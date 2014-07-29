@@ -21,6 +21,8 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
+// Replace this using Spring auto-wiring in GeoNetwork core
+
 package org.fao.geonet.kernel.search;
 
 import static org.fao.geonet.constants.Geonet.LUCENE_VERSION;
@@ -32,47 +34,47 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.fao.geonet.kernel.ThesaurusManager;
 import org.jdom.Element;
 
 public class IndexingClassLoader {
+
 	private String appPath;
-	
+
 	IndexingClassLoader(String appPath) {
 		this.appPath = appPath;
 	}
 
-	public Object newInstance(String className, List<Object> defaultParams, List<Element> configParams) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object newInstance(String className, List<Element> configParams) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class<?> clazz = Class.forName(className);
-		
+
 		ArrayList<Class> argumentClasses = new ArrayList<Class>();
-		argumentClasses.addAll(getClassesFor(defaultParams));
-        argumentClasses.addAll(getTypeList(configParams));
-        
-        ArrayList<Object> argumentValues = new ArrayList<Object>();
-        argumentValues.addAll(defaultParams);
-        argumentValues.addAll(getValueList(configParams));
-        
-        Constructor<?> c = clazz.getConstructor(argumentClasses.toArray(new Class[0]));
+		argumentClasses.addAll(getTypeList(configParams));
+
+		ArrayList<Object> argumentValues = new ArrayList<Object>();
+		argumentValues.addAll(getValueList(configParams));
+
+		Constructor<?> c = clazz.getConstructor(argumentClasses.toArray(new Class[0]));
 		return c.newInstance(argumentValues.toArray());
 	}
-	
+
 	private Collection<? extends Class> getClassesFor(List<Object> defaultParams) {
 		ArrayList<Class> result = new ArrayList<Class>();
-		
+
 		for (Object defaultParam: defaultParams) {
 			result.add(defaultParam.getClass());
 		}
-		
+
 		return result;
 	}
 
 	public Class[] getTypes(List<Element> params) throws ClassNotFoundException {
 		return getTypeList(params).toArray(new Class[0]);
 	}
-	
+
 	private ArrayList<Class> getTypeList(List<Element> params) throws ClassNotFoundException {
 		ArrayList<Class> result = new ArrayList<Class>();
-		
+
 		for (Element param : params) {
 			String paramType = param.getAttributeValue("type");
 
@@ -87,11 +89,11 @@ public class IndexingClassLoader {
 		
 		return result;
 	}
-	
+
 	public Object[] getValues(List<Element> params) {
 		return getValueList(params).toArray();
 	}
-	
+
 	private ArrayList<Object> getValueList(List<Element> params) {
 		ArrayList<Object> result = new ArrayList<Object>();
 
@@ -101,7 +103,10 @@ public class IndexingClassLoader {
 
 			if ("org.apache.lucene.util.Version".equals(paramType)) {
 				result.add(LUCENE_VERSION);
-			} else if ("java.io.File".equals(paramType) && value != null) {
+			} else if (ThesaurusManager.class.getName().equals(paramType)) {
+				result.add(getThesaurusManager());
+			}
+			else if ("java.io.File".equals(paramType) && value != null) {
 				File f = new File(value);
 				
 				if (!f.exists()) { // try relative to appPath
@@ -121,6 +126,19 @@ public class IndexingClassLoader {
 			}
 		}
 		
+		return result;
+	}
+
+	//TODO: Source from context
+	
+	private ThesaurusManager getThesaurusManager() {
+		ThesaurusManager result = null;
+		try {
+			result = ThesaurusManager.getInstance(null, null, null, null, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return result;
 	}
 }

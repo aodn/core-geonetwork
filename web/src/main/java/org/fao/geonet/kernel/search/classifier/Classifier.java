@@ -26,5 +26,7 @@ package org.fao.geonet.kernel.search.classifier;
 import java.util.List;
 
 public interface Classifier {
-	public List<String> classify(String value); 
+
+	public List<String> classify(String value);
+
 }
