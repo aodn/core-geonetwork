@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,20 +37,16 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
-import jeeves.resources.dbms.Dbms;
 import jeeves.server.context.ServiceContext;
 import jeeves.server.overrides.ConfigurationOverrides;
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
 
-import org.apache.lucene.facet.search.params.FacetRequest.SortBy;
-import org.apache.lucene.facet.search.params.FacetRequest.SortOrder;
-
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.search.TopFieldCollector;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.lucene.util.Version;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.search.classifier.Classifier;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
@@ -211,6 +209,12 @@ public class LuceneConfig {
 	private Map<String, Map<String,FacetConfig>> taxonomy;
 	
 	/**
+	 * List of taxonomy by taxonomy types (hits, hits_with_summary
+	 * for each field (eg. denominator) and its configuration (eg. sort).
+	 */
+	private List<Dimension> dimensions;
+	
+	/**
 	 * Lucene numeric field configuration
 	 */
 	public class LuceneConfigNumericField {
@@ -297,6 +301,7 @@ public class LuceneConfig {
 	private Version LUCENE_VERSION = Geonet.LUCENE_VERSION;
 	private Set<String> multilingualSortFields = new HashSet<String>();
 
+	private IndexingClassLoader loader;
 	
     /**
 	 * Creates a new Lucene configuration from an XML configuration file.
@@ -314,6 +319,7 @@ public class LuceneConfig {
 		String taxonomyConfig = "WEB-INF/config-summary.xml";
 		this.taxonomyConfigurationFile = new File(appPath + taxonomyConfig);
 		this.loadTaxonomy(servletContext, taxonomyConfig);
+		this.loader = new IndexingClassLoader(appPath);
 	}
 
 	private void load(ServletContext servletContext, String luceneConfigXmlFile) {
@@ -585,6 +591,18 @@ public class LuceneConfig {
 					}
 				}
 			}
+			
+			dimensions = new ArrayList<Dimension>();
+			Element dimensionElement = taxonomyConfig.getChild("dimensions");
+			
+			if (dimensionElement != null) {
+				for (Object e : dimensionElement.getChildren()) {
+					if (e instanceof Element) {
+						dimensions.add(new Dimension((Element) e));
+					}
+				}
+			}
+			
 		} catch (JDOMException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -916,6 +934,49 @@ public class LuceneConfig {
 	public Version getLuceneVersion() {
         return LUCENE_VERSION;
     }
+
+	/**
+	 * 
+	 * @return Each dimension using the indexKey
+	 */
+	public List<Dimension> getDimensions(String indexKey) {
+		List<Dimension> result = new ArrayList<Dimension>();
+
+		for (Dimension dimension: dimensions) {
+			String dimensionIndexKey = dimension.getIndexKey();
+
+			if (dimensionIndexKey != null && dimensionIndexKey.equals(indexKey)) {
+				result.add(dimension);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * @return Each classifier for the indexKey
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws ClassNotFoundException 
+	 */
+	public Classifier getClassifier(Dimension dimension) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Classifier classifier;
+				
+		List<Object> defaultParams = new ArrayList<Object>();
+
+		classifier = (Classifier) loader.newInstance(
+			dimension.getClassifier(), 
+			defaultParams,
+			dimension.getParams()
+		);
+
+		return classifier;
+	}
 
 	/**
 	 * 

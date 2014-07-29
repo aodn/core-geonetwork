@@ -66,4 +66,17 @@
 
 
 	</def>
+<<<<<<< HEAD
 </summary>
+=======
+	<dimensions>
+		<dimension name="Keyword" indexKey="keyword" classifier="org.fao.geonet.kernel.search.classifier.Split">
+			<param name="regex" type="java.lang.String" value="-"/>
+		</dimension>
+		<dimension name="Organisation" indexKey="orgName" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
+		    <param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
+			<param name="conceptSchema" type="java.lang.String" value="http://geonetwork-opensource.org/regions"/>
+		</dimension>
+	</dimensions>
+</summary>
+>>>>>>> e60d242... Add indexing of categories
