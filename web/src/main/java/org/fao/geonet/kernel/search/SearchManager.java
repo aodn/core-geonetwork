@@ -25,6 +25,7 @@ package org.fao.geonet.kernel.search;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -91,6 +92,7 @@ import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.SchemaManager;
 import org.fao.geonet.kernel.search.LuceneConfig.FacetConfig;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
+import org.fao.geonet.kernel.search.classifier.Classifier;
 import org.fao.geonet.kernel.search.function.DocumentBoosting;
 import org.fao.geonet.kernel.search.index.GeonetworkMultiReader;
 import org.fao.geonet.kernel.search.index.LuceneIndexLanguageTracker;
@@ -1496,6 +1498,12 @@ public class SearchManager {
                         }
                         categories.add(new CategoryPath(name, string));
                     }
+                    
+                    // Add dimension categories for term as defined in config-summary 
+                    for (Dimension dimension : _luceneConfig.getDimensions(name)) {
+                        categories.add(getCategoryPath(dimension, string));
+                   } 
+                    
             }
         }
         
@@ -1504,7 +1512,23 @@ public class SearchManager {
         }
         
         return Pair.write(doc, categories);
+}
 
+	//TODO: Can we move this to dimension class
+	private CategoryPath getCategoryPath(Dimension dimension, String value) {
+		ArrayList<String> dimensionCategories = new ArrayList<String>();
+		
+		try {
+			Classifier classifier = _luceneConfig.getClassifier(dimension);
+		    dimensionCategories.add(dimension.getName());
+		    dimensionCategories.addAll(classifier.classify(value));
+		} catch (Exception e) {
+		    Log.warning(Geonet.SEARCH_ENGINE,
+		            "  Error loading classifier for dimension: " + dimension.getName());
+		    e.printStackTrace();
+		}
+		
+		return new CategoryPath(dimensionCategories.toArray(new String[0]));
 	}
 
 	/**
