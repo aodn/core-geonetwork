@@ -29,6 +29,8 @@ import org.jdom.Element;
 
 public class Dimension {
 	
+	private static final String DEFAULT_CLASSIFIER = "org.fao.geonet.kernel.search.classifier.Value";
+
 	private String name;
 	
 	private String indexKey;
@@ -41,6 +43,11 @@ public class Dimension {
 		name = e.getAttributeValue("name");
 		indexKey = e.getAttributeValue("indexKey");
 		classifier = e.getAttributeValue("classifier");
+
+		if (classifier == null) {
+			classifier = DEFAULT_CLASSIFIER;
+		}
+
 		params = (List<Element>)e.getChildren();
 	}
 
