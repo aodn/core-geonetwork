@@ -51,6 +51,8 @@ File > Import > Maven > Existing Maven Project
 
 Select location of geonetwork workspace
 
+For a non-imos clone you may get the following error
+
 yui-compressor - resolve later 
 
 This can be fixed by changing the pom refer 
@@ -59,22 +61,9 @@ http://stackoverflow.com/questions/6008942/yuicompressor-plugin-execution-not-co
 
 this is an eclipse specific fix which I'm not sure is appropriate for core
 
-wait for build to finish or cancel as we are changing more build options below
+I have however added it to this branch for convenience in generating compressed java script files
 
-## servlet-api
-
-servlet-api is provided by containers and shouldn't be included in geonetwork-main generated war (causes problems when deploying geonetwork to tomcat).  Its currently included transitively by the yammer metrics servlet dependency in geonetwork-main and the jeeves dependency
-
-this can be fixed by overriding the scope of this transitive dependency by specifying the dependency explicitly (unfortunately we are forced by maven to specify the version as well) e.g. 
-
-```
-      <dependency>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-          <scope>provided</scope>
-          <version>2.5</version>
-      </dependency>
-```
+Wait for build to finish or cancel as we are changing more build options below
 
 ## Disable validation of xml and xsl files on build
 
@@ -98,34 +87,29 @@ Select Java Build Path / Source
 
 Remove the src/main/webapp/WEB-INF/classes/setup/sql/migrate entry
 
+## Run a maven build 
+
+Run a maven clean package on the GeoNetwork project
+
+Referesh the workspace when finished
+
 ## Adjust geonetwork-main project web deployment settings
 
 Right click on the geonetwork-main project and select properties.
 
 Select Project Facets and tick Dynamic Web Module
 
-## Include missing dependencies
+## Correct the web deployment assembly
 
 Right click on the geonetwork-main project and select properties.
 
 Select Deployment Assembly
 
-Add > Java Build Path Entries > Maven Dependencies
+Remove all existing entries
 
-Add > Folder > target/m2e-wtp/web-resources
+Add the target/geonetwork folder
 
-## Fix geonetwork-client dependency as required
-
-For some reason my geonetwork-client dependency wasn't being included in the generated web app (widget and htmlui interfaces would not work)
-
-I had to delete this dependency and re-add it (project dependency)
-
-## Build geonetwork project
-
-Right click on geonetwork project and select Run As > Maven Build
-
-Enter clean package in the maven goal and run.
-
+Recheck this setting if you have problems starting tomcat below as for me some of the maven depenedencies are re-added (or not deleted) and had to be removed again 
 
 ## Create a tomcat server
 
