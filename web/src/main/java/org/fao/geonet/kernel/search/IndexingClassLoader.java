@@ -34,6 +34,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import jeeves.server.context.ServiceContext;
+
+import org.fao.geonet.GeonetContext;
+import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.ThesaurusManager;
 import org.jdom.Element;
 
@@ -129,16 +133,12 @@ public class IndexingClassLoader {
 		return result;
 	}
 
-	//TODO: Source from context
-	
 	private ThesaurusManager getThesaurusManager() {
-		ThesaurusManager result = null;
-		try {
-			result = ThesaurusManager.getInstance(null, null, null, null, null);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return result;
+		return getGeonetContext().getThesaurusManager();
+	}
+
+	private GeonetContext getGeonetContext() {
+		final ServiceContext context = ServiceContext.get();
+		return (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 	}
 }
