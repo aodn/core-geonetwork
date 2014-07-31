@@ -167,7 +167,7 @@ public class LuceneConfig {
 	private Version LUCENE_VERSION = Geonet.LUCENE_VERSION;
 	private Set<String> multilingualSortFields = new HashSet<String>();
 
-	private IndexingClassLoader loader;
+	private ConfigClassLoader loader;
 	
     /**
 	 * Creates a new Lucene configuration from an XML configuration file.
@@ -185,7 +185,7 @@ public class LuceneConfig {
 		String taxonomyConfig = "WEB-INF/config-summary.xml";
 		this.taxonomyConfigurationFile = new File(appPath + taxonomyConfig);
 		this.loadTaxonomy(servletContext, taxonomyConfig);
-		this.loader = new IndexingClassLoader(appPath);
+		this.loader = new ConfigClassLoader(appPath);
 	}
 
 	private void load(ServletContext servletContext, String luceneConfigXmlFile) {
