@@ -1520,12 +1520,12 @@ public class SearchManager {
 		
 		try {
 			Classifier classifier = _luceneConfig.getClassifier(dimension);
-		    dimensionCategories.add(dimension.getName());
-		    dimensionCategories.addAll(classifier.classify(value));
+			dimensionCategories.add(dimension.getName());
+			dimensionCategories.addAll(classifier.classify(value));
 		} catch (Exception e) {
-		    Log.warning(Geonet.SEARCH_ENGINE,
-		            "  Error loading classifier for dimension: " + dimension.getName());
-		    e.printStackTrace();
+			Log.warning(Geonet.SEARCH_ENGINE,
+			        "  Error loading classifier for dimension: " + dimension.getName());
+			e.printStackTrace();
 		}
 		
 		return new CategoryPath(dimensionCategories.toArray(new String[0]));
