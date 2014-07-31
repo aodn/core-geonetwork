@@ -1,5 +1,5 @@
-//=============================================================================
-//===	Copyright (C) 2010 Food and Agriculture Organization of the
+//==============================================================================
+//===	Copyright (C) 2001-2007 Food and Agriculture Organization of the
 //===	United Nations (FAO-UN), United Nations World Food Programme (WFP)
 //===	and United Nations Environment Programme (UNEP)
 //===
@@ -21,50 +21,37 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.search;
+package org.fao.geonet.kernel.search.facet;
 
-import java.util.List;
-
+import org.fao.geonet.kernel.search.facet.DimensionConfig;
 import org.jdom.Element;
 
-public class Dimension {
-	
-	private static final String DEFAULT_CLASSIFIER = "org.fao.geonet.kernel.search.classifier.Value";
+public class DimensionSummaryBuilder extends FacetSummaryBuilder {
+	private DimensionConfig config;
 
-	private String name;
-	
-	private String indexKey;
-	
-	private String classifier;
-	
-	private List<Element> params;
-	
-	public Dimension(Element e) {
-		name = e.getAttributeValue("name");
-		indexKey = e.getAttributeValue("indexKey");
-		classifier = e.getAttributeValue("classifier");
-
-		if (classifier == null) {
-			classifier = DEFAULT_CLASSIFIER;
-		}
-
-		params = (List<Element>) e.getChildren();
+	public DimensionSummaryBuilder(DimensionConfig config) {
+		this.config = config;
 	}
 
-	public String getName() {
-		return name;
+	@Override
+	protected FacetConfig getConfig() {
+		return config;
 	}
 
-	public String getIndexKey() {
-		return indexKey;
+	@Override
+	protected Element buildDimensionTag(String value, String count) {
+		return buildSummaryTag("dimension", value, count);
 	}
 
-	public String getClassifier() {
-		return classifier;
+	@Override
+	protected Element buildCategoryTag(String value, String count) {
+		return buildSummaryTag("category", value, count);
 	}
-
-	public List<Element> getParams() {
-		return params;
+	
+	private Element buildSummaryTag(String elementName, String value, String count) {
+		Element summaryTag = new Element(elementName);
+		summaryTag.setAttribute("count", count);
+		summaryTag.setAttribute("name", value);
+		return summaryTag;
 	}
-
 }

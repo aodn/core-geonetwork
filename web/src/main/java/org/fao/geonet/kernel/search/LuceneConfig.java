@@ -37,7 +37,6 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
-import jeeves.server.context.ServiceContext;
 import jeeves.server.overrides.ConfigurationOverrides;
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
@@ -47,6 +46,9 @@ import org.apache.lucene.util.NumericUtils;
 import org.apache.lucene.util.Version;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.classifier.Classifier;
+import org.fao.geonet.kernel.search.facet.DimensionConfig;
+import org.fao.geonet.kernel.search.facet.FacetConfig;
+import org.fao.geonet.kernel.search.facet.ItemConfig;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
@@ -66,143 +68,7 @@ public class LuceneConfig {
 	private File taxonomyConfigurationFile;
 	private String appPath;
 	
-    public static class Facet {
-        /**
-         * Default number of values for a facet
-         */
-        public static final int DEFAULT_MAX_KEYS = 10;
-        /**
-         * Max number of values for a facet
-         */
-        public static final int MAX_SUMMARY_KEY = 1000;
-        /**
-         * Define the sorting order of a facet.
-         */
-        public enum SortBy {
-            /**
-             * Use a text comparator for sorting values
-             */
-            VALUE, 
-            /**
-             * Use a numeric compartor for sorting values
-             */
-            NUMVALUE, 
-            /**
-             * Sort by count
-             */
-            COUNT
-        }
-
-        public enum SortOrder {
-            ASCENDIND, DESCENDING
-        }
-    }
-    
     /**
-     * Facet configuration
-     */
-    public class FacetConfig {
-        private String name;
-        private String plural;
-        private String indexKey;
-        private Facet.SortBy sortBy = Facet.SortBy.COUNT;
-        private Facet.SortOrder sortOrder = Facet.SortOrder.DESCENDING;
-        private int max;
-        private String translator;
-        /**
-         * Create a facet configuration from a summary configuration element.
-         * 
-         * @param summaryElement
-         */
-        public FacetConfig(Element summaryElement) {
-            
-            name = summaryElement.getAttributeValue("name");
-            plural = summaryElement.getAttributeValue("plural");
-            indexKey = summaryElement.getAttributeValue("indexKey");
-            translator = summaryElement.getAttributeValue("translator");
-            
-            String maxString = summaryElement.getAttributeValue("max");
-            if (maxString == null) {
-                max = Facet.DEFAULT_MAX_KEYS;
-            } else {
-                max = Integer.parseInt(maxString);
-            }
-            max = Math.min(Facet.MAX_SUMMARY_KEY, max);
-            
-            String sortByConfig = summaryElement.getAttributeValue("sortBy");
-            String sortOrderConfig = summaryElement.getAttributeValue("sortOrder");
-            
-            if("value".equals(sortByConfig)){
-                sortBy = Facet.SortBy.VALUE;
-            } else if("numValue".equals(sortByConfig)){
-                sortBy = Facet.SortBy.NUMVALUE;
-            }
-            
-            if("asc".equals(sortOrderConfig)){
-                sortOrder = Facet.SortOrder.ASCENDIND;
-            }
-        }
-        public String toString() {
-            StringBuffer sb = new StringBuffer("Field: ");
-            sb.append(indexKey);
-            sb.append("\tname:");
-            sb.append(name);
-            sb.append("\tmax:");
-            sb.append(max + "");
-            sb.append("\tsort by");
-            sb.append(sortBy.toString());
-            sb.append("\tsort order:");
-            sb.append(sortOrder.toString());
-            return sb.toString();
-        }
-        /**
-         * @return the name of the facet (ie. the tag name in the XML response)
-         */
-        public String getName() {
-            return name;
-        }
-        /**
-         * @return the plural for the name (ie. the parent tag of each facet values)
-         */
-        public String getPlural() {
-            return plural;
-        }
-        /**
-         * @return the name of the field in the index
-         */
-        public String getIndexKey() {
-            return indexKey;
-        }
-        /**
-         * @return the ordering for the facet. Defaults is by {@link Facet.SortBy#COUNT}.
-         */
-        public Facet.SortBy getSortBy() {
-            return sortBy;
-        }
-        /**
-         * @return asc or desc. Defaults is {@link Facet.SortOrder#DESCENDING}.
-         */
-        public Facet.SortOrder getSortOrder() {
-            return sortOrder;
-        }
-        /**
-         * @return (optional) the number of values to be returned for the facet.
-         * Defaults is {@link Facet#DEFAULT_MAX_KEYS} and never greater than
-         * {@link Facet#MAX_SUMMARY_KEY}.
-         */
-        public int getMax() {
-            return max;
-        }
-        public Translator getTranslator(ServiceContext context, String langCode) {
-            try {
-                return Translator.createTranslator(translator, context, langCode);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-	}
-
-	/**
 	 * List of taxonomy by taxonomy types (hits, hits_with_summary
 	 * for each field (eg. denominator) and its configuration (eg. sort).
 	 */
@@ -624,8 +490,8 @@ public class LuceneConfig {
 		for (Object obj : resultTypeConfig.getChildren()) {
 			if(obj instanceof Element) {
 			    Element summaryElement = (Element) obj;
-			    FacetConfig fc = new FacetConfig(summaryElement);
-				results.put(fc.getIndexKey(), fc);
+			    FacetConfig fc = FacetConfig.newInstance(summaryElement);
+				results.put(fc.getDimensionName(), fc);
 			}
 		}
 		return results;
@@ -1002,6 +868,12 @@ public class LuceneConfig {
 			sb.append("  * type: " + key + "\n");
 			Map<String, FacetConfig> facetsConfig = getTaxonomy().get(key);
 			sb.append(facetsConfig.toString());
+			sb.append("\n");
+		}
+		for (Dimension dimension: dimensions) {
+			sb.append("  * dimension: " + dimension.getName() + "\n");
+			sb.append(dimension.toString());
+			sb.append("\n");
 		}
 		return sb.toString();
 	}
