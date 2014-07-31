@@ -41,11 +41,11 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.ThesaurusManager;
 import org.jdom.Element;
 
-public class IndexingClassLoader {
+public class ConfigClassLoader {
 
 	private String appPath;
 
-	IndexingClassLoader(String appPath) {
+	ConfigClassLoader(String appPath) {
 		this.appPath = appPath;
 	}
 
@@ -90,7 +90,7 @@ public class IndexingClassLoader {
 				result.add(Class.forName(paramType));
 			}
 		}
-		
+
 		return result;
 	}
 

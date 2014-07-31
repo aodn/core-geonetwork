@@ -48,7 +48,10 @@ public class Dimension {
 			classifier = DEFAULT_CLASSIFIER;
 		}
 
-		params = (List<Element>)e.getChildren();
+		@SuppressWarnings("unchecked")
+		List<Element> params = (List<Element>) e.getChildren();
+
+		this.params = params;
 	}
 
 	public String getName() {
