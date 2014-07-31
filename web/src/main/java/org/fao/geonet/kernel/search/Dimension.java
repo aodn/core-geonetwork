@@ -25,11 +25,12 @@ package org.fao.geonet.kernel.search;
 
 import java.util.List;
 
+import org.fao.geonet.kernel.search.classifier.Value;
 import org.jdom.Element;
 
 public class Dimension {
 	
-	private static final String DEFAULT_CLASSIFIER = "org.fao.geonet.kernel.search.classifier.Value";
+	public static final String DEFAULT_CLASSIFIER = Value.class.getName();
 
 	private String name;
 	
@@ -40,9 +41,11 @@ public class Dimension {
 	private List<Element> params;
 	
 	public Dimension(Element e) {
-		name = e.getAttributeValue("name");
-		indexKey = e.getAttributeValue("indexKey");
-		classifier = e.getAttributeValue("classifier");
+		Element elem = (Element) e.clone();
+
+		name = elem.getAttributeValue("name");
+		indexKey = elem.getAttributeValue("indexKey");
+		classifier = elem.getAttributeValue("classifier");
 
 		if (classifier == null) {
 			classifier = DEFAULT_CLASSIFIER;
@@ -52,7 +55,7 @@ public class Dimension {
 		params = (List<Element>) e.getChildren();
 =======
 		@SuppressWarnings("unchecked")
-		List<Element> params = (List<Element>) e.getChildren();
+		List<Element> params = (List<Element>) elem.getChildren();
 
 		this.params = params;
 >>>>>>> 6df2eeb... Whitespace cleanup, rename IndexingClassLoader to ConfigClassLoader and handle unchecked warnings

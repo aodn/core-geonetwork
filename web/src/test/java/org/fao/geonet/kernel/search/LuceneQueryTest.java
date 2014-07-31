@@ -1,6 +1,7 @@
 package org.fao.geonet.kernel.search;
 
 import junit.framework.TestCase;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
@@ -13,6 +14,10 @@ import org.jdom.JDOMFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import jeeves.server.context.ServiceContext;
+import jeeves.server.sources.http.JeevesServlet;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -38,8 +43,15 @@ public class LuceneQueryTest extends TestCase {
 		
 		_analyzer = new PerFieldAnalyzerWrapper(new GeoNetworkAnalyzer(), analyzers);
 
-        LuceneConfig lc = new LuceneConfig("src/main/webapp/", null, "WEB-INF/config-lucene.xml");
-    	
+		JeevesServlet servlet = mock(JeevesServlet.class);
+		when(servlet.getServletContext()).thenReturn(null);
+		
+		ServiceContext context = mock(ServiceContext.class);
+		when(context.getAppPath()).thenReturn("src/main/webapp/");
+		when(context.getServlet()).thenReturn(servlet);
+		
+		LuceneConfig lc = new LuceneConfig(context, "WEB-INF/config-lucene.xml");
+		
 		_tokenizedFieldSet = lc.getTokenizedField();
 		_numericFieldSet = lc.getNumericFields();
 	}
