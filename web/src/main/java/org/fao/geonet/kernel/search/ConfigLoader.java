@@ -31,7 +31,6 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import jeeves.server.context.ServiceContext;
@@ -41,18 +40,18 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.ThesaurusManager;
 import org.jdom.Element;
 
-public class IndexingClassLoader {
+public class ConfigLoader {
 
-	private String appPath;
+	private ServiceContext context;
 
-	IndexingClassLoader(String appPath) {
-		this.appPath = appPath;
+	ConfigLoader(ServiceContext context) {
+		this.context = context;
 	}
 
 	public Object newInstance(String className, List<Element> configParams) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class<?> clazz = Class.forName(className);
 
-		ArrayList<Class> argumentClasses = new ArrayList<Class>();
+		ArrayList<Class<?>> argumentClasses = new ArrayList<Class<?>>();
 		argumentClasses.addAll(getTypeList(configParams));
 
 		ArrayList<Object> argumentValues = new ArrayList<Object>();
@@ -62,22 +61,12 @@ public class IndexingClassLoader {
 		return c.newInstance(argumentValues.toArray());
 	}
 
-	private Collection<? extends Class> getClassesFor(List<Object> defaultParams) {
-		ArrayList<Class> result = new ArrayList<Class>();
-
-		for (Object defaultParam: defaultParams) {
-			result.add(defaultParam.getClass());
-		}
-
-		return result;
-	}
-
-	public Class[] getTypes(List<Element> params) throws ClassNotFoundException {
+	public Class<?>[] getTypes(List<Element> params) throws ClassNotFoundException {
 		return getTypeList(params).toArray(new Class[0]);
 	}
 
-	private ArrayList<Class> getTypeList(List<Element> params) throws ClassNotFoundException {
-		ArrayList<Class> result = new ArrayList<Class>();
+	private ArrayList<Class<?>> getTypeList(List<Element> params) throws ClassNotFoundException {
+		ArrayList<Class<?>> result = new ArrayList<Class<?>>();
 
 		for (Element param : params) {
 			String paramType = param.getAttributeValue("type");
@@ -90,7 +79,7 @@ public class IndexingClassLoader {
 				result.add(Class.forName(paramType));
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -114,7 +103,7 @@ public class IndexingClassLoader {
 				File f = new File(value);
 				
 				if (!f.exists()) { // try relative to appPath
-					f = new File(appPath + value);
+					f = new File(context.getAppPath() + value);
 				}
 				if (f != null) {
 					result.add(f);
@@ -138,7 +127,6 @@ public class IndexingClassLoader {
 	}
 
 	private GeonetContext getGeonetContext() {
-		final ServiceContext context = ServiceContext.get();
 		return (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
 	}
 }
