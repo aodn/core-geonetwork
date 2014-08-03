@@ -22,39 +22,24 @@
 
 package org.fao.geonet.kernel.search.facet;
 
-public class Facet {
-    /**
-     * Default number of values for a facet
-     */
-    public static final int DEFAULT_MAX_KEYS = 10;
-    /**
-     * Max number of values for a facet
-     */
-    public static final int MAX_SUMMARY_KEY = 1000;
-    /**
-     * Define the sorting order of a facet.
-     */
-    public enum SortBy {
-        /**
-         * Use a text comparator for sorting values
-         */
-        VALUE, 
-        /**
-         * Use a numeric compartor for sorting values
-         */
-        NUMVALUE, 
-        /**
-         * Sort by count
-         */
-        COUNT
-    }
+import jeeves.server.context.ServiceContext;
 
-    public enum SortOrder {
-        ASCENDIND, DESCENDING
-    }
+public enum Format {
+	DIMENSION {
+		@Override
+		public Formatter getFormatter(ServiceContext context, ItemConfig config)
+		{
+			return new DimensionFormatter(context, config);
+		}
+	},
 
-    /**
-     * Default depth of sub categories to count
-     */
-	public static final int DEFAULT_DEPTH = 1;
+	FACET_NAME {
+		@Override
+		public Formatter getFormatter(ServiceContext context, ItemConfig config)
+		{
+			return new FacetNameFormatter(context, config);
+		}
+	};
+
+	public abstract Formatter getFormatter(ServiceContext context, ItemConfig config);
 }

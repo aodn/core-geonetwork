@@ -98,8 +98,8 @@ import org.fao.geonet.exceptions.UnAuthorizedException;
 import org.fao.geonet.kernel.MdInfo;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
 import org.fao.geonet.kernel.search.SearchManager.TermFrequency;
-import org.fao.geonet.kernel.search.facet.FacetConfig;
-import org.fao.geonet.kernel.search.facet.FacetSummaryBuilder;
+import org.fao.geonet.kernel.search.facet.ItemConfig;
+import org.fao.geonet.kernel.search.facet.ItemBuilder;
 import org.fao.geonet.kernel.search.index.GeonetworkMultiReader;
 import org.fao.geonet.kernel.search.log.SearcherLogger;
 import org.fao.geonet.kernel.search.lucenequeries.DateRangeQuery;
@@ -114,8 +114,6 @@ import org.jdom.Element;
 
 import java.util.Iterator;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Ranges;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -814,7 +812,7 @@ public class LuceneSearcher extends MetaSearcher {
         Pair<TopDocs,Element> results;
         try {
             results = doSearchAndMakeSummary( endHit, startHit, endHit, 
-    				_language, _luceneConfig.getTaxonomy().get(_resultType), indexAndTaxonomy.indexReader, 
+    				_language, _luceneConfig.getSummaryTypes().get(_resultType), indexAndTaxonomy.indexReader, 
     				_query, _filter, _sort, indexAndTaxonomy.taxonomyReader, buildSummary, _luceneConfig.isTrackDocScores(),
     				_luceneConfig.isTrackMaxScore(), _luceneConfig.isDocsScoredInOrder()
     		);
@@ -1148,7 +1146,7 @@ public class LuceneSearcher extends MetaSearcher {
 	 * @throws Exception hmm
 	 */
 	public static Pair<TopDocs, Element> doSearchAndMakeSummary(int numHits, int startHit, int endHit, String langCode, 
-			Map<String, FacetConfig> summaryConfig, IndexReader reader, 
+			Map<String, ItemConfig> summaryConfig, IndexReader reader, 
 			Query query, Filter cFilter, Sort sort, TaxonomyReader taxonomyReader, boolean buildSummary, boolean trackDocScores,
 			boolean trackMaxScore, boolean docsScoredInOrder) throws Exception
 	{
@@ -1207,16 +1205,16 @@ public class LuceneSearcher extends MetaSearcher {
 	 * @throws IOException
 	 */
     private static void buildFacetSummary(Element elSummary,
-            Map<String, FacetConfig> summaryConfigValues,
+            Map<String, ItemConfig> summaryConfigValues,
             FacetsCollector facetCollector, String langCode) throws IOException {
 
         try {
             for (FacetResult result: facetCollector.getFacetResults()) {
                 String label = result.getFacetResultNode().getLabel()
                         .toString();
-                FacetConfig config = summaryConfigValues.get(label);
-                FacetSummaryBuilder builder = FacetSummaryBuilder.newInstance(config, langCode);
-                Element facetSummary = builder.build(result);
+                ItemConfig config = summaryConfigValues.get(label);
+                ItemBuilder builder = new ItemBuilder(ServiceContext.get(), config);
+                Element facetSummary = builder.build(result, langCode);
                 elSummary.addContent(facetSummary);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -1229,7 +1227,7 @@ public class LuceneSearcher extends MetaSearcher {
         }
     }
 
-    /**
+	/**
 	 * Build facet search params according to the summary configuration file.
 	 * 
 	 * FacetRequest sort order and sort by option is the default (ie. by count descending).
@@ -1239,14 +1237,14 @@ public class LuceneSearcher extends MetaSearcher {
 	 * @return
 	 */
 	private static FacetSearchParams buildFacetSearchParams(
-			Map<String, FacetConfig> summaryConfigValues) {
-            List<FacetRequest> requests = new ArrayList<FacetRequest>(summaryConfigValues.size());
-		
+		Map<String, ItemConfig> summaryConfigValues) {
+		List<FacetRequest> requests = new ArrayList<FacetRequest>(summaryConfigValues.size());
+
 		for (String key : summaryConfigValues.keySet()) {
-			FacetConfig config = summaryConfigValues.get(key);
-			
+			ItemConfig config = summaryConfigValues.get(key);
+
 			int max = config.getMax();
-			
+
 			FacetRequest facetRequest = new CountFacetRequest(
 					new CategoryPath(key), max);
 			facetRequest.setSortBy(SortBy.VALUE);

@@ -22,39 +22,10 @@
 
 package org.fao.geonet.kernel.search.facet;
 
-public class Facet {
-    /**
-     * Default number of values for a facet
-     */
-    public static final int DEFAULT_MAX_KEYS = 10;
-    /**
-     * Max number of values for a facet
-     */
-    public static final int MAX_SUMMARY_KEY = 1000;
-    /**
-     * Define the sorting order of a facet.
-     */
-    public enum SortBy {
-        /**
-         * Use a text comparator for sorting values
-         */
-        VALUE, 
-        /**
-         * Use a numeric compartor for sorting values
-         */
-        NUMVALUE, 
-        /**
-         * Sort by count
-         */
-        COUNT
-    }
+import org.jdom.Element;
 
-    public enum SortOrder {
-        ASCENDIND, DESCENDING
-    }
-
-    /**
-     * Default depth of sub categories to count
-     */
-	public static final int DEFAULT_DEPTH = 1;
+public interface Formatter {
+	public Element buildDimensionTag(String value, String count, String langCode);
+	
+	public Element buildCategoryTag(String value, String count, String langCode);
 }

@@ -1,4 +1,3 @@
-//==============================================================================
 //===	Copyright (C) 2001-2007 Food and Agriculture Organization of the
 //===	United Nations (FAO-UN), United Nations World Food Programme (WFP)
 //===	and United Nations Environment Programme (UNEP)
@@ -23,35 +22,42 @@
 
 package org.fao.geonet.kernel.search.facet;
 
-import org.fao.geonet.kernel.search.facet.DimensionConfig;
+import jeeves.server.context.ServiceContext;
+
+import org.fao.geonet.kernel.search.Translator;
 import org.jdom.Element;
 
-public class DimensionSummaryBuilder extends FacetSummaryBuilder {
-	private DimensionConfig config;
+public class FacetNameFormatter implements Formatter {
+	private ItemConfig config;
 
-	public DimensionSummaryBuilder(DimensionConfig config) {
+	private ServiceContext context;
+
+	public FacetNameFormatter(ServiceContext context, ItemConfig config) {
+		this.context = context;
 		this.config = config;
 	}
 
 	@Override
-	protected FacetConfig getConfig() {
-		return config;
+	public Element buildDimensionTag(String value, String count, String langCode) {
+		return new Element(config.getDimension().getLabel());
 	}
 
 	@Override
-	protected Element buildDimensionTag(String value, String count) {
-		return buildSummaryTag("dimension", value, count);
+	public Element buildCategoryTag(String value, String count, String langCode) {
+		Translator translator = config.getTranslator(context, langCode);
+
+		String translatedValue = translator.translate(value);
+
+		Element categoryTag = new Element(config.getDimension().getName());
+		
+		categoryTag.setAttribute("count", count);
+		categoryTag.setAttribute("name", value);
+
+		if (translatedValue != null) {
+			categoryTag.setAttribute("label", translatedValue);
+		}
+
+		return categoryTag;
 	}
 
-	@Override
-	protected Element buildCategoryTag(String value, String count) {
-		return buildSummaryTag("category", value, count);
-	}
-	
-	private Element buildSummaryTag(String elementName, String value, String count) {
-		Element summaryTag = new Element(elementName);
-		summaryTag.setAttribute("count", count);
-		summaryTag.setAttribute("name", value);
-		return summaryTag;
-	}
 }
