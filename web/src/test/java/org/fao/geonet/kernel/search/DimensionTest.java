@@ -24,10 +24,11 @@ public class DimensionTest {
 
 	@Test
 	public void testDimension() throws JDOMException {
-		Element pointOfContact = Xml.selectElement(testData, "dimension[@name='Point of Contact']");
+		Element pointOfContact = Xml.selectElement(testData, "dimension[@name='metadataPOC']");
 		Dimension dimension = new Dimension(pointOfContact);
-		assertEquals("Point of Contact", dimension.getName());
+		assertEquals("metadataPOC", dimension.getName());
 		assertEquals("metadataPOC", dimension.getIndexKey());
+		assertEquals("metadataPOCs", dimension.getLabel());
 		assertEquals("org.fao.geonet.kernel.search.classifier.Value", dimension.getClassifier());
 		assertEquals(dimension.getParams().size(), 0);
 	}
