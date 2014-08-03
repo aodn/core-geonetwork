@@ -33,18 +33,21 @@ public class Dimension {
 	public static final String DEFAULT_CLASSIFIER = Value.class.getName();
 
 	private String name;
-	
+
 	private String indexKey;
-	
+
+	private String label;
+
 	private String classifier;
-	
+
 	private List<Element> params;
-	
+
 	public Dimension(Element e) {
 		Element elem = (Element) e.clone();
 
 		name = elem.getAttributeValue("name");
 		indexKey = elem.getAttributeValue("indexKey");
+		label = elem.getAttributeValue("label");
 		classifier = elem.getAttributeValue("classifier");
 
 		if (classifier == null) {
@@ -69,6 +72,10 @@ public class Dimension {
 		return indexKey;
 	}
 
+	public String getLabel() {
+		return label;
+	}
+
 	public String getClassifier() {
 		return classifier;
 	}
@@ -77,4 +84,13 @@ public class Dimension {
 		return params;
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer("dimension: ");
+		sb.append(name);
+		sb.append("\tindexKey: ");
+		sb.append(indexKey);
+		sb.append("\tclassifier: ");
+		sb.append(classifier);
+		return sb.toString();
+	}
 }

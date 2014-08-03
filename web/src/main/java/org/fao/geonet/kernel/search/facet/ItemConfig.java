@@ -22,109 +22,162 @@
 
 package org.fao.geonet.kernel.search.facet;
 
+import java.util.Map;
+
 import jeeves.server.context.ServiceContext;
 
+import org.fao.geonet.kernel.search.Dimension;
 import org.fao.geonet.kernel.search.Translator;
 import org.jdom.Element;
 
-public class ItemConfig extends FacetConfig {
-	private String name;
+public class ItemConfig {
+	private Dimension dimension;
 	
-	private String plural;
+	private Facet.SortBy sortBy = Facet.SortBy.COUNT;
 	
-	private String indexKey;
+	private Facet.SortOrder sortOrder = Facet.SortOrder.DESCENDING;
+	
+	private int max;
+
+	private int depth;
+
+	private Format format;
 	
 	private String translator;
-	
-	/**
-	 * Create a facet configuration from a summary item configuration element.
-	 * 
-	 * @param summaryElement
-	 */
-	public ItemConfig(Element summaryElement) {
-		name = summaryElement.getAttributeValue("name");
-		plural = summaryElement.getAttributeValue("plural");
-		indexKey = summaryElement.getAttributeValue("indexKey");
-		translator = summaryElement.getAttributeValue("translator");
 
-		addCommonConfig(summaryElement);
+	public ItemConfig(Element item, Map<String, Dimension> dimensions) {
+		String dimensionName = item.getAttributeValue("dimension");
+
+		if (dimensionName == null) {
+			throw new RuntimeException("Check facet configuration. Dimension attribute for item not found");
+		}
+
+		dimension = dimensions.get(dimensionName);
+
+		if (dimension == null) {
+			throw new RuntimeException("Check facet configuration. Dimension " + dimensionName + " not found");
+		}
+
+		String maxString = item.getAttributeValue("max");
+
+		if (maxString == null) {
+				max = Facet.DEFAULT_MAX_KEYS;
+		} else {
+				max = Integer.parseInt(maxString);
+		}
+
+		max = Math.min(Facet.MAX_SUMMARY_KEY, max);
+
+		String sortByConfig = item.getAttributeValue("sortBy");
+		String sortOrderConfig = item.getAttributeValue("sortOrder");
+
+		if("value".equals(sortByConfig)){
+				sortBy = Facet.SortBy.VALUE;
+		} else if("numValue".equals(sortByConfig)){
+				sortBy = Facet.SortBy.NUMVALUE;
+		}
+
+		if("asc".equals(sortOrderConfig)){
+				sortOrder = Facet.SortOrder.ASCENDIND;
+		}
+
+		String depthString = item.getAttributeValue("depth");
+
+		if (depthString == null) {
+			depth = Facet.DEFAULT_DEPTH;
+		} else {
+			depth = Integer.parseInt(depthString);
+		}
+
+		String formatString = item.getAttributeValue("format");
+
+		if (formatString == null) {
+			format = Format.FACET_NAME;
+		} else {
+			format = Format.valueOf(formatString);
+		}
+
+		translator = item.getAttributeValue("translator");
 	}
-
-	/**
-	 * @return category element
-	 */
-	public Element buildCategoryTag(String label, Double value, String langCode) {
-		Element result = new Element(name);
-		result.setAttribute("count", value.toString());
-		result.setAttribute("name", label);
-		return result;
-	};
-
-	/**
-	 * @return the dimension tag to be used in summary
-	 */
-	public String getDimensionElement() {
-		return plural;
-	};
 
 	/**
 	 * @return the dimension name used when indexing
 	 */
-	public String getDimensionName() {
-		return indexKey;
-	};
+
+	public Dimension getDimension() {
+		return dimension;
+	}
+	/**
+	 * @return a string representation of this configuration item.
+	 */
 
 	/**
 	 * @return a string representation of this configuration item
 	 */
 	public String toString() {
-		StringBuffer sb = new StringBuffer("Field: ");
-		sb.append(indexKey);
-		sb.append("\tname:");
-		sb.append(name);
+		StringBuffer sb = new StringBuffer("dimension: ");
+		sb.append(dimension.getName());
 		sb.append("\tmax:");
 		sb.append(getMax() + "");
 		sb.append("\tsort by");
 		sb.append(getSortBy().toString());
 		sb.append("\tsort order:");
 		sb.append(getSortOrder().toString());
+		sb.append("\tdepth:");
+		sb.append(Integer.toString(depth));
+		sb.append("\tformat:");
+		sb.append(format);
 		return sb.toString();
 	}
 
 	/**
-	 * @return the name of the facet (ie. the tag name in the XML response)
+	 * @return the ordering for the facet. Defaults is by {@link Facet.SortBy#COUNT}.
 	 */
-	public String getName() {
-		return name;
+
+	public Facet.SortBy getSortBy() {
+		return sortBy;
 	}
 
 	/**
-	 * @return the plural for the name (ie. the parent tag of each facet values)
+	 * @return asc or desc. Defaults is {@link Facet.SortOrder#DESCENDING}.
 	 */
-	public String getPlural() {
-		return plural;
+	public Facet.SortOrder getSortOrder() {
+		return sortOrder;
 	}
 
 	/**
-	 * @return the name of the field in the index
+	 * @return the depth to go to returning facet values
 	 */
-	public String getIndexKey() {
-		return indexKey;
+	public int getDepth() {
+		return depth;
+	}
+
+	/**
+	 * @return (optional) the number of values to be returned for the facet.
+	 * Defaults is {@link Facet#DEFAULT_MAX_KEYS} and never greater than
+	 * {@link Facet#MAX_SUMMARY_KEY}.
+	 */
+
+	public int getMax() {
+		return max;
+	}
+
+	/**
+	 * @return a formatter for creating item summaries
+	 */
+
+	public Formatter getFormatter(ServiceContext context) {
+		return format.getFormatter(context, this);
 	}
 
 	public Translator getTranslator(ServiceContext context, String langCode) {
+		if (context == null)
+			return Translator.NULL_TRANSLATOR;
+
 		try {
 			return Translator.createTranslator(translator, context, langCode);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	/**
-	 * @return the facet depth - for item config it's always 1
-	 */
-	@Override
-	public int getDepth() {
-		return 1;
 	}
 }

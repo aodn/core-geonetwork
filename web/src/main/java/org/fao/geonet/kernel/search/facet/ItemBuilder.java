@@ -32,48 +32,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jeeves.server.context.ServiceContext;
 import jeeves.utils.Log;
 
 import org.apache.lucene.facet.search.results.FacetResult;
 import org.apache.lucene.facet.search.results.FacetResultNode;
 import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.kernel.search.facet.DimensionConfig;
 import org.jdom.Element;
 
-public abstract class FacetSummaryBuilder {
+public class ItemBuilder {
 
-	public static FacetSummaryBuilder newInstance(FacetConfig config, String langCode) {
-		if (config instanceof ItemConfig) {
-			return new ItemSummaryBuilder((ItemConfig) config, langCode);
-		} else if (config instanceof DimensionConfig) {
-			return new DimensionSummaryBuilder((DimensionConfig) config);
-		} else {
-			throw new RuntimeException("Unknown facet configuration type");
-		}
+	private ItemConfig config;
+	private ServiceContext context;
+
+	public ItemBuilder(ServiceContext context, ItemConfig config) {
+		this.context = context;
+		this.config = config;
 	}
-	
-	protected abstract FacetConfig getConfig();
 
-	public Element build(FacetResult result) {
-		FacetConfig config = getConfig();
-
+	public Element build(FacetResult result, String langCode) {
 		FacetResultNode resultNode = result.getFacetResultNode();
 		String dimensionValue = resultNode.getLabel().toString();
 		String dimensionCount = doubleFormat.format(resultNode.getValue());
-		Element facets = buildDimensionTag(dimensionValue, dimensionCount);
-		
-		addSubResults(facets, config, resultNode);
+		Element facets = getFormatter().buildDimensionTag(dimensionValue, dimensionCount, langCode);
+
+		addSubResults(facets, resultNode, langCode);
 
 		return facets;
 	}
 
-	private void addSubResults(Element parent, FacetConfig config, FacetResultNode resultNode) {
+	private void addSubResults(Element parent, FacetResultNode resultNode, String langCode) {
 		if (resultNode.getNumSubResults() == 0) {
 			return;
 		}
 
-		List<Entry<String, FacetResultNode>> entries = sortResults(config,
-				resultNode);
+		List<Entry<String, FacetResultNode>> entries = sortResults(resultNode);
 
 		for (Entry<String, FacetResultNode> entry : entries) {
 			String facetValue = entry.getKey();
@@ -85,19 +78,23 @@ public abstract class FacetSummaryBuilder {
 						+ " (" + facetCount + ")");
 			}
 
-			Element category = buildCategoryTag(facetValue, facetCount);
-			addSubResults(category, config, entry.getValue());
-			
+			Element category = getFormatter().buildCategoryTag(facetValue, facetCount, langCode);
+			addSubResults(category, entry.getValue(), langCode);
+
 			parent.addContent(category);
 		}
 	}
 
+	private Formatter getFormatter() {
+		return config.getFormatter(context);
+	}
+
 	private List<Entry<String, FacetResultNode>> sortResults(
-			FacetConfig config, FacetResultNode resultNode) {
+			FacetResultNode resultNode) {
 		List<Entry<String, FacetResultNode>> entries = toResultList(resultNode);
 
 		if (Log.isDebugEnabled(Geonet.FACET_ENGINE)) {
-			Log.debug(Geonet.FACET_ENGINE, config.getDimensionName()
+			Log.debug(Geonet.FACET_ENGINE, config.getDimension().getName()
 					+ ":\tSorting facet by " + config.getSortBy().toString()
 					+ " (" + config.getSortOrder().toString() + ")");
 		}
@@ -175,10 +172,6 @@ public abstract class FacetSummaryBuilder {
 				facetValues.entrySet());
 		return entries;
 	}
-
-	protected abstract Element buildDimensionTag(String value, String count);
-
-	protected abstract Element buildCategoryTag(String value, String count);
 
 	private DecimalFormat doubleFormat = new DecimalFormat("0");
 

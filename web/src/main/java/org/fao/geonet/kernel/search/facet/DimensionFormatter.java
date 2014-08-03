@@ -22,39 +22,31 @@
 
 package org.fao.geonet.kernel.search.facet;
 
-public class Facet {
-    /**
-     * Default number of values for a facet
-     */
-    public static final int DEFAULT_MAX_KEYS = 10;
-    /**
-     * Max number of values for a facet
-     */
-    public static final int MAX_SUMMARY_KEY = 1000;
-    /**
-     * Define the sorting order of a facet.
-     */
-    public enum SortBy {
-        /**
-         * Use a text comparator for sorting values
-         */
-        VALUE, 
-        /**
-         * Use a numeric compartor for sorting values
-         */
-        NUMVALUE, 
-        /**
-         * Sort by count
-         */
-        COUNT
-    }
+import jeeves.server.context.ServiceContext;
 
-    public enum SortOrder {
-        ASCENDIND, DESCENDING
-    }
+import org.jdom.Element;
 
-    /**
-     * Default depth of sub categories to count
-     */
-	public static final int DEFAULT_DEPTH = 1;
+public class DimensionFormatter implements Formatter {
+	private ItemConfig config;
+
+	public DimensionFormatter(ServiceContext context, ItemConfig config) {
+		this.config = config;
+	}
+
+	@Override
+	public Element buildDimensionTag(String value, String count, String langCode) {
+		Element dimensionTag = new Element("dimension");
+		dimensionTag.setAttribute("name", config.getDimension().getName());
+		dimensionTag.setAttribute("value", value);
+		dimensionTag.setAttribute("count", count);
+		return dimensionTag;
+	}
+
+	@Override
+	public Element buildCategoryTag(String value, String count, String langCode) {
+		Element categoryTag = new Element("category");
+		categoryTag.setAttribute("value", value);
+		categoryTag.setAttribute("count", count);
+		return categoryTag;
+	}
 }
