@@ -1,0 +1,5 @@
+<dimension name="Keyword" value="Keywords" count="7">
+  <category value="test1" count="2" />
+  <category value="test2" count="1" />
+  <category value="test3" count="5" />
+</dimension>
