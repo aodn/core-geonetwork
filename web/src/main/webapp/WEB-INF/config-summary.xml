@@ -56,7 +56,7 @@
 		<!-- Multi level dimensions - not currently supported by GeoNetwork UI -->
 		<dimension name="Keyword" indexKey="keyword" label="Keywords"
 			classifier="org.fao.geonet.kernel.search.classifier.Split">
-			<param name="regex" type="java.lang.String" value="\|"/>
+			<param name="regex" type="java.lang.String" value=" *\| *"/>
 		</dimension>
 		<dimension name="organisation" indexKey="orgName" label="Organisations" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
 			<param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
