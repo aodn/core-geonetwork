@@ -52,7 +52,7 @@ public class ConfigLoaderTest {
 
 	@Test
 	public void testThesaurusManagerWiring() throws Exception {
-		Element orgElement = Xml.selectElement(testData, "dimension[@name='Organisation']");
+		Element orgElement = Xml.selectElement(testData, "dimension[@name='organisation']");
 		@SuppressWarnings("unchecked")
 		List<Element> orgParams = (List <Element>) orgElement.getChildren();
 

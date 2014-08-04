@@ -90,9 +90,9 @@ import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.csw.common.exceptions.NoApplicableCodeEx;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.SchemaManager;
-import org.fao.geonet.kernel.search.LuceneConfig.FacetConfig;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
 import org.fao.geonet.kernel.search.classifier.Classifier;
+import org.fao.geonet.kernel.search.facet.ItemConfig;
 import org.fao.geonet.kernel.search.function.DocumentBoosting;
 import org.fao.geonet.kernel.search.index.GeonetworkMultiReader;
 import org.fao.geonet.kernel.search.index.LuceneIndexLanguageTracker;
@@ -150,7 +150,7 @@ public class SearchManager {
 
 	private final File _stylesheetsDir;
     private static File _stopwordsDir;
-	Map<String, FacetConfig> _summaryConfigValues = null;
+	Map<String, ItemConfig> _summaryConfigValues = null;
 
 	private LuceneConfig _luceneConfig;
 	private File _luceneDir;
@@ -505,7 +505,7 @@ public class SearchManager {
 		_scm = scm;
 		_thesauriDir = thesauriDir;
 		_luceneConfig = lc;
-		_summaryConfigValues = _luceneConfig.getTaxonomy().get("hits");
+		_summaryConfigValues = _luceneConfig.getSummaryTypes().get("hits");
         _settingInfo = si;
 
 		_stylesheetsDir = new File(appPath, SEARCH_STYLESHEETS_DIR_PATH);
@@ -1490,20 +1490,14 @@ public class SearchManager {
                     }
                     doc.add(f);
                     
-                    // Add value to the taxonomy
-                    // TODO : Add all facets whatever the types
-                    if(_luceneConfig.getTaxonomy().get("hits").get(name) != null) {
-                        if(Log.isDebugEnabled(Geonet.INDEX_ENGINE)) {
-                            Log.debug(Geonet.INDEX_ENGINE, "Add category path: " + name + " with " + string);
-                        }
-                        categories.add(new CategoryPath(name, string));
-                    }
-                    
-                    // Add dimension categories for term as defined in config-summary 
+                    // Add dimension categories for term as defined in config-summary to the taxonomy 
                     for (Dimension dimension : _luceneConfig.getDimensions(name)) {
-                        categories.add(getCategoryPath(dimension, string));
+                        CategoryPath categoryPath = getCategoryPath(dimension, string);
+                        if(Log.isDebugEnabled(Geonet.INDEX_ENGINE)) {
+                            Log.debug(Geonet.INDEX_ENGINE, "Adding category path: " + categoryPath);
+                        }
+                        categories.add(categoryPath);
                    } 
-                    
             }
         }
         
@@ -1520,7 +1514,7 @@ public class SearchManager {
 		
 		try {
 			Classifier classifier = _luceneConfig.getClassifier(dimension);
-			dimensionCategories.add(dimension.getName());
+			dimensionCategories.add(dimension.getLabel());
 			dimensionCategories.addAll(classifier.classify(value));
 		} catch (Exception e) {
 			Log.warning(Geonet.SEARCH_ENGINE,
