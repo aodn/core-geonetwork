@@ -33,8 +33,7 @@ public class DimensionFormatterTest {
 
 		assertEquals("dimension", dimensionTag.getName());
 		assertEquals(0, dimensionTag.getContent().size());
-		assertEquals(3, dimensionTag.getAttributes().size());
-		assertEquals("keyword", dimensionTag.getAttributeValue("name"));
+		assertEquals(2, dimensionTag.getAttributes().size());
 		assertEquals("Keywords", dimensionTag.getAttributeValue("value"));
 		assertEquals("6", dimensionTag.getAttributeValue("count"));
 	}
