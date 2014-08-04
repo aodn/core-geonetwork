@@ -2147,12 +2147,7 @@ public class LuceneQueryTest extends TestCase {
 	 * 'facet.q' parameter. Single drilldown
 	 */
 	public void testDrilldownQuery() {
-		// create request object with facet.q=keyword/ocean/salinity
-		JDOMFactory factory = new DefaultJDOMFactory();
-		Element request = factory.element("request");
-		Element facetQuery = factory.element(SearchParameter.FACET_QUERY);
-		facetQuery.addContent("keyword/ocean/salinity");
-		request.addContent(facetQuery);
+		Element request = buildSingleDrilldownQuery("keyword/ocean/salinity");
 		// build lucene query input
 		LuceneQueryInput lQI = new LuceneQueryInput(request);
 		// build lucene query
@@ -2195,6 +2190,15 @@ public class LuceneQueryTest extends TestCase {
 		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
 		assertEquals("unexpected Lucene query", "+(+(+(+_isTemplate:n) +ConstantScore($facets:keyword/ocean/chemistry/)^0.0) +ConstantScore($facets:keyword/ocean/salinity/)^0.0) +ConstantScore($facets:keyword/ocean/temperature/)^0.0", query.toString());
+	}
+
+	private Element buildSingleDrilldownQuery(String drilldownPath) {
+		JDOMFactory factory = new DefaultJDOMFactory();
+		Element request = factory.element("request");
+		Element facetQuery = factory.element(SearchParameter.FACET_QUERY);
+		facetQuery.addContent(drilldownPath);
+		request.addContent(facetQuery);
+		return request;
 	}
 
 	private Element buildMultipleDrilldownQueryUsingAnd(String... drilldowns) {
