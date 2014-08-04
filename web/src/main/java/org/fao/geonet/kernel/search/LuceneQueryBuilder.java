@@ -24,11 +24,16 @@
 package org.fao.geonet.kernel.search;
 
 import com.google.common.base.Splitter;
+
 import jeeves.utils.Log;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
+import org.apache.lucene.facet.index.params.FacetIndexingParams;
+import org.apache.lucene.facet.search.DrillDown;
+import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
@@ -72,6 +77,8 @@ public class LuceneQueryBuilder {
 
     private static final String OR_SEPARATOR = " or ";
     private static final String FIELD_OR_SEPARATOR = "_OR_";
+    private static final String DRILLDOWN_AND_SEPARATOR = "&";
+    private static final String CATEGORY_SEPARATOR = "/";
     private static final String STRING_TOKENIZER_DELIMITER = " \n\r\t";
     private Set<String> _tokenizedFieldSet;
     private PerFieldAnalyzerWrapper _analyzer;
@@ -119,6 +126,19 @@ public class LuceneQueryBuilder {
 
     /**
      * Build a Lucene query for the {@link LuceneQueryInput}.
+     * 
+     * @param luceneQueryInput the requested search parameters
+     * @return Lucene query
+     */
+    public Query build(LuceneQueryInput luceneQueryInput) {
+        if(Log.isDebugEnabled(Geonet.SEARCH_ENGINE))
+            Log.debug(Geonet.SEARCH_ENGINE, "LuceneQueryBuilder: luceneQueryInput is: \n" + luceneQueryInput.toString());
+        Query baseQuery = buildBaseQuery(luceneQueryInput);
+        return addFacetQueries(baseQuery, luceneQueryInput.getFacetQueries());
+    }
+
+    /**
+     * Build a Lucene query for the {@link LuceneQueryInput}.
      *
      * A AND clause is used for each search criteria and a OR clause if the content of a criteria is "this or that".
      *
@@ -130,10 +150,8 @@ public class LuceneQueryBuilder {
      * @param luceneQueryInput user and system input
      * @return Lucene query
      */
-    public Query build(LuceneQueryInput luceneQueryInput) {
-        if(Log.isDebugEnabled(Geonet.SEARCH_ENGINE))
-            Log.debug(Geonet.SEARCH_ENGINE, "LuceneQueryBuilder: luceneQueryInput is: \n" + luceneQueryInput.toString());
 
+    private Query buildBaseQuery(LuceneQueryInput luceneQueryInput) {
         // Remember which range fields have been processed
         Set<String> processedRangeFields = new HashSet<String>();
 
@@ -225,6 +243,62 @@ public class LuceneQueryBuilder {
                 Log.debug(Geonet.LUCENE, "no language set, not adding locale query");
             return query;
         }
+    }
+
+    /**
+     * Add facet queries to a base query
+     *
+     * There may be many facet queries specified in the search parameters
+     * Add each one to the base query
+     * 
+     * @param baseQuery base query for requested search criteria
+     * @param facetQueries queries requested on facets
+     * 
+     * @return Lucene query
+     */
+
+    private Query addFacetQueries(Query baseQuery,
+            Set<String> facetQueries) {
+        Query result = baseQuery;
+
+        for (String facetQuery: facetQueries) {
+            result = addFacetQuery(result, facetQuery);
+        }
+
+        return result;
+    }
+
+    /**
+     * Add a facet query to a base query
+     * 
+     * @param baseQuery base query to which the facet query should be added
+     * @param facetQuery the facetQuery to add
+     * 
+     * @return Lucene query
+     */
+
+    private Query addFacetQuery(Query baseQuery, String facetQuery) {
+        Query result = baseQuery;
+
+        for (String drilldownPath : facetQuery.split(DRILLDOWN_AND_SEPARATOR)) {
+            result = addDrilldownPath(result, drilldownPath);
+        }
+
+        return result;
+    }
+
+    /**
+     * Add a drilldownPath to a base query
+     * 
+     * @param baseQuery base query to which the facet query should be added
+     * @param String the drilldown path to add
+     * 
+     * @return Lucene query
+     */
+
+    private Query addDrilldownPath(Query baseQuery, String drilldownPath) {
+        CategoryPath categoryPath = new CategoryPath(drilldownPath, CATEGORY_SEPARATOR);
+        return DrillDown.query(FacetIndexingParams.ALL_PARENTS, baseQuery, categoryPath);
     }
 
     /**
