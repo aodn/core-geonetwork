@@ -27,16 +27,13 @@ import jeeves.server.context.ServiceContext;
 import org.jdom.Element;
 
 public class DimensionFormatter implements Formatter {
-	private ItemConfig config;
 
 	public DimensionFormatter(ServiceContext context, ItemConfig config) {
-		this.config = config;
 	}
 
 	@Override
 	public Element buildDimensionTag(String value, String count, String langCode) {
 		Element dimensionTag = new Element("dimension");
-		dimensionTag.setAttribute("name", config.getDimension().getName());
 		dimensionTag.setAttribute("value", value);
 		dimensionTag.setAttribute("count", count);
 		return dimensionTag;
