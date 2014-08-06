@@ -24,7 +24,9 @@ package org.fao.geonet.kernel;
 
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
+
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.search.ThesaurusSearcher;
 import org.fao.geonet.kernel.search.keyword.KeywordRelation;
 import org.fao.geonet.languages.IsoLanguagesMapper;
 import org.fao.geonet.util.ISODate;
@@ -61,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -771,6 +774,44 @@ public class Thesaurus {
 
              myGraph.add(subjectURI, relationURI, relatedSubjectURI);
              myGraph.add(relatedSubjectURI, opposteRelationURI, subjectURI);
+        }
+
+        /**
+         * Gets a keyword using its id
+         * 
+         * @param subject the keyword to retrieve
+         * @return keyword
+         * @throws AccessDeniedException 
+         * @throws QueryEvaluationException 
+         * @throws MalformedQueryException 
+         * @throws IOException 
+         */
+        public KeywordBean getKeyword(String uri, String... languages) throws IOException, MalformedQueryException, QueryEvaluationException, AccessDeniedException {
+            ThesaurusSearcher searcher = new ThesaurusSearcher(this);
+            return searcher.searchById(uri, languages);
+        }
+
+        /**
+         * Gets related keywords
+         * 
+         * @param subject the keyword to retrieve
+         * @return keyword
+         * @throws Exception 
+         */
+        public List<KeywordBean> getRelated(String uri, KeywordRelation request, String... languages) throws Exception {
+            ThesaurusSearcher searcher = new ThesaurusSearcher(this);
+            return searcher.searchForRelated(uri, request, languages);
+        }
+
+        /**
+         * Gets related keywords
+         * 
+         * @param subject the keyword to retrieve
+         * @return keyword
+         * @throws Exception 
+         */
+        public List<KeywordBean> getBroader(String uri, KeywordRelation request, String... languages) throws Exception {
+            return getRelated(uri, KeywordRelation.BROADER, languages);
         }
 
         // ------------------------------- Deprecated methods -----------------------------
