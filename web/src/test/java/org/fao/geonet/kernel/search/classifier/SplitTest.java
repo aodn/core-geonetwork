@@ -12,7 +12,7 @@ public class SplitTest {
 	public void testClassify() {
 		Split splitClassifier = new Split("-");
 
-		List<String> result = splitClassifier.classify("ant-bat-car");
+		List<String> result = splitClassifier.classify("ant-bat-car", "eng");
 
 		assertEquals(result.size(), 3);
 		assertEquals(result.get(0), "ant");

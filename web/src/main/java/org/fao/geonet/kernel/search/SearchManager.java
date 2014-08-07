@@ -1515,7 +1515,7 @@ public class SearchManager {
 		try {
 			Classifier classifier = _luceneConfig.getClassifier(dimension);
 			dimensionCategories.add(dimension.getLabel());
-			dimensionCategories.addAll(classifier.classify(value));
+			dimensionCategories.addAll(classifier.classify(value, "eng"));
 		} catch (Exception e) {
 			Log.warning(Geonet.SEARCH_ENGINE,
 			        "  Error loading classifier for dimension: " + dimension.getName());

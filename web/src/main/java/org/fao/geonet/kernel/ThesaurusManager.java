@@ -33,12 +33,9 @@ import jeeves.xlink.Processor;
 import jeeves.guiservices.session.JeevesUser;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.oaipmh.Lib;
-
 import org.jdom.Element;
-
 import org.openrdf.sesame.Sesame;
 import org.openrdf.sesame.config.ConfigurationException;
 import org.openrdf.sesame.config.RepositoryConfig;
@@ -55,7 +52,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -403,7 +399,25 @@ public class ThesaurusManager implements ThesaurusFinder {
     @Override
     public Thesaurus getThesaurusByName(String thesaurusName) {
 		return thesauriMap.get(thesaurusName);
-	}	
+	}
+    
+    public Thesaurus getThesaurusByConceptScheme(String uri) {
+    	
+    	for (Map.Entry<String, Thesaurus> entry : thesauriMap.entrySet()) {
+    		try {
+    			Thesaurus thesaurus = entry.getValue();
+                
+    			if (thesaurus.hasConceptScheme(uri)) {
+    				return thesaurus;
+    			}
+    			
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	
+    	return null;   	
+    }
 
 	/**
 	 * @param name

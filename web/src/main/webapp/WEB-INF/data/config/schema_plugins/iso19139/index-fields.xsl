@@ -6,6 +6,7 @@
 										xmlns:geonet="http://www.fao.org/geonetwork"
 										xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 										xmlns:gmx="http://www.isotc211.org/2005/gmx"
+										xmlns:xlink="http://www.w3.org/1999/xlink"
                                         xmlns:skos="http://www.w3.org/2004/02/skos/core#">
 
 	<xsl:include href="convert/functions.xsl"/>
@@ -242,6 +243,10 @@
                           </xsl:if>
                         </xsl:if>
                     </xsl:if>
+                </xsl:for-each>
+                
+                <xsl:for-each select="gmd:keyword/gmx:Anchor [starts-with(@xlink:href, 'http://localhost:8080/geonetwork/srv/eng/xml.keyword.get?thesaurus=external.place.regions&amp;id=')]">
+                    <Field name="regionTerm" string="{substring-after(@xlink:href, 'http://localhost:8080/geonetwork/srv/eng/xml.keyword.get?thesaurus=external.place.regions&amp;id=')}" store="false" index="true"/>
                 </xsl:for-each>
 
 				<xsl:for-each select="gmd:type/gmd:MD_KeywordTypeCode/@codeListValue">

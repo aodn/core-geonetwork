@@ -150,6 +150,16 @@ public class KeywordBean {
 		return values.get(defaultLang);
 	}
 
+	/**
+	 * Get the preferred label for a given language code
+	 * 
+	 * @param langCode
+	 * @return preferredLabel
+	 */
+	public String getPreferredLabel(String langCode) {
+		return values.get(langCode);
+	}
+
     /**
      * Return an <em>unmodifiable</em> map of values.  Key is the 3 letter code language
      * 
@@ -695,6 +705,10 @@ public class KeywordBean {
     public String getBroaderRelationship() {
         return broader;
     }
+    
+	public boolean hasBroader() {
+		return broader != null && !broader.equals("");
+	}
     
     public KeywordBean setBroaderRelationship(String broader) {
         this.broader = broader;
