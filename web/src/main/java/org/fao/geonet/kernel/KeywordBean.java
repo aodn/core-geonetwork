@@ -173,7 +173,7 @@ public class KeywordBean {
     }
 
 	private String noPreferredLabelMessage(String langCode) {
-		return "Could not find preferred label for language code " + langCode;
+		return "Could not find preferred label for language code " + langCode + " for the keyword uri " + getUriCode();
 	}
 
 	private boolean notPreferredLabel(String preferredLabel) {
