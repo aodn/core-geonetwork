@@ -267,7 +267,7 @@ public class Thesaurus {
 
 	public boolean hasConceptScheme(String uri) {
 
-		String query = "SELECT conceptScheme"
+        String query = "SELECT conceptScheme"
                      + " FROM {conceptScheme} rdf:type {skos:ConceptScheme}"
                      + " WHERE conceptScheme = <" + uri + ">"
                      + " USING NAMESPACE skos = <http://www.w3.org/2004/02/skos/core#>"; 
