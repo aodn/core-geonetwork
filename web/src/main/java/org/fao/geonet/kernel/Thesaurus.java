@@ -27,7 +27,10 @@ import jeeves.utils.Xml;
 
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.exceptions.TermNotFoundException;
-import org.fao.geonet.kernel.search.ThesaurusSearcher;
+import org.fao.geonet.kernel.rdf.Query;
+import org.fao.geonet.kernel.rdf.QueryBuilder;
+import org.fao.geonet.kernel.rdf.Selectors;
+import org.fao.geonet.kernel.rdf.Wheres;
 import org.fao.geonet.kernel.search.keyword.KeywordRelation;
 import org.fao.geonet.languages.IsoLanguagesMapper;
 import org.fao.geonet.util.ISODate;
@@ -801,36 +804,49 @@ public class Thesaurus {
          * @return keyword 
          */
         public KeywordBean getKeyword(String uri, String... languages) {
-            ThesaurusSearcher searcher = new ThesaurusSearcher(this);
-            KeywordBean searchResult;
-			try {
-				searchResult = searcher.searchById(uri, languages);
-			} catch (Exception e) {
-				throw new TermNotFoundException(getTermNotFoundMessage(uri), e);
-			}
-            
-            if (searchResult == null) {
-    			Log.error(Geonet.CLASSIFIER, getTermNotFoundMessage(uri));
-    			throw new TermNotFoundException(getTermNotFoundMessage(uri));
+            List<KeywordBean> keywords;
+
+            try {
+                Query<KeywordBean> query = QueryBuilder
+                    .keywordQueryBuilder(getIsoLanguageMapper(), languages)
+                    .where(Wheres.ID(uri))
+                    .build();
+
+                keywords = query.execute(this);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            
-            return searchResult;
+
+            if (keywords.isEmpty()) {
+                Log.error(Geonet.THESAURUS, getTermNotFoundMessage(uri));
+                throw new TermNotFoundException(getTermNotFoundMessage(uri));
+            }
+
+            return keywords.get(0);
         }
-		private String getTermNotFoundMessage(String uri) {
-			String couldNotFindTermMessage = "Could not find "+uri+" in file "+thesaurusFile;
-			return couldNotFindTermMessage;
-		}
+
+        private String getTermNotFoundMessage(String uri) {
+            String couldNotFindTermMessage = "Could not find "+uri+" in file "+thesaurusFile;
+            return couldNotFindTermMessage;
+        }
 
         /**
          * Gets related keywords
          * 
-         * @param subject the keyword to retrieve
+         * @param uri the keyword whose related terms should be retrieved
          * @return keyword
-         * @throws Exception 
          */
-        public List<KeywordBean> getRelated(String uri, KeywordRelation request, String... languages) throws Exception {
-            ThesaurusSearcher searcher = new ThesaurusSearcher(this);
-            return searcher.searchForRelated(uri, request, languages);
+        public List<KeywordBean> getRelated(String uri, KeywordRelation request, String... languages) {
+            Query<KeywordBean> query = QueryBuilder
+                .keywordQueryBuilder(getIsoLanguageMapper(), languages)
+                .select(Selectors.related(uri, request), true)
+                .build();
+
+            try {
+                return query.execute(this);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         /**
