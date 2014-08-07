@@ -27,6 +27,6 @@ import java.util.List;
 
 public interface Classifier {
 
-	public List<String> classify(String value, String langCode);
+	public List<String> classify(String value);
 
 }

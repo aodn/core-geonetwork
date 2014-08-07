@@ -41,7 +41,7 @@ public class BroaderTerm implements Classifier {
 	}
 	
 	@Override
-	public List<String> classify(String value, String langCode) {		
+	public List<String> classify(String value) {
 		List<String> termHierarchy = getClassifications(value);
 		Collections.reverse(termHierarchy);
 		
