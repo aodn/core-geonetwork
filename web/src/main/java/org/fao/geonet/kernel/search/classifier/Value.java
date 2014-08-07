@@ -29,7 +29,7 @@ import java.util.List;
 public class Value implements Classifier {
 
 	@Override
-	public List<String> classify(String value) {
+	public List<String> classify(String value, String langCode) {
 		List<String> result = new ArrayList<String>();
 		result.add(value);
 		return result;

@@ -26,6 +26,7 @@ import jeeves.utils.Log;
 import jeeves.utils.Xml;
 
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.exceptions.TermNotFoundException;
 import org.fao.geonet.kernel.search.ThesaurusSearcher;
 import org.fao.geonet.kernel.search.keyword.KeywordRelation;
 import org.fao.geonet.languages.IsoLanguagesMapper;
@@ -185,6 +186,7 @@ public class Thesaurus {
   public String getKeywordUrl() {
 		return keywordUrl;
 	}
+  
 
   public void retrieveThesaurusTitle() {
     retrieveThesaurusTitle(thesaurusFile, dname + "." + fname, false);
@@ -260,6 +262,19 @@ public class Thesaurus {
 
         //printResultsTable(resultsTable);
 		return repository.performTableQuery(QueryLanguage.SERQL, query);
+	}
+	
+
+	public boolean hasConceptScheme(String uri) {
+		
+		String query = "SELECT conceptScheme FROM {conceptScheme} rdf:type {skos:ConceptScheme} WHERE conceptScheme = <" + uri + "> USING NAMESPACE skos = <http://www.w3.org/2004/02/skos/core#>";    	 
+		
+		try {
+			return performRequest(query).getRowCount() > 0;
+		} catch (Exception e) {
+            Log.error(Geonet.THESAURUS_MAN, "Error retrieving concept scheme for " + thesaurusFile + ". Error is: " + e.getMessage());
+            throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -780,16 +795,28 @@ public class Thesaurus {
          * Gets a keyword using its id
          * 
          * @param subject the keyword to retrieve
-         * @return keyword
-         * @throws AccessDeniedException 
-         * @throws QueryEvaluationException 
-         * @throws MalformedQueryException 
-         * @throws IOException 
+         * @return keyword 
          */
-        public KeywordBean getKeyword(String uri, String... languages) throws IOException, MalformedQueryException, QueryEvaluationException, AccessDeniedException {
+        public KeywordBean getKeyword(String uri, String... languages) {
             ThesaurusSearcher searcher = new ThesaurusSearcher(this);
-            return searcher.searchById(uri, languages);
+            KeywordBean searchResult;
+			try {
+				searchResult = searcher.searchById(uri, languages);
+			} catch (Exception e) {
+				throw new TermNotFoundException(getTermNotFoundMessage(uri), e);
+			}
+            
+            if (searchResult == null) {
+    			Log.error(Geonet.CLASSIFIER, getTermNotFoundMessage(uri));
+    			throw new TermNotFoundException(getTermNotFoundMessage(uri));
+            }
+            
+            return searchResult;
         }
+		private String getTermNotFoundMessage(String uri) {
+			String couldNotFindTermMessage = "Could not find "+uri+" in file "+thesaurusFile;
+			return couldNotFindTermMessage;
+		}
 
         /**
          * Gets related keywords

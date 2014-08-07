@@ -58,9 +58,9 @@
 			classifier="org.fao.geonet.kernel.search.classifier.Split">
 			<param name="regex" type="java.lang.String" value=" *\| *"/>
 		</dimension>
-		<dimension name="organisation" indexKey="orgName" label="Organisations" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
+		<dimension name="region" indexKey="regionTerm" label="Regions" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
 			<param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
-			<param name="conceptSchema" type="java.lang.String" value="http://geonetwork-opensource.org/regions"/>
+			<param name="conceptScheme" type="java.lang.String" value="http://geonetwork-opensource.org/regions"/>
 		</dimension>
 	</dimensions>
 	<def>
@@ -118,6 +118,7 @@
 			<item dimension="createDateYear" sortOrder="asc" max="40"/>
 		</results_with_summary>
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 		<portal_summary>
 			<item name="organisationName" plural="organisationNames"
@@ -150,6 +151,11 @@
 		<hierarchical_summary>
 			<item dimension="Keyword" max="100" format="DIMENSION" depth="2"/>
 		</hierarchical_summary>
+=======
+		<region_summary>
+			<item dimension="region" max="100" format="DIMENSION" depth="10"/>
+		</region_summary>
+>>>>>>> 1fe6134... Adding support for hierarchical facet indexing of broader terms
 	</def>
 </summary>
 >>>>>>> b2f3916... Add hierarchical facet counting and dimension format to facet summary

@@ -20,7 +20,7 @@
 		</dimension>
 		<dimension name="organisation" indexKey="orgName" label="Organisations" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
 			<param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
-			<param name="conceptSchema" type="java.lang.String" value="http://geonetwork-opensource.org/regions"/>
+			<param name="conceptScheme" type="java.lang.String" value="http://geonetwork-opensource.org/regions"/>
 		</dimension>
 	</dimensions>
 	<def>

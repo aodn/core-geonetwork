@@ -24,24 +24,40 @@
 package org.fao.geonet.kernel.search.classifier;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.fao.geonet.kernel.KeywordBean;
+import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusManager;
 
 public class BroaderTerm implements Classifier {
-
-	private ThesaurusManager thesaurusManager;
-
-	private String conceptScheme;
+	
+	private Thesaurus thesaurus;
+	private final static String LANG_CODE = "eng";
 
 	public BroaderTerm(ThesaurusManager thesaurusManager, String conceptScheme) {
-		this.thesaurusManager = thesaurusManager;
-		this.conceptScheme = conceptScheme;
+		thesaurus = thesaurusManager.getThesaurusByConceptScheme(conceptScheme);
 	}
-
+	
 	@Override
-	public List<String> classify(String value) {
-		return new ArrayList<String>();
+	public List<String> classify(String value, String langCode) {		
+		List<String> termHierarchy = getClassifications(value);
+		Collections.reverse(termHierarchy);
+		
+		return termHierarchy;
 	}
-
+	
+	public List<String> getClassifications(String termUri) {
+        List<String> termHierarchy = new ArrayList<String>();
+		
+		KeywordBean term = thesaurus.getKeyword(termUri, LANG_CODE);
+		termHierarchy.add(term.getPreferredLabel(LANG_CODE));
+		
+		if (term.hasBroader()) {
+			termHierarchy.addAll(getClassifications(term.getBroaderRelationship()));
+		}
+		
+		return termHierarchy;
+	}
 }

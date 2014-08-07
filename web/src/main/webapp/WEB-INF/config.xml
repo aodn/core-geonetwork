@@ -1226,6 +1226,14 @@
 		<service name="q">
 			<class name=".services.main.XmlSearch" />
 		</service>
+		
+		<service name="xml.search.region.summary">
+		      <class name=".services.main.XmlSearch">
+ 				<param name="maxSummaryKeys" value="100" />
+ 				<param name="maxHitsInSummary" value="100000" />
+ 				<param name="resultType" value="region_summary" />
+		      </class>
+			</service>
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
 		<service name="xml.metadata.get">

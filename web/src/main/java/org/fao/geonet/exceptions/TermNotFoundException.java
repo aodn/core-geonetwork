@@ -1,5 +1,5 @@
 //=============================================================================
-//===	Copyright (C) 2010 Food and Agriculture Organization of the
+//===	Copyright (C) 2001-2007 Food and Agriculture Organization of the
 //===	United Nations (FAO-UN), United Nations World Food Programme (WFP)
 //===	and United Nations Environment Programme (UNEP)
 //===
@@ -21,22 +21,17 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.search.classifier;
+package org.fao.geonet.exceptions;
 
-import java.util.Arrays;
-import java.util.List;
-
-public class Split implements Classifier {
+public class TermNotFoundException extends RuntimeException {
 	
-	private String regex;
+	private static final long serialVersionUID = 1L;
+
+	public TermNotFoundException(String message) {
+		super(message);
+	}
 	
-	public Split(String regex) {
-		this.regex = regex;
+	public TermNotFoundException(String message, Throwable cause) {
+		super(message, cause);
 	}
-
-	@Override
-	public List<String> classify(String value, String langCode) {
-		return Arrays.asList(value.split(regex));
-	}
-
 }
