@@ -24,7 +24,10 @@ package org.fao.geonet.kernel;
 
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
+
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.exceptions.TermNotFoundException;
+import org.fao.geonet.kernel.search.ThesaurusSearcher;
 import org.fao.geonet.kernel.search.keyword.KeywordRelation;
 import org.fao.geonet.languages.IsoLanguagesMapper;
 import org.fao.geonet.util.ISODate;
@@ -61,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -182,6 +186,7 @@ public class Thesaurus {
   public String getKeywordUrl() {
 		return keywordUrl;
 	}
+  
 
   public void retrieveThesaurusTitle() {
     retrieveThesaurusTitle(thesaurusFile, dname + "." + fname, false);
@@ -257,6 +262,22 @@ public class Thesaurus {
 
         //printResultsTable(resultsTable);
 		return repository.performTableQuery(QueryLanguage.SERQL, query);
+	}
+	
+
+	public boolean hasConceptScheme(String uri) {
+
+        String query = "SELECT conceptScheme"
+                     + " FROM {conceptScheme} rdf:type {skos:ConceptScheme}"
+                     + " WHERE conceptScheme = <" + uri + ">"
+                     + " USING NAMESPACE skos = <http://www.w3.org/2004/02/skos/core#>"; 
+		
+		try {
+			return performRequest(query).getRowCount() > 0;
+		} catch (Exception e) {
+            Log.error(Geonet.THESAURUS_MAN, "Error retrieving concept scheme for " + thesaurusFile + ". Error is: " + e.getMessage());
+            throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -771,6 +792,56 @@ public class Thesaurus {
 
              myGraph.add(subjectURI, relationURI, relatedSubjectURI);
              myGraph.add(relatedSubjectURI, opposteRelationURI, subjectURI);
+        }
+
+        /**
+         * Gets a keyword using its id
+         * 
+         * @param subject the keyword to retrieve
+         * @return keyword 
+         */
+        public KeywordBean getKeyword(String uri, String... languages) {
+            ThesaurusSearcher searcher = new ThesaurusSearcher(this);
+            KeywordBean searchResult;
+			try {
+				searchResult = searcher.searchById(uri, languages);
+			} catch (Exception e) {
+				throw new TermNotFoundException(getTermNotFoundMessage(uri), e);
+			}
+            
+            if (searchResult == null) {
+    			Log.error(Geonet.CLASSIFIER, getTermNotFoundMessage(uri));
+    			throw new TermNotFoundException(getTermNotFoundMessage(uri));
+            }
+            
+            return searchResult;
+        }
+		private String getTermNotFoundMessage(String uri) {
+			String couldNotFindTermMessage = "Could not find "+uri+" in file "+thesaurusFile;
+			return couldNotFindTermMessage;
+		}
+
+        /**
+         * Gets related keywords
+         * 
+         * @param subject the keyword to retrieve
+         * @return keyword
+         * @throws Exception 
+         */
+        public List<KeywordBean> getRelated(String uri, KeywordRelation request, String... languages) throws Exception {
+            ThesaurusSearcher searcher = new ThesaurusSearcher(this);
+            return searcher.searchForRelated(uri, request, languages);
+        }
+
+        /**
+         * Gets related keywords
+         * 
+         * @param subject the keyword to retrieve
+         * @return keyword
+         * @throws Exception 
+         */
+        public List<KeywordBean> getBroader(String uri, KeywordRelation request, String... languages) throws Exception {
+            return getRelated(uri, KeywordRelation.BROADER, languages);
         }
 
         // ------------------------------- Deprecated methods -----------------------------

@@ -14,6 +14,7 @@ import jeeves.utils.Xml;
 
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.ThesaurusManager;
 import org.fao.geonet.kernel.search.classifier.BroaderTerm;
 import org.fao.geonet.kernel.search.classifier.Split;
 import org.jdom.Element;
@@ -22,18 +23,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ConfigLoaderTest {
-	private Element testData;
+	private Element testDimensions;
 
 	@Before
 	public void loadTestData() throws IOException, JDOMException {
 		URL url = this.getClass().getResource("/org/fao/geonet/kernel/search/config-summary.xml");
 		Element configSummary = Xml.loadFile(url);
-		testData = Xml.selectElement(configSummary, "dimensions");
+		testDimensions = Xml.selectElement(configSummary, "dimensions");
 	}
 
 	@Test
 	public void testNewInstance() throws Exception {
-		Element keywordElement = Xml.selectElement(testData, "dimension[@name='Keyword']");
+		Element keywordElement = Xml.selectElement(testDimensions, "dimension[@name='Keyword']");
 		@SuppressWarnings("unchecked")
 		List<Element> keywordParams = (List <Element>) keywordElement.getChildren();
 		ConfigLoader loader = new ConfigLoader(null);
@@ -52,15 +53,8 @@ public class ConfigLoaderTest {
 
 	@Test
 	public void testThesaurusManagerWiring() throws Exception {
-		Element orgElement = Xml.selectElement(testData, "dimension[@name='organisation']");
-		@SuppressWarnings("unchecked")
-		List<Element> orgParams = (List <Element>) orgElement.getChildren();
-
-		GeonetContext geonetContext = mock(GeonetContext.class);
-		when(geonetContext.getThesaurusManager()).thenReturn(null);
-		
-		ServiceContext context = mock(ServiceContext.class);
-		when(context.getHandlerContext(Geonet.CONTEXT_NAME)).thenReturn(geonetContext);
+		List<Element> orgParams = mockParams();
+		ServiceContext context = mockContext();
 		
 		ConfigLoader loader = new ConfigLoader(context);
 
@@ -70,6 +64,28 @@ public class ConfigLoaderTest {
 			orgParams
 		);
 
-		verify(geonetContext).getThesaurusManager();
+		verify(getGeonetContext(context)).getThesaurusManager();
+	}
+
+	private GeonetContext getGeonetContext(ServiceContext context) {
+		return (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
+	}
+
+	private List<Element> mockParams() throws JDOMException {
+		Element orgElement = Xml.selectElement(testDimensions, "dimension[@name='organisation']");
+		@SuppressWarnings("unchecked")
+		List<Element> orgParams = (List <Element>) orgElement.getChildren();
+		return orgParams;
+	}
+
+	private ServiceContext mockContext() {
+		GeonetContext geonetContext = mock(GeonetContext.class);
+		ThesaurusManager mockManager = mock(ThesaurusManager.class);
+		when(geonetContext.getThesaurusManager()).thenReturn(mockManager);
+		when(mockManager.getThesaurusByConceptScheme("http://geonetwork-opensource.org/regions")).thenReturn(null);
+		
+		ServiceContext context = mock(ServiceContext.class);
+		when(context.getHandlerContext(Geonet.CONTEXT_NAME)).thenReturn(geonetContext);
+		return context;
 	}
 }

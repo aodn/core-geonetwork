@@ -36,7 +36,7 @@ public abstract class Wheres {
      * @return a Where object that tries to match the id column to the provided id
      */
     public static Where ID(String id) {return like("id", id);}
-    
+        
     /**
      * Create a Like clause
      * 

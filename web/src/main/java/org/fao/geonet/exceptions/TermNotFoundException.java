@@ -1,5 +1,5 @@
 //=============================================================================
-//===	Copyright (C) 2010 Food and Agriculture Organization of the
+//===	Copyright (C) 2001-2007 Food and Agriculture Organization of the
 //===	United Nations (FAO-UN), United Nations World Food Programme (WFP)
 //===	and United Nations Environment Programme (UNEP)
 //===
@@ -21,43 +21,17 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.search.classifier;
+package org.fao.geonet.exceptions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.fao.geonet.kernel.KeywordBean;
-import org.fao.geonet.kernel.Thesaurus;
-import org.fao.geonet.kernel.ThesaurusManager;
-
-public class BroaderTerm implements Classifier {
+public class TermNotFoundException extends RuntimeException {
 	
-	private Thesaurus thesaurus;
-	private final static String LANG_CODE = "eng";
+	private static final long serialVersionUID = 1L;
 
-	public BroaderTerm(ThesaurusManager thesaurusManager, String conceptScheme) {
-		thesaurus = thesaurusManager.getThesaurusByConceptScheme(conceptScheme);
+	public TermNotFoundException(String message) {
+		super(message);
 	}
 	
-	@Override
-	public List<String> classify(String value) {
-		List<String> termHierarchy = getClassifications(value);
-		Collections.reverse(termHierarchy);
-		
-		return termHierarchy;
-	}
-	
-	public List<String> getClassifications(String termUri) {
-        List<String> termHierarchy = new ArrayList<String>();
-		
-		KeywordBean term = thesaurus.getKeyword(termUri, LANG_CODE);
-		termHierarchy.add(term.getPreferredLabel(LANG_CODE));
-		
-		if (term.hasBroader()) {
-			termHierarchy.addAll(getClassifications(term.getBroaderRelationship()));
-		}
-		
-		return termHierarchy;
+	public TermNotFoundException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

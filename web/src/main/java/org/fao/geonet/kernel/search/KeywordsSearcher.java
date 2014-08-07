@@ -40,7 +40,6 @@ import org.fao.geonet.kernel.ThesaurusFinder;
 import org.fao.geonet.kernel.rdf.Query;
 import org.fao.geonet.kernel.rdf.QueryBuilder;
 import org.fao.geonet.kernel.rdf.Selectors;
-import org.fao.geonet.kernel.rdf.Wheres;
 import org.fao.geonet.kernel.search.keyword.KeywordRelation;
 import org.fao.geonet.kernel.search.keyword.KeywordSearchParams;
 import org.fao.geonet.kernel.search.keyword.KeywordSearchParamsBuilder;
@@ -88,15 +87,9 @@ public class KeywordsSearcher {
      * @throws Exception
      */
 	public KeywordBean searchById(String id, String sThesaurusName, String... languages) throws Exception {
-        Query<KeywordBean> query = QueryBuilder.keywordQueryBuilder(_isoLanguageMapper, languages).where(Wheres.ID(id)).build();
-
         Thesaurus thesaurus = _thesaurusFinder.getThesaurusByName(sThesaurusName);
-        List<KeywordBean> kws = query.execute(thesaurus); 
-        if(kws.isEmpty()) {
-            return null;
-        } else {
-            return kws.get(0);
-        }
+        ThesaurusSearcher thesaurusSearcher = new ThesaurusSearcher(thesaurus, _isoLanguageMapper);
+        return thesaurusSearcher.searchById(id, languages);
 	}
 
 	   public void search(KeywordSearchParams params) throws Exception {
@@ -153,9 +146,9 @@ public class KeywordsSearcher {
      * @throws Exception hmm
      */
 	public void searchForRelated(String id, String sThesaurusName, KeywordRelation request, String... languages) throws Exception {
-	    Thesaurus thesaurus = _thesaurusFinder.getThesaurusByName(sThesaurusName);
-	    Query<KeywordBean> query = QueryBuilder.keywordQueryBuilder(_isoLanguageMapper, languages).select(Selectors.related(id,request), true).build();
-	    _results = query.execute(thesaurus);
+		Thesaurus thesaurus = _thesaurusFinder.getThesaurusByName(sThesaurusName);
+		ThesaurusSearcher thesaurusSearcher = new ThesaurusSearcher(thesaurus, _isoLanguageMapper);
+		_results = thesaurusSearcher.searchForRelated(id, request, languages);
 	}
 
     /**
