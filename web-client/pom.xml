@@ -33,6 +33,22 @@
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
+				<excludes>
+						<exclude>**/*.woff</exclude>
+						<exclude>**/*.eot</exclude>
+						<exclude>**/*.ttf</exclude>
+						<exclude>**/*.otf</exclude>
+				</excludes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+				<includes>
+						<include>**/*.woff</include>
+						<include>**/*.eot</include>
+						<include>**/*.ttf</include>
+						<include>**/*.otf</include>
+				</includes>
       </resource>
     </resources>
     <plugins>
@@ -89,6 +105,10 @@
             <exclude>**/GeoExt/examples/*.js</exclude>
             <exclude>**/ext/**/*.js</exclude>
             <exclude>**/ext-4.0-pr1/**/*.js</exclude>
+						<exclude>**/*.woff</exclude>
+						<exclude>**/*.eot</exclude>
+						<exclude>**/*.ttf</exclude>
+						<exclude>**/*.otf</exclude>
 <!--            <exclude>**/*.css</exclude>
 -->          </excludes>
           <aggregations>
@@ -344,6 +364,7 @@
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/Old.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/INSPIRESearchFormTools.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/SearchFormTools.js</include>
+                <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/LinkTools.js</include>
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/util/CSWSearchTools.js</include>
 
                 <include>${project.build.directory}/classes/apps/js/GeoNetwork/lib/GeoNetwork/data/CatalogueSourceStore.js</include>

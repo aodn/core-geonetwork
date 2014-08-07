@@ -53,7 +53,7 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
          *  Default edit mode to open the editor. Default to 'simple'.
          *  View mode is keep in user session (on the server).
          */
-        defaultEditMode: 'simple',
+        defaultEditMode: GeoNetwork.defaultViewMode || 'simple',
         editMode: null,
         /** api: config[thesaurusButton] 
          *  Use thesaurus selector and inline keyword selection 
@@ -802,7 +802,9 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
      *  Use for XslProcessing task
      */
     process: function(action) {
-        this.loadUrl(action, undefined,  this.loadCallback, true);
+        this.loadUrl('metadata.update.new', undefined, function () {
+            this.loadUrl(action, undefined,  this.loadCallback, true);
+        });
     },
     /** api: method[init]
      * 
@@ -1111,7 +1113,7 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
      *
      *  All calendars are composed of one div and 1 or 2 inputs;
      *  one for the format, one for the value. According
-     *  to the format, A DateTime or a DateField component
+     *  to the format, An ISODateTime or a DateFieldFormats component
      *  are initialized.
      *
      *  TODO : Add vtype control for extent (start < end)
@@ -1213,33 +1215,35 @@ GeoNetwork.editor.EditorPanel = Ext.extend(Ext.Panel, {
         for (i = 0; i < modes.length; i ++) {
             if (modes[i].firstChild) {
                 var id = modes[i].getAttribute('id');
-                var next = Ext.get(modes[i]).next();
                 var label = modes[i].innerHTML;
-                var tabs = next.query('LI');
-                var current = next.query('LI[id=' + document.mainForm.currTab.value + ']');
-                var activeMode = current.length === 1;
-                
-                // Remove mode and children tabs if not in current mode
-                if (!activeMode) {
-                    var p = Ext.get(modes[i]).parent();
-                    p.setVisibilityMode(Ext.Element.DISPLAY);
-                    p.setVisible(false);
-                } else {
-                    // Remove tab if only one tab in that mode
-                    if (next && tabs.length === 1) {
-                        next.remove();
-                    } else {
-                        // Register events when multiple tabs
-                        for (j = 0; j < tabs.length; j++) {
-                            e = Ext.get(tabs[j]);
-                            e.on('click', function(){
-                                Ext.getCmp('editorPanel').switchToTab(this);
-                            }, e.getAttribute('id'));
-                        }
-                    }
-                }
-                menu.push([label, id, activeMode]);
-            }
+                var next = Ext.get(modes[i]).next();
+								if (next) {
+                	var tabs = next.query('LI');
+                	var current = next.query('LI[id=' + document.mainForm.currTab.value + ']');
+                	var activeMode = current.length === 1;
+               	 
+                	// Remove mode and children tabs if not in current mode
+                	if (!activeMode) {
+                    	var p = Ext.get(modes[i]).parent();
+                    	p.setVisibilityMode(Ext.Element.DISPLAY);
+                    	p.setVisible(false);
+                	} else {
+                    	// Remove tab if only one tab in that mode
+                    	if (next && tabs.length === 1) {
+                        	next.remove();
+                    	} else {
+                        	// Register events when multiple tabs
+                        	for (j = 0; j < tabs.length; j++) {
+                            	e = Ext.get(tabs[j]);
+                            	e.on('click', function(){
+                                	Ext.getCmp('editorPanel').switchToTab(this);
+                            	}, e.getAttribute('id'));
+                        	}
+                    	}
+                	}
+                	menu.push([label, id, activeMode]);
+            	}
+						}
         }
         this.toolbar.updateViewMenu(menu);
     },

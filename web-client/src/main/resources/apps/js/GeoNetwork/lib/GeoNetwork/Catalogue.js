@@ -1134,6 +1134,10 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
             if (cookie) {
                 cookie.set('user', undefined);
             }
+            
+            this.identifiedUser = undefined;
+            this.onAfterBadLogin();
+            
             return false;
         }
     },
@@ -1268,7 +1272,8 @@ GeoNetwork.Catalogue = Ext.extend(Ext.util.Observable, {
      *  Open the administration interface according to adminAppUrl properties.
      */
     admin: function(){
-        location.href = this.adminAppUrl;
+      var win = window.open(this.adminAppUrl, '_blank');
+      win.focus();
     },
     /** api: method[admin]
     *

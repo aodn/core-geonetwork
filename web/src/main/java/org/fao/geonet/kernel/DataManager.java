@@ -93,7 +93,6 @@ import java.util.concurrent.Executors;
  */
 public class DataManager {
 
-
     //--------------------------------------------------------------------------
     //---
     //--- Constructor
@@ -148,7 +147,6 @@ public class DataManager {
      *
      **/
     public synchronized void init(ServiceContext context, Dbms dbms, Boolean force) throws Exception {
-
 
         // get all metadata from DB
         Element result = dbms.select("SELECT id, changeDate FROM Metadata ORDER BY id ASC");
@@ -452,7 +450,8 @@ public class DataManager {
                         sb.append(xlink.getValue()); sb.append(" ");
                     }
                     moreFields.add(SearchManager.makeField("_xlink", sb.toString(), true, true));
-                    Processor.detachXLink(md);
+										// ok to use servContext here
+                    Processor.detachXLink(md, servContext);
                 }
                 else {
                     moreFields.add(SearchManager.makeField("_hasxlinks", "0", true, true));
@@ -1694,7 +1693,7 @@ public class DataManager {
                 if (keepXlinkAttributes) {
                     Processor.processXLink(md, srvContext);
                 } else {
-                    Processor.detachXLink(md);
+                    Processor.detachXLink(md, srvContext);
                 }
             }
         }
@@ -2185,8 +2184,8 @@ public class DataManager {
      * @return
      * @throws Exception
      */
-    public Element getThumbnails(Dbms dbms, String id) throws Exception {
-        Element md = xmlSerializer.select(dbms, "Metadata", id);
+    public Element getThumbnails(Dbms dbms, String id, ServiceContext context) throws Exception {
+        Element md = xmlSerializer.select(dbms, "Metadata", id, context);
 
         if (md == null)
             return null;
@@ -2220,10 +2219,12 @@ public class DataManager {
         env.addContent(new Element("file").setText(file));
         env.addContent(new Element("ext").setText(ext));
 
+        String protocol    = settingMan.getValue(Geonet.Settings.SERVER_PROTOCOL);
         String host    = settingMan.getValue(Geonet.Settings.SERVER_HOST);
         String port    = settingMan.getValue(Geonet.Settings.SERVER_PORT);
         String baseUrl = context.getBaseUrl();
 
+        env.addContent(new Element("protocol").setText(protocol));
         env.addContent(new Element("host").setText(host));
         env.addContent(new Element("port").setText(port));
         env.addContent(new Element("baseUrl").setText(baseUrl));
@@ -2375,7 +2376,7 @@ public class DataManager {
      */
     private void manageCommons(Dbms dbms, ServiceContext context, String id, Element env, String styleSheet) throws Exception {
         Lib.resource.checkEditPrivilege(context, id);
-        Element md = xmlSerializer.select(dbms, "Metadata", id);
+        Element md = xmlSerializer.select(dbms, "Metadata", id, context);
 
         if (md == null) return;
 
@@ -3467,6 +3468,8 @@ public class DataManager {
     private HarvestManager harvestMan;
     private String dataDir;
     private String thesaurusDir;
+		// Note: servContext is logged in as administrator so use with care
+		// eg. notifyMetadata service
     private ServiceContext servContext;
     private String appPath;
     private String stylePath;
