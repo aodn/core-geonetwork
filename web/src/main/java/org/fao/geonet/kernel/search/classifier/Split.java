@@ -35,7 +35,7 @@ public class Split implements Classifier {
 	}
 
 	@Override
-	public List<String> classify(String value, String langCode) {
+	public List<String> classify(String value) {
 		return Arrays.asList(value.split(regex));
 	}
 

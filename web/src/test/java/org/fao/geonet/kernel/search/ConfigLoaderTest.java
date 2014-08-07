@@ -44,7 +44,7 @@ public class ConfigLoaderTest {
 			keywordParams
 		);
 
-		List<String> categories = splitClassifier.classify("one-two", "eng");
+		List<String> categories = splitClassifier.classify("one-two");
 
 		assertEquals(categories.size(), 2);
 		assertEquals(categories.get(0), "one");
