@@ -161,22 +161,22 @@ public class KeywordBean {
 	 * @return preferredLabel
 	 */
 
-	public String getPreferredLabel(String langCode) {
+    public String getPreferredLabel(String langCode) {
         String preferredLabel = values.get(langCode);
-		
-		if (hasPreferredLabel(preferredLabel))
-		{
-			Log.error(Geonet.CLASSIFIER, noPreferredLabelMessage(langCode));
-			throw new LabelNotFoundException(noPreferredLabelMessage(langCode));
-		}
-		return preferredLabel;
-	}
+
+        if (notPreferredLabel(preferredLabel))
+        {
+            Log.error(Geonet.CLASSIFIER, noPreferredLabelMessage(langCode));
+            throw new LabelNotFoundException(noPreferredLabelMessage(langCode));
+        }
+        return preferredLabel;
+    }
 
 	private String noPreferredLabelMessage(String langCode) {
 		return "Could not find preferred label for language code " + langCode;
 	}
 
-	private boolean hasPreferredLabel(String preferredLabel) {
+	private boolean notPreferredLabel(String preferredLabel) {
 		return preferredLabel == null || preferredLabel.equals("");
 	}
 
