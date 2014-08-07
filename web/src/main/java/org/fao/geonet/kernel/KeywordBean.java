@@ -22,13 +22,17 @@
 
 package org.fao.geonet.kernel;
 
+import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Geonet.Namespaces;
+import org.fao.geonet.exceptions.LabelNotFoundException;
 import org.fao.geonet.languages.IsoLanguagesMapper;
 import org.jdom.Content;
 import org.jdom.Element;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+
+import jeeves.utils.Log;
 
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.httpclient.URIException;
@@ -156,8 +160,24 @@ public class KeywordBean {
 	 * @param langCode
 	 * @return preferredLabel
 	 */
+
 	public String getPreferredLabel(String langCode) {
-		return values.get(langCode);
+        String preferredLabel = values.get(langCode);
+		
+		if (hasPreferredLabel(preferredLabel))
+		{
+			Log.error(Geonet.CLASSIFIER, noPreferredLabelMessage(langCode));
+			throw new LabelNotFoundException(noPreferredLabelMessage(langCode));
+		}
+		return preferredLabel;
+	}
+
+	private String noPreferredLabelMessage(String langCode) {
+		return "Could not find preferred label for language code " + langCode;
+	}
+
+	private boolean hasPreferredLabel(String preferredLabel) {
+		return preferredLabel == null || preferredLabel.equals("");
 	}
 
     /**
