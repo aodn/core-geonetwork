@@ -31,15 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jeeves.utils.Log;
 import jeeves.utils.Util;
 
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.exceptions.TermNotFoundException;
 import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusFinder;
-import org.fao.geonet.kernel.rdf.Query;
-import org.fao.geonet.kernel.rdf.QueryBuilder;
-import org.fao.geonet.kernel.rdf.Selectors;
 import org.fao.geonet.kernel.search.keyword.KeywordRelation;
 import org.fao.geonet.kernel.search.keyword.KeywordSearchParams;
 import org.fao.geonet.kernel.search.keyword.KeywordSearchParamsBuilder;
@@ -83,14 +82,21 @@ public class KeywordsSearcher {
      * @param languages translations to load into the keyword bean
      *  
      * @return keywordbean with the requested translations
-     * 
-     * @throws Exception
      */
-	public KeywordBean searchById(String id, String sThesaurusName, String... languages) throws Exception {
+    public KeywordBean searchById(String id, String sThesaurusName, String... languages) {
+        KeywordBean result = null;
+
         Thesaurus thesaurus = _thesaurusFinder.getThesaurusByName(sThesaurusName);
-        ThesaurusSearcher thesaurusSearcher = new ThesaurusSearcher(thesaurus, _isoLanguageMapper);
-        return thesaurusSearcher.searchById(id, languages);
-	}
+
+        try {
+            result = thesaurus.getKeyword(id, languages);
+        } catch (TermNotFoundException e) {
+            if (Log.isDebugEnabled(Geonet.THESAURUS))
+                Log.debug(Geonet.THESAURUS, "Could not find keyword: " + id);
+        }
+
+        return result;
+    }
 
 	   public void search(KeywordSearchParams params) throws Exception {
 	       this._results = params.search(_thesaurusFinder);
@@ -125,9 +131,8 @@ public class KeywordsSearcher {
      * @param params parameters
      * @param request request
      * @param extraLangs the languages to load
-     * @throws Exception hmm
      */
-	public void searchForRelated(Element params, KeywordRelation request, String... languages) throws Exception {
+	public void searchForRelated(Element params, KeywordRelation request, String... languages) {
         //System.out.println("KeywordsSearcher searchBN");
 		// TODO : Add geonetinfo elements.
 		String id = Util.getParam(params, "id");
@@ -143,13 +148,11 @@ public class KeywordsSearcher {
      * @param sThesaurusName thesaurus name
      * @param request request
      * @param languages the languages to load
-     * @throws Exception hmm
      */
-	public void searchForRelated(String id, String sThesaurusName, KeywordRelation request, String... languages) throws Exception {
-		Thesaurus thesaurus = _thesaurusFinder.getThesaurusByName(sThesaurusName);
-		ThesaurusSearcher thesaurusSearcher = new ThesaurusSearcher(thesaurus, _isoLanguageMapper);
-		_results = thesaurusSearcher.searchForRelated(id, request, languages);
-	}
+    public void searchForRelated(String id, String sThesaurusName, KeywordRelation request, String... languages) {
+        Thesaurus thesaurus = _thesaurusFinder.getThesaurusByName(sThesaurusName);
+        _results = thesaurus.getRelated(id, request, languages);
+    }
 
     /**
      * Return the number of results
