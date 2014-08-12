@@ -379,7 +379,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                 <sec:intercept-url pattern="/srv/[a-z]{2,3}/region.getmap.\w\w\w!?.*" access="permitAll"></sec:intercept-url>
                 <sec:intercept-url pattern="/srv/[a-z]{2,3}/region\.geom\.\w\w\w!?.*" access="permitAll"></sec:intercept-url>
 
+                <!-- IMOS services -->
+                <sec:intercept-url pattern="/srv/[a-z]{2,3}/xml.search.summary!?.*" access="permitAll"/>
 
+                <!-- Default - no permission -->
                 <sec:intercept-url pattern="/.*" access="denyAll"></sec:intercept-url>
             </sec:filter-security-metadata-source>
         </property>
