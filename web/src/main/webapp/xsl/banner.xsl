@@ -27,10 +27,12 @@
             <!-- title -->
             <tr class="banner">
                 <td class="banner">
-                    <img src="{/root/gui/url}/images/header-left.jpg" alt="World picture" align="top" />
+                    <img src="{/root/gui/config/banner/headerLeftImage}"
+                         alt="AODN Australian Ocean Data Network Logo" />
                 </td>
                 <td align="right" class="banner">
-                    <img src="{/root/gui/url}/images/header-right.gif" alt="GeoNetwork opensource logo" align="top" />
+                    <img src="{/root/gui/config/banner/headerRightImage}"
+                         alt="IMOS Integrated Marine Observation System logo" align="top" />
                 </td>
             </tr>
 
