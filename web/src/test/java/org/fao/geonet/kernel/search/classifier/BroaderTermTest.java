@@ -35,63 +35,63 @@ import org.fao.geonet.kernel.ThesaurusManager;
 import org.junit.Test;
 
 public class BroaderTermTest {
-	
-	private static final String TEST_LANG = "eng";
-	private static final String TEST_CONFIG_SCHEME = "http://geonetwork-opensource.org/regions";		
-	private static final String TEST_VALUE = "#term";
-	
-	@Test
-	public void testClassifyHierarchyWithBroaderTerms() {		
-		ThesaurusManager mockManager = mockGetThesaurusByConceptScheme();
 
-		BroaderTerm testBroaderTermClassifier = new BroaderTerm(mockManager, TEST_CONFIG_SCHEME);		
-		List<String> testTermHierarchy = testBroaderTermClassifier.classify(TEST_VALUE);
+    private static final String TEST_LANG = "eng";
+    private static final String TEST_CONFIG_SCHEME = "http://geonetwork-opensource.org/regions";
+    private static final String TEST_VALUE = "#term";
 
-		assertEquals(testTermHierarchy.size(), 3);
-		assertEquals(testTermHierarchy.get(0), "ocean"); 
-		assertEquals(testTermHierarchy.get(1), "ocean temperature");
-		assertEquals(testTermHierarchy.get(2), "sea surface temperature");
-	}
-	
-	@Test(expected=TermNotFoundException.class)
-	public void testClassifyTermDoesNotExist() {
-		ThesaurusManager mockManager = mockTermNotFoundThesaurus();
-		
-		BroaderTerm testBroaderTermClassifier = new BroaderTerm(mockManager, TEST_CONFIG_SCHEME);		
-		testBroaderTermClassifier.classify(TEST_VALUE);
-	}
+    @Test
+    public void testClassifyHierarchyWithBroaderTerms() {
+        ThesaurusManager mockManager = mockGetThesaurusByConceptScheme();
 
-	private ThesaurusManager mockTermNotFoundThesaurus() {
-		Thesaurus mockThesaurus = mock(Thesaurus.class);
-		ThesaurusManager mockManager = mockManager(mockThesaurus);
-		when(mockThesaurus.getKeyword(TEST_VALUE, TEST_LANG)).thenThrow(new TermNotFoundException("term not found"));
-		return mockManager;
-	}
+        BroaderTerm testBroaderTermClassifier = new BroaderTerm(mockManager, TEST_CONFIG_SCHEME);
+        List<String> testTermHierarchy = testBroaderTermClassifier.classify(TEST_VALUE);
 
-	private ThesaurusManager mockGetThesaurusByConceptScheme() {	
-		Thesaurus mockThesaurus = mock(Thesaurus.class);
-		KeywordBean mockKeywordBean = mockKeyword("#1", "sea surface temperature");
-		KeywordBean mockKeywordBeanBroader = mockKeyword("#2", "ocean temperature");
-		KeywordBean mockKeywordBeanBroadest = mockKeyword("", "ocean");
-		
-		when(mockThesaurus.getKeyword("#term", TEST_LANG)).thenReturn(mockKeywordBean);
-		when(mockThesaurus.getKeyword("#1", TEST_LANG)).thenReturn(mockKeywordBeanBroader);
-		when(mockThesaurus.getKeyword("#2", TEST_LANG)).thenReturn(mockKeywordBeanBroadest);
-		
-		return mockManager(mockThesaurus);
-	}
+        assertEquals(testTermHierarchy.size(), 3);
+        assertEquals(testTermHierarchy.get(0), "ocean"); 
+        assertEquals(testTermHierarchy.get(1), "ocean temperature");
+        assertEquals(testTermHierarchy.get(2), "sea surface temperature");
+    }
 
-	private ThesaurusManager mockManager(Thesaurus mockThesaurus) {
-		ThesaurusManager mockManager = mock(ThesaurusManager.class);
-		when(mockManager.getThesaurusByConceptScheme(TEST_CONFIG_SCHEME)).thenReturn(mockThesaurus);
-		return mockManager;
-	}
+    @Test(expected=TermNotFoundException.class)
+    public void testClassifyTermDoesNotExist() {
+        ThesaurusManager mockManager = mockTermNotFoundThesaurus();
 
-	private KeywordBean mockKeyword(String theBroaderTerm, String label) {
-		KeywordBean mockKeywordBean = mock(KeywordBean.class);
-		when(mockKeywordBean.getBroaderRelationship()).thenReturn(theBroaderTerm);
-		when(mockKeywordBean.hasBroader()).thenReturn(!theBroaderTerm.equals(""));
-		when(mockKeywordBean.getPreferredLabel(TEST_LANG)).thenReturn(label);
-		return mockKeywordBean;
-	}
+        BroaderTerm testBroaderTermClassifier = new BroaderTerm(mockManager, TEST_CONFIG_SCHEME);
+        testBroaderTermClassifier.classify(TEST_VALUE);
+    }
+
+    private ThesaurusManager mockTermNotFoundThesaurus() {
+        Thesaurus mockThesaurus = mock(Thesaurus.class);
+        ThesaurusManager mockManager = mockManager(mockThesaurus);
+        when(mockThesaurus.getKeyword(TEST_VALUE, TEST_LANG)).thenThrow(new TermNotFoundException("term not found"));
+        return mockManager;
+    }
+
+    private ThesaurusManager mockGetThesaurusByConceptScheme() {
+        Thesaurus mockThesaurus = mock(Thesaurus.class);
+        KeywordBean mockKeywordBean = mockKeyword("#1", "sea surface temperature"); 
+        KeywordBean mockKeywordBeanBroader = mockKeyword("#2", "ocean temperature");
+        KeywordBean mockKeywordBeanBroadest = mockKeyword("", "ocean");
+
+        when(mockThesaurus.getKeyword("#term", TEST_LANG)).thenReturn(mockKeywordBean);
+        when(mockThesaurus.getKeyword("#1", TEST_LANG)).thenReturn(mockKeywordBeanBroader);
+        when(mockThesaurus.getKeyword("#2", TEST_LANG)).thenReturn(mockKeywordBeanBroadest);
+
+        return mockManager(mockThesaurus);
+    }
+
+    private ThesaurusManager mockManager(Thesaurus mockThesaurus) {
+        ThesaurusManager mockManager = mock(ThesaurusManager.class);
+        when(mockManager.getThesaurusByConceptScheme(TEST_CONFIG_SCHEME)).thenReturn(mockThesaurus);
+        return mockManager;
+    }
+
+    private KeywordBean mockKeyword(String theBroaderTerm, String label) {
+        KeywordBean mockKeywordBean = mock(KeywordBean.class);
+        when(mockKeywordBean.getBroaderRelationship()).thenReturn(theBroaderTerm);
+        when(mockKeywordBean.hasBroader()).thenReturn(!theBroaderTerm.equals(""));
+        when(mockKeywordBean.getPreferredLabel(TEST_LANG)).thenReturn(label);
+        return mockKeywordBean;
+    }
 }

@@ -27,20 +27,18 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class KeywordBeanTest {
-	
-	@Test
+
+    @Test
     public void testHasBroaderRelationship() {
         KeywordBean testKeywordBean = new KeywordBean();
         testKeywordBean.setBroaderRelationship("broaderTerm");
+        assertTrue(testKeywordBean.hasBroader());
+    }
 
-	    assertTrue(testKeywordBean.hasBroader());
-	}
-	
-	@Test
-	public void testHasNoBroaderRelationship() {
-		KeywordBean testKeywordBean = new KeywordBean();
-		testKeywordBean.setBroaderRelationship(null);
-		
-		assertFalse(testKeywordBean.hasBroader());
-	}
+    @Test
+    public void testHasNoBroaderRelationship() {
+        KeywordBean testKeywordBean = new KeywordBean();
+        testKeywordBean.setBroaderRelationship(null);
+        assertFalse(testKeywordBean.hasBroader());
+    }
 }
