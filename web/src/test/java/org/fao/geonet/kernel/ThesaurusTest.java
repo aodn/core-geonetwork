@@ -3,11 +3,6 @@ package org.fao.geonet.kernel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,11 +22,8 @@ import org.junit.Test;
 import org.openrdf.model.GraphException;
 import org.openrdf.sesame.config.AccessDeniedException;
 import org.openrdf.sesame.config.ConfigurationException;
-import org.openrdf.sesame.constants.QueryLanguage;
 import org.openrdf.sesame.query.MalformedQueryException;
 import org.openrdf.sesame.query.QueryEvaluationException;
-import org.openrdf.sesame.query.QueryResultsTable;
-import org.openrdf.sesame.repository.local.LocalRepository;
 
 public class ThesaurusTest extends AbstractThesaurusBasedTest {
 
