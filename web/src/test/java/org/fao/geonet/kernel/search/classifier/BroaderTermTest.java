@@ -42,7 +42,7 @@ public class BroaderTermTest {
 
     @Test
     public void testClassifyHierarchyWithBroaderTerms() {
-        ThesaurusManager mockManager = mockGetThesaurusByConceptScheme();
+        ThesaurusManager mockManager = mockThesaurusWithBroaderTerms();
 
         BroaderTerm testBroaderTermClassifier = new BroaderTerm(mockManager, TEST_CONFIG_SCHEME);
         List<String> testTermHierarchy = testBroaderTermClassifier.classify(TEST_VALUE);
@@ -68,7 +68,7 @@ public class BroaderTermTest {
         return mockManager;
     }
 
-    private ThesaurusManager mockGetThesaurusByConceptScheme() {
+    private ThesaurusManager mockThesaurusWithBroaderTerms() {
         Thesaurus mockThesaurus = mock(Thesaurus.class);
         KeywordBean mockKeywordBean = mockKeyword("#1", "sea surface temperature"); 
         KeywordBean mockKeywordBeanBroader = mockKeyword("#2", "ocean temperature");
