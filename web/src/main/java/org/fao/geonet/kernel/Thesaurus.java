@@ -274,14 +274,14 @@ public class Thesaurus {
                      + " FROM {conceptScheme} rdf:type {skos:ConceptScheme}"
                      + " WHERE conceptScheme = <" + uri + ">"
                      + " USING NAMESPACE skos = <http://www.w3.org/2004/02/skos/core#>"; 
-		
-		try {
-			return performRequest(query).getRowCount() > 0;
-		} catch (Exception e) {
+
+        try {
+            return performRequest(query).getRowCount() > 0;
+        } catch (Exception e) {
             Log.error(Geonet.THESAURUS_MAN, "Error retrieving concept scheme for " + thesaurusFile + ". Error is: " + e.getMessage());
             throw new RuntimeException(e);
-		}
-	}
+        }
+    }
 
 	/**
 	 * 
@@ -847,17 +847,6 @@ public class Thesaurus {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
-
-        /**
-         * Gets related keywords
-         * 
-         * @param subject the keyword to retrieve
-         * @return keyword
-         * @throws Exception 
-         */
-        public List<KeywordBean> getBroader(String uri, KeywordRelation request, String... languages) throws Exception {
-            return getRelated(uri, KeywordRelation.BROADER, languages);
         }
 
         // ------------------------------- Deprecated methods -----------------------------
