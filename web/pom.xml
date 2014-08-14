@@ -790,6 +790,15 @@
                 <exclude>iso19139.sdn-cdi/**</exclude>
                 <exclude>iso19139.sdn-csr/**</exclude>
                 <exclude>iso19139.rndt/**</exclude>
+                <exclude>iso19115/**</exclude>
+                <exclude>anzmeta/**</exclude>
+                <exclude>eml-gbif/**</exclude>
+                <exclude>iso19115-3/**</exclude>
+                <exclude>iso19139.naplio-dataset/**</exclude>
+                <exclude>iso19139.naplio-service/**</exclude>
+                <exclude>iso19139.napm/**</exclude>
+                <exclude>iso19139.ngmp/**</exclude>
+                <exclude>sensorML/**</exclude>
                 <exclude>dist/**</exclude>
                 <exclude>.build/**</exclude>
                 <exclude>build.xml</exclude>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/">
+    <skos:ConceptScheme rdf:about="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1">
+    <dc:title>IMOS 123 Portal Search Facet Platform Classiffication Scheme</dc:title>
+    <dc:description>A classification scheme to support faceted searching across Platform Types in the IMOS 123 Portal</dc:description>
+    <dc:creator>
+       <foaf:Organization>
+          <foaf:name>IMOS</foaf:name>
+       </foaf:Organization>
+    </dc:creator>
+    <dc:publisher>
+      <foaf:Person>
+        <foaf:name>Natalia Atkins</foaf:name>
+      </foaf:Person>
+    </dc:publisher>		
+    <dc:rights>Freely Available For Reuse</dc:rights>
+    <dcterms:issued>2014-05-29T14:25:38</dcterms:issued>
+	</skos:ConceptScheme>
+    <skos:Concept rdf:about="http://vocab.aodn.org.au/def/ClassScheme/platform1/35">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">AUVs</skos:prefLabel>
+      <skos:definition>This category contains vocabulary terms describing AUV type of platforms</skos:definition>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:46"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://vocab.aodn.org.au/def/ClassScheme/platform1/41">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">Satellites</skos:prefLabel>
+      <skos:definition>This category contains vocabulary terms describing satellite type of platform</skos:definition>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:59"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://vocab.aodn.org.au/def/ClassScheme/platform1/39">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">Ships</skos:prefLabel>
+      <skos:definition>This category contains vocabulary terms describing ship type of platform</skos:definition>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:49"/>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:50"/>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:51"/>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:622"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://vocab.aodn.org.au/def/ClassScheme/platform1/43">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">Gliders</skos:prefLabel>
+      <skos:definition>This category contains vocabulary terms describing glider type of platform</skos:definition>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:592"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://vocab.aodn.org.au/def/ClassScheme/platform1/44">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">Moorings</skos:prefLabel>
+      <skos:definition>This category contains vocabulary terms describing mooring type of platform</skos:definition>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:53"/>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:54"/>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:57"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://vocab.aodn.org.au/def/ClassScheme/platform1/37">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">Floats</skos:prefLabel>
+      <skos:definition>This category contains vocabulary terms describing profiling float type of platform</skos:definition>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:55"/>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:627"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://vocab.aodn.org.au/def/ClassScheme/platform1/40">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">Biological platforms</skos:prefLabel>
+      <skos:definition>This category contains vocabulary terms describing animal type of platform</skos:definition>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:589"/>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:595"/>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:61"/>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:62"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="http://vocab.aodn.org.au/def/ClassScheme/platform1/36">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">Fixed stations</skos:prefLabel>
+      <skos:definition>This category contains vocabulary terms describing fixed stations type of platform</skos:definition>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:348"/>
+      <skos:narrower rdf:resource="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:44"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:348">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">offshore structure</skos:prefLabel>
+      <skos:definition>A fixed (for the duration of the measurements) man-made structure away from the coast to which instrumentation may be attached (e.g. oil rig gas rig or jack-up barge)</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/36"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:44">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">land/onshore structure</skos:prefLabel>
+      <skos:definition>A fixed man-made structure on land to which instrumentation may be attached (e.g. meteorological tower)</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/36"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:46">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">autonomous underwater vehicle</skos:prefLabel>
+      <skos:definition>A free-roving platform operating in the water column with propulsion but no human operator on board (e.g. Autosub Glider).</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/35"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:49">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">research vessel</skos:prefLabel>
+      <skos:definition>A platform of any size operating on the surface of the water column in unpredictable locations that is specifically equipped manned and operated for scientific usually oceanographic research.</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/39"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:50">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">vessel of opportunity</skos:prefLabel>
+      <skos:definition>A platform for purpose of commerce of any size operating on the surface of the water column in unpredictable locations that regularly collects scientific (oceanographic and meteorological) data (e.g. an instrumented cargo vessel).</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/39"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:51">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">vessel of opportunity on fixed route</skos:prefLabel>
+      <skos:definition>A platform repeatedly following a predictable fixed track on the surface of the water column that collects scientific (oceanographic and meteorological) data (e.g. an instrumented ferry).</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/39"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:53">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">moored surface buoy</skos:prefLabel>
+      <skos:definition>An unmanned instrumented platform operating on the surface of the water column loosely tethered to the seafloor to maintain a fixed position (e.g. ODAS buoy)</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/44"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:54">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">subsurface mooring</skos:prefLabel>
+      <skos:definition>A collection of oceanographic instruments attached to wires suspended between anchors on the seabed and buoyant spheres in the water column.</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/44"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:55">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">drifting subsurface profiling float</skos:prefLabel>
+      <skos:definition>An unmanned instrumented platform drifting freely in the water column that periodically makes vertical traverses through the water column (e.g. Argo float)</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/37"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:57">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">mooring</skos:prefLabel>
+      <skos:definition>A tethered collection of oceanographic instruments at a fixed location that may include seafloor mid-water and surface components.</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/44"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:589">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">seabird and duck</skos:prefLabel>
+      <skos:definition>A flighted bird that is able to exist on the water column surface and dive into the water column (e.g. cormorants auks ducks and gulls).</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/40"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:59">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">orbiting satellite</skos:prefLabel>
+      <skos:definition>A vehicle operating beyond the Earth's atmosphere without human occupants that orbits the Earth at a different rate to the Earth's rotation so it moves over the Earth's surface..</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/41"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:592">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">sub-surface gliders</skos:prefLabel>
+      <skos:definition>Platforms with buoyancy-based propulsion that are capable of operations of variable depths which are not constrained to be near the sea surface.</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/43"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:595">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">organism</skos:prefLabel>
+      <skos:definition>A living creature carrying instruments or collecting samples</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/40"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:61">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">flightless bird</skos:prefLabel>
+      <skos:definition>A bird that is unable to fly with the ability to exist within the water column (e.g. penguin).</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/40"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:62">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">land-sea mammals</skos:prefLabel>
+      <skos:definition>A mammal that exists both on land and within the water column. Includes seals sealions sea-otters and walruses.</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/40"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:622">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">self-propelled boat</skos:prefLabel>
+      <skos:definition>A small self-propelled platform operating on the surface of the water column in unpredictable locations that is smaller than a ship but too large to easily remove from the water.</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/39"/>
+    </skos:Concept>
+    <skos:Concept rdf:about="43041df9-32f9-4176-b364-25c2b28c9bf1:concept:627">
+      <skos:inScheme rdf:resource="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+      <skos:prefLabel xml:lang="en">drifting surface float</skos:prefLabel>
+      <skos:definition>An unmanned instrumented platform operating on the surface of the water column often attached to a drogue to track currents rather than winds (e.g. Argos buoy).</skos:definition>
+      <skos:broader rdf:resource="http://vocab.aodn.org.au/def/ClassScheme/platform1/37"/>
+    </skos:Concept>
+</rdf:RDF>
