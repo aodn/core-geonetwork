@@ -1,6 +1,7 @@
 package org.fao.geonet.kernel.search;
 
 import junit.framework.TestCase;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
@@ -13,6 +14,10 @@ import org.jdom.JDOMFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import jeeves.server.context.ServiceContext;
+import jeeves.server.sources.http.JeevesServlet;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -38,8 +43,15 @@ public class LuceneQueryTest extends TestCase {
 		
 		_analyzer = new PerFieldAnalyzerWrapper(new GeoNetworkAnalyzer(), analyzers);
 
-        LuceneConfig lc = new LuceneConfig("src/main/webapp/", null, "WEB-INF/config-lucene.xml");
-    	
+		JeevesServlet servlet = mock(JeevesServlet.class);
+		when(servlet.getServletContext()).thenReturn(null);
+		
+		ServiceContext context = mock(ServiceContext.class);
+		when(context.getAppPath()).thenReturn("src/main/webapp/");
+		when(context.getServlet()).thenReturn(servlet);
+		
+		LuceneConfig lc = new LuceneConfig(context, "WEB-INF/config-lucene.xml");
+		
 		_tokenizedFieldSet = lc.getTokenizedField();
 		_numericFieldSet = lc.getNumericFields();
 	}
@@ -2130,4 +2142,93 @@ public class LuceneQueryTest extends TestCase {
 		// verify query
 		assertEquals("unexpected Lucene query", "+paper:true +_isTemplate:n", query.toString());
     }
+
+	/**
+	 * 'facet.q' parameter. Single drilldown
+	 */
+	public void testDrilldownQuery() {
+		Element request = buildSingleDrilldownQuery("keyword/ocean/salinity");
+		// build lucene query input
+		LuceneQueryInput lQI = new LuceneQueryInput(request);
+		// build lucene query
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
+		// verify query
+		assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore($facets:keyword/ocean/salinity/)^0.0", query.toString());
+	}
+
+	/**
+	 * 'facet.q' parameter. Multiple drilldown using AND separator
+	 */
+
+	public void testMultipleDrilldownQueryUsingAnd() {
+		Element request = buildMultipleDrilldownQueryUsingAnd(
+			"keyword/ocean/salinity",
+			"keyword/ocean/chemistry",
+			"keyword/ocean/temperature"
+		);
+		// build lucene query input
+		LuceneQueryInput lQI = new LuceneQueryInput(request);
+		// build lucene query
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
+		// verify query
+		assertEquals("unexpected Lucene query", "+(+(+(+_isTemplate:n) +ConstantScore($facets:keyword/ocean/salinity/)^0.0) +ConstantScore($facets:keyword/ocean/chemistry/)^0.0) +ConstantScore($facets:keyword/ocean/temperature/)^0.0", query.toString());
+	}
+
+	/**
+	 * 'facet.q' parameter. Multiple drilldown using multiple facet query parameters
+	 */
+
+	public void testMultipleDrilldownUsingFacetParameters() {
+		Element request = buildMultipleDrilldownFacetQueries(
+			"keyword/ocean/salinity",
+			"keyword/ocean/chemistry",
+			"keyword/ocean/temperature"
+		);
+		// build lucene query input
+		LuceneQueryInput lQI = new LuceneQueryInput(request);
+		// build lucene query
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
+		// verify query
+		assertEquals("unexpected Lucene query", "+(+(+(+_isTemplate:n) +ConstantScore($facets:keyword/ocean/chemistry/)^0.0) +ConstantScore($facets:keyword/ocean/salinity/)^0.0) +ConstantScore($facets:keyword/ocean/temperature/)^0.0", query.toString());
+	}
+
+	private Element buildSingleDrilldownQuery(String drilldownPath) {
+		JDOMFactory factory = new DefaultJDOMFactory();
+		Element request = factory.element("request");
+		Element facetQuery = factory.element(SearchParameter.FACET_QUERY);
+		facetQuery.addContent(drilldownPath);
+		request.addContent(facetQuery);
+		return request;
+	}
+
+	private Element buildMultipleDrilldownQueryUsingAnd(String... drilldowns) {
+		JDOMFactory factory = new DefaultJDOMFactory();
+		Element request = factory.element("request");
+		Element facetQuery = factory.element(SearchParameter.FACET_QUERY);
+
+		StringBuilder queryString = new StringBuilder();
+		
+		for (String drilldown : drilldowns) {
+			queryString.append(drilldown);
+			queryString.append("&");
+		}
+
+		facetQuery.addContent(queryString.toString());
+		request.addContent(facetQuery);
+
+		return request;
+	}
+
+	private Element buildMultipleDrilldownFacetQueries(String... drilldowns) {
+		JDOMFactory factory = new DefaultJDOMFactory();
+		Element request = factory.element("request");
+
+		for (String drilldown : drilldowns) {
+			Element facetQuery = factory.element(SearchParameter.FACET_QUERY);
+			facetQuery.addContent(drilldown);
+			request.addContent(facetQuery);
+		}
+		
+		return request;
+	}
 }

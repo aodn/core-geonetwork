@@ -22,13 +22,17 @@
 
 package org.fao.geonet.kernel;
 
+import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.constants.Geonet.Namespaces;
+import org.fao.geonet.exceptions.LabelNotFoundException;
 import org.fao.geonet.languages.IsoLanguagesMapper;
 import org.jdom.Content;
 import org.jdom.Element;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+
+import jeeves.utils.Log;
 
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.httpclient.URIException;
@@ -148,6 +152,32 @@ public class KeywordBean {
      */
 	public String getDefaultValue() {
 		return values.get(defaultLang);
+	}
+
+	/**
+	 * Get the preferred label for a given language code
+	 * 
+	 * @param langCode
+	 * @return preferredLabel
+	 */
+
+    public String getPreferredLabel(String langCode) {
+        String preferredLabel = values.get(langCode);
+
+        if (notPreferredLabel(preferredLabel))
+        {
+            Log.error(Geonet.CLASSIFIER, noPreferredLabelMessage(langCode));
+            throw new LabelNotFoundException(noPreferredLabelMessage(langCode));
+        }
+        return preferredLabel;
+    }
+
+	private String noPreferredLabelMessage(String langCode) {
+		return "Could not find preferred label for language code " + langCode + " for the keyword uri " + getUriCode();
+	}
+
+	private boolean notPreferredLabel(String preferredLabel) {
+		return preferredLabel == null || preferredLabel.equals("");
 	}
 
     /**
@@ -695,6 +725,10 @@ public class KeywordBean {
     public String getBroaderRelationship() {
         return broader;
     }
+    
+	public boolean hasBroader() {
+		return broader != null && !broader.equals("");
+	}
     
     public KeywordBean setBroaderRelationship(String broader) {
         this.broader = broader;

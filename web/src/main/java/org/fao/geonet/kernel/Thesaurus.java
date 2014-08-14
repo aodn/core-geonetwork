@@ -24,7 +24,13 @@ package org.fao.geonet.kernel;
 
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
+
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.exceptions.TermNotFoundException;
+import org.fao.geonet.kernel.rdf.Query;
+import org.fao.geonet.kernel.rdf.QueryBuilder;
+import org.fao.geonet.kernel.rdf.Selectors;
+import org.fao.geonet.kernel.rdf.Wheres;
 import org.fao.geonet.kernel.search.keyword.KeywordRelation;
 import org.fao.geonet.languages.IsoLanguagesMapper;
 import org.fao.geonet.util.ISODate;
@@ -61,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -182,6 +189,7 @@ public class Thesaurus {
   public String getKeywordUrl() {
 		return keywordUrl;
 	}
+  
 
   public void retrieveThesaurusTitle() {
     retrieveThesaurusTitle(thesaurusFile, dname + "." + fname, false);
@@ -258,6 +266,22 @@ public class Thesaurus {
         //printResultsTable(resultsTable);
 		return repository.performTableQuery(QueryLanguage.SERQL, query);
 	}
+	
+
+	public boolean hasConceptScheme(String uri) {
+
+        String query = "SELECT conceptScheme"
+                     + " FROM {conceptScheme} rdf:type {skos:ConceptScheme}"
+                     + " WHERE conceptScheme = <" + uri + ">"
+                     + " USING NAMESPACE skos = <http://www.w3.org/2004/02/skos/core#>"; 
+
+        try {
+            return performRequest(query).getRowCount() > 0;
+        } catch (Exception e) {
+            Log.error(Geonet.THESAURUS_MAN, "Error retrieving concept scheme for " + thesaurusFile + ". Error is: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
 
 	/**
 	 * 
@@ -771,6 +795,58 @@ public class Thesaurus {
 
              myGraph.add(subjectURI, relationURI, relatedSubjectURI);
              myGraph.add(relatedSubjectURI, opposteRelationURI, subjectURI);
+        }
+
+        /**
+         * Gets a keyword using its id
+         * 
+         * @param subject the keyword to retrieve
+         * @return keyword 
+         */
+        public KeywordBean getKeyword(String uri, String... languages) {
+            List<KeywordBean> keywords;
+
+            try {
+                Query<KeywordBean> query = QueryBuilder
+                    .keywordQueryBuilder(getIsoLanguageMapper(), languages)
+                    .where(Wheres.ID(uri))
+                    .build();
+
+                keywords = query.execute(this);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            if (keywords.isEmpty()) {
+                Log.error(Geonet.THESAURUS, getTermNotFoundMessage(uri));
+                throw new TermNotFoundException(getTermNotFoundMessage(uri));
+            }
+
+            return keywords.get(0);
+        }
+
+        private String getTermNotFoundMessage(String uri) {
+            String couldNotFindTermMessage = "Could not find "+uri+" in file "+thesaurusFile;
+            return couldNotFindTermMessage;
+        }
+
+        /**
+         * Gets related keywords
+         * 
+         * @param uri the keyword whose related terms should be retrieved
+         * @return keyword
+         */
+        public List<KeywordBean> getRelated(String uri, KeywordRelation request, String... languages) {
+            Query<KeywordBean> query = QueryBuilder
+                .keywordQueryBuilder(getIsoLanguageMapper(), languages)
+                .select(Selectors.related(uri, request), true)
+                .build();
+
+            try {
+                return query.execute(this);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         // ------------------------------- Deprecated methods -----------------------------

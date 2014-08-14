@@ -287,7 +287,7 @@ public class Geonetwork implements ApplicationHandler {
 		String luceneTermsToExclude = "";
 		luceneTermsToExclude = handlerConfig.getMandatoryValue(Geonet.Config.STAT_LUCENE_TERMS_EXCLUDE);
 
-		LuceneConfig lc = new LuceneConfig(path, servletContext, luceneConfigXmlFile);
+		LuceneConfig lc = new LuceneConfig(context, luceneConfigXmlFile);
         logger.info("  - Lucene configuration is:");
         logger.info(lc.toString());
        

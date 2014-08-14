@@ -1,69 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-	Configuration of the taxonomy index used for faceting.
-	
-	An item element defined a facet with the following parameter:
-	
-	* name: the name of the facet (ie. the tag name in the XML response)
-	* plural: the plural for the name (ie. the parent tag of each facet values)
-	* indexKey: the name of the field in the index
-	* (optional) sortBy: the ordering for the facet. Defaults is by count.
+	Configuration of the taxonomy index used for faceting and 
+	formatting/building facet summaries
+
+	How each facet should be classified is defined in the dimensions element. The dimensions element
+	contains a number of dimension elements which define what facets to index and how
+	using attributes as follows:
+
+	* name: the name of the dimension
+	* indexKey: the name of the field created for indexing
+	* label: the label to use for the dimension
+	* classifier: (optional) the class to be used for classifying the value of a field
+		defaults to a classifier which uses the value of the indexed field only
+
+	A dimension can optionally contain a number of param elements each of which define a parameter
+	to be passed to the classifier constructor using attributes as follows:
+
+	* name: the name of the parameter
+	* type: the java type of the parameter
+	* value: the value for the parameter
+
+	How facet summaries should be built and formatted for each summary type is defined 
+	in the def element. The def element contains a number of summary type elements each
+	of which define a response summary that can be configured for a service. Each summary type 
+	element contains a number of item elements defining the facets to be returned
+	in that summary, how they should be built and formatted using attributes as follows:
+
+	* dimension: the name of a dimension indexed above
+	* (optional) sortBy: the ordering for the facet. Defaults to by count.
 	* (optional) sortOrder: asc or desc. Defaults is descendant.
-	* (optional) max: the number of values to be returned for the facet. Defaults is 10.
+	* (optional) max: the number of values to be returned for the facet. Defaults to 10.
+	* (optional) depth: the depth to which hierarchical facets should be summarised. Defaults to 1.
+	* (optional) format: the format to be used for generating facet summary elements. Defaults to 
+		'FACET_NAME' (format used by the UI/CSW). Can also be 'DIMENSION', which uses a top level
+		dimension tag and category tags for sub-categories. 
+	* (optional) translator: translator for translating returned values (e.g. codeList values)
 
-	When an item is modified or added, the index MUST be rebuild.
+	When an dimension is modified or added, the index MUST be rebuilt.
 -->
-<summary>
-	<def>
-		<hits>
-			<item name="keyword" plural="keywords" indexKey="keyword" max="15"/>
-			<item name="inspireTheme" plural="inspireThemes" indexKey="inspiretheme" sortBy="value" sortOrder="asc" max="35"/>
-			<item name="denominator" plural="denominators" indexKey="denominator" sortBy="numValue" sortOrder="desc"/>
-			<item name="spatialRepresentationType" plural="spatialRepresentationTypes" indexKey="spatialRepresentationType" translator="codelist:gmd:MD_SpatialRepresentationTypeCode"/>
-			<item name="orgName" plural="orgNames" indexKey="orgName" max="15"/>
-			<item name="metadataPOC" plural="metadataPOCs" indexKey="metadataPOC" max="15"/>
-			<item name="serviceType" plural="serviceTypes" indexKey="serviceType"/>
-			<item name="type" plural="types" indexKey="type" translator="codelist:gmd:MD_ScopeCode"/>
-			<item name="createDateYear" plural="createDateYears" indexKey="createDateYear"
-				sortBy="value" sortOrder="desc" max="40"/>
 
-			<item name="organisationName" plural="organisationNames"
-				indexKey="orgName" order="freq" type="string" max="100" />
-			<item name="longParamName" plural="longParamNames"
-				indexKey="longParamName" order="freq" type="string" max="100"/>
-			<item name="platformName" plural="platformNames"
-				indexKey="platform" order="freq" type="string" max="100"/>
- 
+<summary>
+	<dimensions>
+		<!-- Single level dimensions -->
+		<dimension name= "keyword" indexKey="keyword" label="keywords"/>
+		<dimension name="inspireTheme" indexKey="inspiretheme" label="inspireThemes"/>
+		<dimension name="denominator" indexKey="denominator" label="denominators"/>
+		<dimension name="spatialRepresentationType" indexKey="spatialRepresentationType"
+			label="spatialRepresentationTypes"/>
+		<dimension name="orgName" indexKey="orgName" label="orgNames"/>
+		<dimension name="metadataPOC" indexKey="metadataPOC" label="metadataPOCs"/>
+		<dimension name="serviceType" indexKey="serviceType" label="serviceTypes"/>
+		<dimension name="type" indexKey="type" label="types"/>
+		<dimension name="createDateYear" indexKey="createDateYear" label="createDateYears"/>
+		<dimension name="title" indexKey="title" label="titles"/>
+		<!-- Multi level dimensions - not currently supported by GeoNetwork UI -->
+		<dimension name="Keyword" indexKey="keyword" label="Keywords"
+			classifier="org.fao.geonet.kernel.search.classifier.Split">
+			<param name="regex" type="java.lang.String" value=" *\| *"/>
+		</dimension>
+		<dimension name="region" indexKey="regionTerm" label="Regions" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
+			<param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
+			<param name="conceptScheme" type="java.lang.String" value="http://geonetwork-opensource.org/regions"/>
+		</dimension>
+	</dimensions>
+	<def>
+<!-- 		<hits> -->
+<!-- 			<item dimension="keyword" max="15"/> -->
+<!-- 			<item dimension="inspireTheme" sortBy="value" sortOrder="asc" max="35"/> -->
+<!-- 			<item dimension="denominator" sortBy="numValue" sortOrder="desc"/> -->
+<!-- 			<item dimension="spatialRepresentationType" translator="codelist:gmd:MD_SpatialRepresentationTypeCode"/> -->
+<!-- 			<item dimension="orgName" max="15"/> -->
+<!-- 			<item dimension="metadataPOC" max="15"/> -->
+<!-- 			<item dimension="serviceType"/> -->
+<!-- 			<item dimension="type" translator="codelist:gmd:MD_ScopeCode"/> -->
+<!-- 			<item dimension="createDateYear" sortBy="value" sortOrder="desc" max="40"/> -->
+<!-- 		</hits> -->
+		<hits>
+			<item dimension="Keyword" max="100" format="DIMENSION" depth="3"/>
 		</hits>
 		<titles>
-			<item name="title" plural="titles" indexKey="title" sortBy="freq" sortOrder="desc" max="100"
-			/>
+			<item dimension="title" sortBy="freq" sortOrder="desc" max="100"/>
 		</titles>
 		<results>
-			<item name="keyword" plural="keywords" indexKey="keyword" max="100"/>
+			<item dimension="keyword" max="100"/>
 		</results>
 		<results_with_summary>
-			<item name="keyword" plural="keywords" indexKey="keyword" max="15"/>
-			<item name="inspireTheme" plural="inspireThemes" indexKey="inspiretheme" sortBy="value" sortOrder="asc" max="35"/>
-			<item name="denominator" plural="denominators" indexKey="denominator" sortBy="value" sortOrder="asc" max="20"/>
-			<item name="spatialRepresentationType" plural="spatialRepresentationTypes" indexKey="spatialRepresentationType" translator="codelist:gmd:MD_SpatialRepresentationTypeCode"/>
-			<item name="orgName" plural="orgNames" indexKey="orgName" max="15"/>
-			<item name="metadataPOC" plural="metadataPOCs" indexKey="metadataPOC" max="15"/>
-			<item name="serviceType" plural="serviceTypes" indexKey="serviceType"/>
-			<item name="type" plural="types" indexKey="type" translator="codelist:gmd:MD_ScopeCode"/>
-			<item name="createDateYear" plural="createDateYears" indexKey="createDateYear"
-				sortOrder="asc" max="40"/>
+			<item dimension="keyword" max="15"/>
+			<item dimension="inspireTheme" sortBy="value" sortOrder="asc" max="35"/>
+			<item dimension="denominator" sortBy="value" sortOrder="asc" max="20"/>
+			<item dimension="spatialRepresentationType" translator="codelist:gmd:MD_SpatialRepresentationTypeCode"/>
+			<item dimension="orgName" max="15"/>
+			<item dimension="metadataPOC" max="15"/>
+			<item dimension="serviceType"/>
+			<item dimension="type" translator="codelist:gmd:MD_ScopeCode"/>
+			<item dimension="createDateYear" sortOrder="asc" max="40"/>
 		</results_with_summary>
-
-		<portal_summary>
-			<item name="organisationName" plural="organisationNames"
-				indexKey="orgName" order="freq" type="string" max="100" />
-			<item name="longParamName" plural="longParamNames"
-				indexKey="longParamName" order="freq" type="string" max="100"/>
-			<item name="platformName" plural="platformNames"
-				indexKey="platform" order="freq" type="string" max="100"/>
-		</portal_summary>
-
-
+		<region_summary>
+			<item dimension="region" max="100" format="DIMENSION" depth="10"/>
+		</region_summary>
 	</def>
 </summary>
+

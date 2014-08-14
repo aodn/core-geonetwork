@@ -25,6 +25,7 @@ package org.fao.geonet.kernel.search;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -89,8 +90,9 @@ import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.csw.common.exceptions.NoApplicableCodeEx;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.SchemaManager;
-import org.fao.geonet.kernel.search.LuceneConfig.FacetConfig;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
+import org.fao.geonet.kernel.search.classifier.Classifier;
+import org.fao.geonet.kernel.search.facet.ItemConfig;
 import org.fao.geonet.kernel.search.function.DocumentBoosting;
 import org.fao.geonet.kernel.search.index.GeonetworkMultiReader;
 import org.fao.geonet.kernel.search.index.LuceneIndexLanguageTracker;
@@ -148,7 +150,7 @@ public class SearchManager {
 
 	private final File _stylesheetsDir;
     private static File _stopwordsDir;
-	Map<String, FacetConfig> _summaryConfigValues = null;
+	Map<String, ItemConfig> _summaryConfigValues = null;
 
 	private LuceneConfig _luceneConfig;
 	private File _luceneDir;
@@ -503,7 +505,7 @@ public class SearchManager {
 		_scm = scm;
 		_thesauriDir = thesauriDir;
 		_luceneConfig = lc;
-		_summaryConfigValues = _luceneConfig.getTaxonomy().get("hits");
+		_summaryConfigValues = _luceneConfig.getSummaryTypes().get("hits");
         _settingInfo = si;
 
 		_stylesheetsDir = new File(appPath, SEARCH_STYLESHEETS_DIR_PATH);
@@ -1488,14 +1490,14 @@ public class SearchManager {
                     }
                     doc.add(f);
                     
-                    // Add value to the taxonomy
-                    // TODO : Add all facets whatever the types
-                    if(_luceneConfig.getTaxonomy().get("hits").get(name) != null) {
+                    // Add dimension categories for term as defined in config-summary to the taxonomy 
+                    for (Dimension dimension : _luceneConfig.getDimensions(name)) {
+                        CategoryPath categoryPath = getCategoryPath(dimension, string);
                         if(Log.isDebugEnabled(Geonet.INDEX_ENGINE)) {
-                            Log.debug(Geonet.INDEX_ENGINE, "Add category path: " + name + " with " + string);
+                            Log.debug(Geonet.INDEX_ENGINE, "Adding category path: " + categoryPath);
                         }
-                        categories.add(new CategoryPath(name, string));
-                    }
+                        categories.add(categoryPath);
+                   } 
             }
         }
         
@@ -1504,7 +1506,23 @@ public class SearchManager {
         }
         
         return Pair.write(doc, categories);
+}
 
+	//TODO: Can we move this to dimension class
+	private CategoryPath getCategoryPath(Dimension dimension, String value) {
+		ArrayList<String> dimensionCategories = new ArrayList<String>();
+		
+		try {
+			Classifier classifier = _luceneConfig.getClassifier(dimension);
+			dimensionCategories.add(dimension.getLabel());
+			dimensionCategories.addAll(classifier.classify(value));
+		} catch (Exception e) {
+			Log.warning(Geonet.SEARCH_ENGINE,
+			        "  Error loading classifier for dimension: " + dimension.getName());
+			e.printStackTrace();
+		}
+		
+		return new CategoryPath(dimensionCategories.toArray(new String[0]));
 	}
 
 	/**

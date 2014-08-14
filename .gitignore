@@ -33,3 +33,6 @@ eclipse/
 web/src/main/webapp/WEB-INF/data/data
 web/src/main/webapp/WEB-INF/data/index
 web-itest/jcs_caching
+web-client/src/main/java/META-INF/MANIFEST.MF
+web/src/main/webapp/META-INF/MANIFEST.MF
+

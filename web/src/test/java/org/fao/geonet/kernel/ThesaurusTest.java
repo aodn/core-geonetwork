@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.exceptions.TermNotFoundException;
 import org.fao.geonet.kernel.rdf.Query;
 import org.fao.geonet.kernel.rdf.QueryBuilder;
 import org.fao.geonet.kernel.rdf.Selectors;
@@ -391,4 +392,43 @@ public class ThesaurusTest extends AbstractThesaurusBasedTest {
         assertEquals(code2, result.get(0).getUriCode());
     }
 
+    @Test
+    public void testHasConceptSchemeTrue() throws Exception {
+        writableThesaurus.addTitleElement("testScheme");
+
+        boolean hasConceptScheme = writableThesaurus.hasConceptScheme("http://geonetwork-opensource.org/testScheme");
+
+        assertTrue(hasConceptScheme);
+    }
+
+    @Test
+    public void testHasConceptSchemeFalse() throws Exception {
+        writableThesaurus.addTitleElement("testScheme");
+
+        boolean hasConceptScheme = writableThesaurus.hasConceptScheme("http://geonetwork-opensource.org/anotherScheme");
+
+        assertFalse(hasConceptScheme);
+    }
+
+    @Test
+    public void testGetKeywordFound() throws Exception {
+        String testKeyword = "http://test.com/keywords#testKeyword";
+        addKeywordToWritableThesaurus(testKeyword);
+
+        KeywordBean result = writableThesaurus.getKeyword(testKeyword);
+
+        assertEquals(result.getUriCode(), testKeyword);
+    }
+
+    @Test(expected=TermNotFoundException.class)
+    public void testGetKeywordNotFound() throws Exception {
+        writableThesaurus.getKeyword("http://test.com/keywords#testKeyword");
+    }
+
+    private void addKeywordToWritableThesaurus(String uri)
+            throws IOException, AccessDeniedException, GraphException {
+        KeywordBean keyword = new KeywordBean();
+        keyword.setUriCode(uri);
+        writableThesaurus.addElement(keyword);
+    }
 }
