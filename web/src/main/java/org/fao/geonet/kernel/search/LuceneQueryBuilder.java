@@ -78,7 +78,7 @@ public class LuceneQueryBuilder {
     private static final String OR_SEPARATOR = " or ";
     private static final String FIELD_OR_SEPARATOR = "_OR_";
     private static final String DRILLDOWN_AND_SEPARATOR = "&";
-    private static final String CATEGORY_SEPARATOR = "/";
+    private static final char CATEGORY_SEPARATOR = '/';
     private static final String STRING_TOKENIZER_DELIMITER = " \n\r\t";
     private Set<String> _tokenizedFieldSet;
     private PerFieldAnalyzerWrapper _analyzer;

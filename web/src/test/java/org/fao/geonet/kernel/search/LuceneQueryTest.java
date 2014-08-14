@@ -2153,7 +2153,7 @@ public class LuceneQueryTest extends TestCase {
 		// build lucene query
 		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
-		assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore($facets:keyword/ocean/salinity/)^0.0", query.toString());
+		assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore($facets:keywordoceansalinity)^0.0", query.toString());
 	}
 
 	/**
@@ -2171,7 +2171,7 @@ public class LuceneQueryTest extends TestCase {
 		// build lucene query
 		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
-		assertEquals("unexpected Lucene query", "+(+(+(+_isTemplate:n) +ConstantScore($facets:keyword/ocean/salinity/)^0.0) +ConstantScore($facets:keyword/ocean/chemistry/)^0.0) +ConstantScore($facets:keyword/ocean/temperature/)^0.0", query.toString());
+		assertEquals("unexpected Lucene query", "+(+(+(+_isTemplate:n) +ConstantScore($facets:keywordoceansalinity)^0.0) +ConstantScore($facets:keywordoceanchemistry)^0.0) +ConstantScore($facets:keywordoceantemperature)^0.0", query.toString());
 	}
 
 	/**
@@ -2189,7 +2189,7 @@ public class LuceneQueryTest extends TestCase {
 		// build lucene query
 		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
 		// verify query
-		assertEquals("unexpected Lucene query", "+(+(+(+_isTemplate:n) +ConstantScore($facets:keyword/ocean/chemistry/)^0.0) +ConstantScore($facets:keyword/ocean/salinity/)^0.0) +ConstantScore($facets:keyword/ocean/temperature/)^0.0", query.toString());
+		assertEquals("unexpected Lucene query", "+(+(+(+_isTemplate:n) +ConstantScore($facets:keywordoceanchemistry)^0.0) +ConstantScore($facets:keywordoceansalinity)^0.0) +ConstantScore($facets:keywordoceantemperature)^0.0", query.toString());
 	}
 
 	private Element buildSingleDrilldownQuery(String drilldownPath) {
