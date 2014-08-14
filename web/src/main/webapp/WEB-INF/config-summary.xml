@@ -76,29 +76,7 @@
 <!-- 			<item dimension="createDateYear" sortBy="value" sortOrder="desc" max="40"/> -->
 <!-- 		</hits> -->
 		<hits>
-<<<<<<< HEAD
-<!-- 			<item name="keyword" plural="keywords" indexKey="keyword" max="15"/> -->
-			<dimension name="Keyword Split" max="15"/>
-			<item name="inspireTheme" plural="inspireThemes" indexKey="inspiretheme" sortBy="value" sortOrder="asc" max="35"/>
-			<item name="denominator" plural="denominators" indexKey="denominator" sortBy="numValue" sortOrder="desc"/>
-			<item name="spatialRepresentationType" plural="spatialRepresentationTypes" indexKey="spatialRepresentationType" translator="codelist:gmd:MD_SpatialRepresentationTypeCode"/>
-			<item name="orgName" plural="orgNames" indexKey="orgName" max="15"/>
-			<item name="metadataPOC" plural="metadataPOCs" indexKey="metadataPOC" max="15"/>
-			<item name="serviceType" plural="serviceTypes" indexKey="serviceType"/>
-			<item name="type" plural="types" indexKey="type" translator="codelist:gmd:MD_ScopeCode"/>
-			<item name="createDateYear" plural="createDateYears" indexKey="createDateYear"
-				sortBy="value" sortOrder="desc" max="40"/>
-
-			<item name="organisationName" plural="organisationNames"
-				indexKey="orgName" order="freq" type="string" max="100" />
-			<item name="longParamName" plural="longParamNames"
-				indexKey="longParamName" order="freq" type="string" max="100"/>
-			<item name="platformName" plural="platformNames"
-				indexKey="platform" order="freq" type="string" max="100"/>
- 
-=======
 			<item dimension="Keyword" max="100" format="DIMENSION" depth="3"/>
->>>>>>> b2f3916... Add hierarchical facet counting and dimension format to facet summary
 		</hits>
 		<titles>
 			<item dimension="title" sortBy="freq" sortOrder="desc" max="100"/>
@@ -117,45 +95,9 @@
 			<item dimension="type" translator="codelist:gmd:MD_ScopeCode"/>
 			<item dimension="createDateYear" sortOrder="asc" max="40"/>
 		</results_with_summary>
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-		<portal_summary>
-			<item name="organisationName" plural="organisationNames"
-				indexKey="orgName" order="freq" type="string" max="100" />
-			<item name="longParamName" plural="longParamNames"
-				indexKey="longParamName" order="freq" type="string" max="100"/>
-			<item name="platformName" plural="platformNames"
-				indexKey="platform" order="freq" type="string" max="100"/>
-		</portal_summary>
-
-
-	</def>
-<<<<<<< HEAD
-</summary>
-=======
-	<dimensions>
-		<dimension name="keywords" indexKey="keyword"/>
-		<dimension name="Keyword Split" indexKey="keyword" classifier="org.fao.geonet.kernel.search.classifier.Split">
-			<param name="regex" type="java.lang.String" value="-"/>
-		</dimension>
-		<dimension name="Organisation" indexKey="orgName" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
-			<param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
-			<param name="conceptSchema" type="java.lang.String" value="http://geonetwork-opensource.org/regions"/>
-		</dimension>
-		<dimension name="Point of Contact" indexKey="metadataPOC"/>
-	</dimensions>
-</summary>
->>>>>>> e60d242... Add indexing of categories
-=======
-		<hierarchical_summary>
-			<item dimension="Keyword" max="100" format="DIMENSION" depth="2"/>
-		</hierarchical_summary>
-=======
 		<region_summary>
 			<item dimension="region" max="100" format="DIMENSION" depth="10"/>
 		</region_summary>
->>>>>>> 1fe6134... Adding support for hierarchical facet indexing of broader terms
 	</def>
 </summary>
->>>>>>> b2f3916... Add hierarchical facet counting and dimension format to facet summary
+

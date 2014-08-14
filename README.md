@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ANZMEST
 -------
 
@@ -135,4 +134,3 @@ widgettab (deprecated) -> -Dgeonetwork.jeeves.configuration.overrides.file={ecli
 
 
 
->>>>>>> 4976157... Changes to simplify build and deployment in eclipse

@@ -54,14 +54,10 @@ public class Dimension {
 			classifier = DEFAULT_CLASSIFIER;
 		}
 
-<<<<<<< HEAD
-		params = (List<Element>) e.getChildren();
-=======
 		@SuppressWarnings("unchecked")
 		List<Element> params = (List<Element>) elem.getChildren();
 
 		this.params = params;
->>>>>>> 6df2eeb... Whitespace cleanup, rename IndexingClassLoader to ConfigClassLoader and handle unchecked warnings
 	}
 
 	public String getName() {
