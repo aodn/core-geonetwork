@@ -99,25 +99,31 @@
 	</file>
 	<!-- add summary items to config-summary.xml -->
 	<file name=".*WEB-INF/config-summary\.xml">
+		<addXML xpath="dimensions">
+			<dimension name="dataparam" label="dataparams" indexKey="dataparam"/>
+			<dimension name="taxon" label="taxons" indexKey="taxon"/>
+			<dimension name="credit" label="credits" indexKey="credit"/>
+			<dimension name="organisation" label="organisations" indexKey="orgName"/>
+		</addXML>
 		<addXML xpath="def">
 			<dataparams>
-      	<item name="dataparam" plural="dataparams" indexKey="dataparam" order="freq" type="string" max="100"/>
-    	</dataparams>
-    	<taxon>
-      	<item name="taxon" plural="taxons" indexKey="taxon" order="freq" type="string" max="100"/>
-    	</taxon>
-    	<credits>
-      	<item name="credit" plural="credits" indexKey="credit" order="freq" type="string" max="100"/>
-    	</credits>	
-    	<keywords>
-      	<item name="keyword" plural="keywords" indexKey="keyword" order="freq" type="string" max="100"/>
-    	</keywords>
-    	<longParamNames>
-      	<item name="longParamName" plural="longParamNames" indexKey="longParamName" order="freq" type="string" max="100"/>
-    	</longParamNames>
-    	<organisations>
-      	<item name="organisation" plural="organisations" indexKey="orgName" order="freq" type="string" max="100"/>
-    	</organisations>
+				<item dimension="dataparam" max="100"/>
+			</dataparams>
+			<taxon>
+				<item dimension="taxon" max="100"/>
+			</taxon>
+			<credits>
+				<item dimension="credit" max="100"/>
+			</credits>	
+			<keywords>
+				<item dimension="keyword" max="100"/>
+			</keywords>
+			<longParamNames>
+				<item dimension="longParamName" max="100"/>
+			</longParamNames>
+			<organisations>
+				<item dimension="organisation" max="100"/>
+			</organisations>
 		</addXML>
 	</file>
 	<!-- add lucene field configs for schema plugins to config-lucene.xml -->

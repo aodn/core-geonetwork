@@ -53,14 +53,24 @@
 		<dimension name="type" indexKey="type" label="types"/>
 		<dimension name="createDateYear" indexKey="createDateYear" label="createDateYears"/>
 		<dimension name="title" indexKey="title" label="titles"/>
+		
+		<dimension name="organisationName" label="organisationNames" indexKey="orgName"/>
+		<dimension name="longParamName" label="longParamNames" indexKey="longParamName"/>
+		<dimension name="platformName" label="platformNames" indexKey="platform"/>
+				
 		<!-- Multi level dimensions - not currently supported by GeoNetwork UI -->
 		<dimension name="Keyword" indexKey="keyword" label="Keywords"
 			classifier="org.fao.geonet.kernel.search.classifier.Split">
 			<param name="regex" type="java.lang.String" value=" *\| *"/>
 		</dimension>
-		<dimension name="region" indexKey="regionTerm" label="Regions" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
+		<dimension name="organisationCategories" label="Organisation" indexKey="orgName"/>
+		<dimension name="platformCategories" indexKey="platformUri" label="Platform" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
 			<param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
-			<param name="conceptScheme" type="java.lang.String" value="http://geonetwork-opensource.org/regions"/>
+			<param name="conceptScheme" type="java.lang.String" value="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+		</dimension>
+		<dimension name="parameterCategories" indexKey="parameterUri" label="Measured parameter" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
+			<param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
+			<param name="conceptScheme" type="java.lang.String" value="http://vocab.aodn.org.au/ParameterClassificationScheme/SchemeNumber1"/>
 		</dimension>
 	</dimensions>
 	<def>
@@ -95,9 +105,16 @@
 			<item dimension="type" translator="codelist:gmd:MD_ScopeCode"/>
 			<item dimension="createDateYear" sortOrder="asc" max="40"/>
 		</results_with_summary>
-		<region_summary>
-			<item dimension="region" max="100" format="DIMENSION" depth="10"/>
-		</region_summary>
+		<portal_summary>
+			<item dimension="organisationName" max="100" />
+			<item dimension="longParamName" max="100"/>
+			<item dimension="platformName" max="100"/>
+		</portal_summary>
+		<portal_hierarchical_summary>
+			<item dimension="organisationCategories" format="DIMENSION" max="100" depth="2"/>
+			<item dimension="parameterCategories" format="DIMENSION" max="100" depth="3"/>
+			<item dimension="platformCategories" format="DIMENSION" max="100" depth="2"/>
+		</portal_hierarchical_summary>
 	</def>
 </summary>
 
