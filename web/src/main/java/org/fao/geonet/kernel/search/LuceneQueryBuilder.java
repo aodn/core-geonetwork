@@ -49,9 +49,13 @@ import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.util.automaton.LevenshteinAutomata;
 import org.fao.geonet.constants.Geonet;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
@@ -78,7 +82,7 @@ public class LuceneQueryBuilder {
     private static final String OR_SEPARATOR = " or ";
     private static final String FIELD_OR_SEPARATOR = "_OR_";
     private static final String DRILLDOWN_AND_SEPARATOR = "&";
-    private static final char CATEGORY_SEPARATOR = '/';
+    private static final String CATEGORY_SEPARATOR = "/";
     private static final String STRING_TOKENIZER_DELIMITER = " \n\r\t";
     private Set<String> _tokenizedFieldSet;
     private PerFieldAnalyzerWrapper _analyzer;
@@ -297,8 +301,23 @@ public class LuceneQueryBuilder {
      */
 
     private Query addDrilldownPath(Query baseQuery, String drilldownPath) {
-        CategoryPath categoryPath = new CategoryPath(drilldownPath, CATEGORY_SEPARATOR);
+        CategoryPath categoryPath = toCategoryPath(drilldownPath);
         return DrillDown.query(FacetIndexingParams.ALL_PARENTS, baseQuery, categoryPath);
+    }
+
+    private CategoryPath toCategoryPath(String drilldownPath) {
+        List<String> components = new ArrayList<String>();
+        String[] categories = drilldownPath.split(CATEGORY_SEPARATOR);
+
+        for (String category: categories) {
+            try {
+                components.add(URLDecoder.decode(category, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return new CategoryPath(components.toArray(new String[0]));
     }
 
     /**

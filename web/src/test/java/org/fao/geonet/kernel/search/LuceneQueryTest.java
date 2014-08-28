@@ -2148,12 +2148,19 @@ public class LuceneQueryTest extends TestCase {
 	 */
 	public void testDrilldownQuery() {
 		Element request = buildSingleDrilldownQuery("keyword/ocean/salinity");
-		// build lucene query input
 		LuceneQueryInput lQI = new LuceneQueryInput(request);
-		// build lucene query
 		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
-		// verify query
 		assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore($facets:keywordoceansalinity)^0.0", query.toString());
+	}
+
+	/**
+	 * 'facet.q' parameter. Encoded value
+	 */
+	public void testEncodedDrilldownQuery() {
+		Element request = buildSingleDrilldownQuery("keyword/oceans%2Frivers/salinity");
+		LuceneQueryInput lQI = new LuceneQueryInput(request);
+		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
+		assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore($facets:keywordoceans/riverssalinity)^0.0", query.toString());
 	}
 
 	/**
@@ -2166,11 +2173,8 @@ public class LuceneQueryTest extends TestCase {
 			"keyword/ocean/chemistry",
 			"keyword/ocean/temperature"
 		);
-		// build lucene query input
 		LuceneQueryInput lQI = new LuceneQueryInput(request);
-		// build lucene query
 		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
-		// verify query
 		assertEquals("unexpected Lucene query", "+(+(+(+_isTemplate:n) +ConstantScore($facets:keywordoceansalinity)^0.0) +ConstantScore($facets:keywordoceanchemistry)^0.0) +ConstantScore($facets:keywordoceantemperature)^0.0", query.toString());
 	}
 
@@ -2184,11 +2188,8 @@ public class LuceneQueryTest extends TestCase {
 			"keyword/ocean/chemistry",
 			"keyword/ocean/temperature"
 		);
-		// build lucene query input
 		LuceneQueryInput lQI = new LuceneQueryInput(request);
-		// build lucene query
 		Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _analyzer, null).build(lQI);
-		// verify query
 		assertEquals("unexpected Lucene query", "+(+(+(+_isTemplate:n) +ConstantScore($facets:keywordoceanchemistry)^0.0) +ConstantScore($facets:keywordoceansalinity)^0.0) +ConstantScore($facets:keywordoceantemperature)^0.0", query.toString());
 	}
 
