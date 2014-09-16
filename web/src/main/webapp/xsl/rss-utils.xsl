@@ -115,8 +115,7 @@
 			</xsl:variable>
 
 			<pubDate><xsl:value-of select="concat($day,' ',$month,' ',$year,' ',$time,' EST')"/></pubDate> 
-			<guid><xsl:value-of select="$mdURL"/></guid>
-			<guid><xsl:value-of select="$mdURL"/></guid>
+			<guid><xsl:value-of select="concat($mdURL,'&amp;dummy=',encode-for-uri($date))"/></guid>
 			<xsl:if test="string($thumbnailLink)!='' and starts-with($thumbnailLink, 'http')">
 				<media:content url="{$thumbnailLink}" type="image/gif" width="100"/>
 			</xsl:if>
