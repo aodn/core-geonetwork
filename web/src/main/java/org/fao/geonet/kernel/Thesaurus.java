@@ -316,7 +316,8 @@ public class Thesaurus {
 	 * @throws GraphException
 	 */
     public synchronized URI addElement(KeywordBean keyword) throws IOException, AccessDeniedException, GraphException {
-        Graph myGraph = new org.openrdf.model.impl.GraphImpl();
+        // Get thesaurus graph
+        Graph myGraph = repository.getGraph();      
 
         ValueFactory myFactory = myGraph.getValueFactory();
 
@@ -375,7 +376,6 @@ public class Thesaurus {
         myGraph.add(gmlNode, predicateUpperCorner, upperCorner);
         myGraph.add(gmlNode, predicateSrsName, srsNameURI);
 
-        repository.addGraph(myGraph);
         return mySubject;
     }
 	
