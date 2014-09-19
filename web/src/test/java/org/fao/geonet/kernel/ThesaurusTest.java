@@ -28,6 +28,7 @@ import org.openrdf.sesame.query.QueryEvaluationException;
 public class ThesaurusTest extends AbstractThesaurusBasedTest {
 
     private Thesaurus writableThesaurus;
+    private static final String TEST_KEYWORD = "http://test.com/keywords#testKeyword";
 
     @Before
     public void prepareEmptyThesaurus() throws ConfigurationException {
@@ -412,17 +413,32 @@ public class ThesaurusTest extends AbstractThesaurusBasedTest {
 
     @Test
     public void testGetKeywordFound() throws Exception {
-        String testKeyword = "http://test.com/keywords#testKeyword";
-        addKeywordToWritableThesaurus(testKeyword);
+        addKeywordToWritableThesaurus(TEST_KEYWORD);
 
-        KeywordBean result = writableThesaurus.getKeyword(testKeyword);
+        KeywordBean result = writableThesaurus.getKeyword(TEST_KEYWORD);
 
-        assertEquals(result.getUriCode(), testKeyword);
+        assertEquals(result.getUriCode(), TEST_KEYWORD);
     }
 
     @Test(expected=TermNotFoundException.class)
     public void testGetKeywordNotFound() throws Exception {
         writableThesaurus.getKeyword("http://test.com/keywords#testKeyword");
+    }
+
+    @Test
+    public void testHasKeyword() throws Exception {
+        addKeywordToWritableThesaurus(TEST_KEYWORD);
+
+        boolean result = writableThesaurus.hasKeyword(TEST_KEYWORD);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void testDoesntHavekeyword() throws Exception {
+        boolean result = writableThesaurus.hasKeyword("http://test.com/keywords#testKeyword");
+
+        assertFalse(result);
     }
 
     private void addKeywordToWritableThesaurus(String uri)

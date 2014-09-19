@@ -834,7 +834,12 @@ public class LuceneConfig {
 	 * @throws ClassNotFoundException 
 	 */
 	public Classifier getClassifier(Dimension dimension) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		return (Classifier) loader.newInstance(dimension.getClassifier(), dimension.getParams());
+		Classifier classifier = (Classifier) loader.newInstance(dimension.getClassifier(), dimension.getParams());
+
+		return new org.fao.geonet.kernel.search.classifier.Dimension(
+			dimension.getLabel(), 
+			classifier
+		);
 	}
 
 	/**

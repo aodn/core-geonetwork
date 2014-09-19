@@ -1,9 +1,10 @@
 package org.fao.geonet.kernel.search.classifier;
 
-import static org.junit.Assert.*;
+import static org.fao.geonet.test.CategoryTestHelper.assertCategoryListEquals;
 
 import java.util.List;
 
+import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.junit.Test;
 
 public class ValueTest {
@@ -12,10 +13,9 @@ public class ValueTest {
 	public void testClassify() {
 		Value valueClassifier = new Value();
 
-		List<String> result = valueClassifier.classify("ant-bat-car");
+		List<CategoryPath> result = valueClassifier.classify("ant-bat-car");
 
-		assertEquals(result.size(), 1);
-		assertEquals(result.get(0), "ant-bat-car");
+		assertCategoryListEquals(result, "ant-bat-car");
 	}
 
 }

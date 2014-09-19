@@ -23,24 +23,48 @@
 
 package org.fao.geonet.kernel.search.classifier;
 
+import static org.fao.geonet.kernel.search.facet.CategoryHelper.addParentCategory;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.facet.taxonomy.CategoryPath;
+import jeeves.utils.Log;
 
-public class Split implements Classifier {
-	
-	private String regex;
-	
-	public Split(String regex) {
-		this.regex = regex;
+import org.apache.lucene.facet.taxonomy.CategoryPath;
+import org.fao.geonet.constants.Geonet;
+
+public class Dimension implements Classifier {
+
+	private String dimensionName;
+	private Classifier wrappedClassifier;
+
+	public Dimension(String dimensionName, Classifier wrappedClassifier) {
+		this.dimensionName = dimensionName;
+		this.wrappedClassifier = wrappedClassifier;
 	}
 
 	@Override
 	public List<CategoryPath> classify(String value) {
-		List<CategoryPath> result = new ArrayList<CategoryPath>();
-		result.add(new CategoryPath(value.split(regex)));
-		return result;
+		List<CategoryPath> dimensionSubCategoryPaths = wrappedClassifier.classify(value);
+		return addDimensionCategory(dimensionSubCategoryPaths);
 	}
 
+	private List<CategoryPath> addDimensionCategory(List<CategoryPath> dimensionSubCategoryPaths) {
+		List<CategoryPath> result = new ArrayList<CategoryPath>();
+
+		for (CategoryPath dimensionSubCategoryPath: dimensionSubCategoryPaths) {
+			CategoryPath dimensionCategoryPath = addParentCategory(
+				dimensionName,
+				dimensionSubCategoryPath
+			);
+
+			if(Log.isDebugEnabled(Geonet.INDEX_ENGINE)) {
+				Log.debug(Geonet.INDEX_ENGINE, "Adding category path: " + dimensionCategoryPath);
+			}
+
+			result.add(dimensionCategoryPath);
+		}
+
+		return result;
+	}
 }

@@ -1,6 +1,6 @@
 package org.fao.geonet.kernel.search;
 
-import static org.junit.Assert.assertEquals;
+import static org.fao.geonet.test.CategoryTestHelper.assertCategoryListEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,6 +12,7 @@ import java.util.List;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Xml;
 
+import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.ThesaurusManager;
@@ -44,11 +45,9 @@ public class ConfigLoaderTest {
 			keywordParams
 		);
 
-		List<String> categories = splitClassifier.classify("one-two");
+		List<CategoryPath> categories = splitClassifier.classify("one-two");
 
-		assertEquals(categories.size(), 2);
-		assertEquals(categories.get(0), "one");
-		assertEquals(categories.get(1), "two");
+		assertCategoryListEquals(categories, "one/two");
 	}
 
 	@Test
