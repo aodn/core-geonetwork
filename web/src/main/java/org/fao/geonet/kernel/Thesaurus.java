@@ -818,7 +818,6 @@ public class Thesaurus {
             }
 
             if (keywords.isEmpty()) {
-                Log.error(Geonet.THESAURUS, getTermNotFoundMessage(uri));
                 throw new TermNotFoundException(getTermNotFoundMessage(uri));
             }
 
@@ -828,6 +827,33 @@ public class Thesaurus {
         private String getTermNotFoundMessage(String uri) {
             String couldNotFindTermMessage = "Could not find "+uri+" in file "+thesaurusFile;
             return couldNotFindTermMessage;
+        }
+
+        /**
+         * Thesaurus has keyword
+         * 
+         * @param subject the keyword to check
+         * @return boolean
+         */
+        public boolean hasKeyword(String uri) {
+            try {
+                getKeyword(uri);
+            } catch (TermNotFoundException e) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * Gets broader keywords
+         * 
+         * @param the keyword whose broader terms should be retrieved
+         * @return keywords
+         */
+
+        public List<KeywordBean> getBroader(String uri, String... languages) {
+            return getRelated(uri, KeywordRelation.NARROWER, languages);
         }
 
         /**

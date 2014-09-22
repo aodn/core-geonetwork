@@ -23,41 +23,77 @@
 
 package org.fao.geonet.kernel.search.classifier;
 
+import static org.fao.geonet.kernel.search.facet.CategoryHelper.addSubCategory;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusManager;
 
 public class BroaderTerm implements Classifier {
-	
+
 	private Thesaurus thesaurus;
 	private final static String LANG_CODE = "eng";
 
 	public BroaderTerm(ThesaurusManager thesaurusManager, String conceptScheme) {
 		thesaurus = thesaurusManager.getThesaurusByConceptScheme(conceptScheme);
 	}
-	
+
 	@Override
-	public List<String> classify(String value) {
-		List<String> termHierarchy = getClassifications(value);
-		Collections.reverse(termHierarchy);
-		
-		return termHierarchy;
-	}
-	
-	public List<String> getClassifications(String termUri) {
-        List<String> termHierarchy = new ArrayList<String>();
-		
-		KeywordBean term = thesaurus.getKeyword(termUri, LANG_CODE);
-		termHierarchy.add(term.getPreferredLabel(LANG_CODE));
-		
-		if (term.hasBroader()) {
-			termHierarchy.addAll(getClassifications(term.getBroaderRelationship()));
+	public List<CategoryPath> classify(String value) {
+		List<CategoryPath> result = new ArrayList<CategoryPath>();
+
+		if (thesaurus.hasKeyword(value)) {
+			KeywordBean term = thesaurus.getKeyword(value, LANG_CODE);
+			result.addAll(classify(term));
 		}
-		
-		return termHierarchy;
+
+		return result;
+	}
+
+	private List<CategoryPath> classify(KeywordBean term) {
+		List<CategoryPath> result = new ArrayList<CategoryPath>();
+
+		if (term.hasBroader()) {
+			result.addAll(classifyTermWithBroaderTerms(term));
+		} else {
+			result.add(classifyTermWithNoBroaderTerms(term));
+		}
+
+		return result;
+	}
+
+	private List<CategoryPath> classifyTermWithBroaderTerms(KeywordBean term) {
+		List<CategoryPath> result = new ArrayList<CategoryPath>();
+
+		for (CategoryPath categoryPathToBroaderTerm: classifyBroaderTerms(term)) {
+			String category = term.getPreferredLabel(LANG_CODE);
+
+			CategoryPath categoryPathToTerm = addSubCategory(
+				categoryPathToBroaderTerm,
+				category
+			);
+
+			result.add(categoryPathToTerm);
+		}
+
+		return result;
+	}
+
+	private List<CategoryPath> classifyBroaderTerms(KeywordBean term) {
+		List<CategoryPath> result = new ArrayList<CategoryPath>();
+
+		for (KeywordBean broaderTerm: thesaurus.getBroader(term.getUriCode(), LANG_CODE)) {
+			result.addAll(classify(broaderTerm));
+		}
+
+		return result;
+	}
+
+	private CategoryPath classifyTermWithNoBroaderTerms(KeywordBean term) {
+		return new CategoryPath(term.getPreferredLabel(LANG_CODE));
 	}
 }

@@ -1,5 +1,4 @@
-//=============================================================================
-//===	Copyright (C) 2010 Food and Agriculture Organization of the
+//===	Copyright (C) 2001-2007 Food and Agriculture Organization of the
 //===	United Nations (FAO-UN), United Nations World Food Programme (WFP)
 //===	and United Nations Environment Programme (UNEP)
 //===
@@ -21,26 +20,34 @@
 //===	Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.search.classifier;
+package org.fao.geonet.kernel.search.facet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.facet.taxonomy.CategoryPath;
 
-public class Split implements Classifier {
-	
-	private String regex;
-	
-	public Split(String regex) {
-		this.regex = regex;
+public class CategoryHelper {
+
+	public static CategoryPath addSubCategory(CategoryPath categoryPath, String category) {
+		List<String> categoryPathList = toList(categoryPath);
+		categoryPathList.add(category);
+		return toCategoryPath(categoryPathList);
 	}
 
-	@Override
-	public List<CategoryPath> classify(String value) {
-		List<CategoryPath> result = new ArrayList<CategoryPath>();
-		result.add(new CategoryPath(value.split(regex)));
-		return result;
+	public static CategoryPath addParentCategory(String category, CategoryPath categoryPath) {
+		List<String> categoryPathList = toList(categoryPath);
+		categoryPathList.add(0, category);
+		return toCategoryPath(categoryPathList);
+	}
+
+	private static CategoryPath toCategoryPath(List<String> categoryPathList) {
+		return new CategoryPath(categoryPathList.toArray(new String[0]));
+	}
+
+	private static List<String> toList(CategoryPath categoryPath) {
+		return new ArrayList<String>(Arrays.asList(categoryPath.components));
 	}
 
 }

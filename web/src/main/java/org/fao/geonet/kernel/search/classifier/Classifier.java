@@ -25,8 +25,10 @@ package org.fao.geonet.kernel.search.classifier;
 
 import java.util.List;
 
+import org.apache.lucene.facet.taxonomy.CategoryPath;
+
 public interface Classifier {
 
-	public List<String> classify(String value);
+	public List<CategoryPath> classify(String value);
 
 }

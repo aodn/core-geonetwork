@@ -26,12 +26,14 @@ package org.fao.geonet.kernel.search.classifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.facet.taxonomy.CategoryPath;
+
 public class Value implements Classifier {
 
 	@Override
-	public List<String> classify(String value) {
-		List<String> result = new ArrayList<String>();
-		result.add(value);
+	public List<CategoryPath> classify(String value) {
+		List<CategoryPath> result = new ArrayList<CategoryPath>();
+		result.add(new CategoryPath(value));
 		return result;
 	}
 

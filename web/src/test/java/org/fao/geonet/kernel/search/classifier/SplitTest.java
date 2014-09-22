@@ -1,23 +1,18 @@
 package org.fao.geonet.kernel.search.classifier;
 
-import static org.junit.Assert.*;
+import static org.fao.geonet.test.CategoryTestHelper.assertCategoryListEquals;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.apache.lucene.facet.taxonomy.CategoryPath;
 
 public class SplitTest {
-
-	@Test
 	public void testClassify() {
 		Split splitClassifier = new Split("-");
 
-		List<String> result = splitClassifier.classify("ant-bat-car");
+		List<CategoryPath> result = splitClassifier.classify("ant-bat-car");
 
-		assertEquals(result.size(), 3);
-		assertEquals(result.get(0), "ant");
-		assertEquals(result.get(1), "bat");
-		assertEquals(result.get(2), "car");
+		assertCategoryListEquals(result, "ant/bar/car");
 	}
 
 }

@@ -22,12 +22,15 @@
 
 package org.fao.geonet.kernel.search.classifier;
 
+import static org.fao.geonet.test.CategoryTestHelper.assertCategoryListEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.fao.geonet.exceptions.TermNotFoundException;
 import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.Thesaurus;
@@ -45,41 +48,65 @@ public class BroaderTermTest {
         ThesaurusManager mockManager = mockThesaurusWithBroaderTerms();
 
         BroaderTerm testBroaderTermClassifier = new BroaderTerm(mockManager, TEST_CONFIG_SCHEME);
-        List<String> testTermHierarchy = testBroaderTermClassifier.classify(TEST_VALUE);
+        List<CategoryPath> testTermHierarchy = testBroaderTermClassifier.classify(TEST_VALUE);
 
-        assertEquals(testTermHierarchy.size(), 3);
-        assertEquals(testTermHierarchy.get(0), "ocean"); 
-        assertEquals(testTermHierarchy.get(1), "ocean temperature");
-        assertEquals(testTermHierarchy.get(2), "sea surface temperature");
+        assertCategoryListEquals(testTermHierarchy, "ocean/ocean temperature/sea surface temperature");
     }
 
-    @Test(expected=TermNotFoundException.class)
+    @Test
+    public void testClassifyTermWithMultipleBroaderTerms() {
+        ThesaurusManager mockManager = mockThesaurusWithMultipleBroaderTerms();
+
+        BroaderTerm testBroaderTermClassifier = new BroaderTerm(mockManager, TEST_CONFIG_SCHEME);
+        List<CategoryPath> testTermHierarchy = testBroaderTermClassifier.classify(TEST_VALUE);
+
+        assertCategoryListEquals(testTermHierarchy, "physical - water/air sea flux", "physical - air/air sea flux");
+    }
+
+    @Test
     public void testClassifyTermDoesNotExist() {
         ThesaurusManager mockManager = mockTermNotFoundThesaurus();
 
         BroaderTerm testBroaderTermClassifier = new BroaderTerm(mockManager, TEST_CONFIG_SCHEME);
-        testBroaderTermClassifier.classify(TEST_VALUE);
+        List<CategoryPath> testTermHierarchy = testBroaderTermClassifier.classify(TEST_VALUE);
+
+        assertEquals(0, testTermHierarchy.size());
     }
 
     private ThesaurusManager mockTermNotFoundThesaurus() {
         Thesaurus mockThesaurus = mock(Thesaurus.class);
         ThesaurusManager mockManager = mockManager(mockThesaurus);
+        when(mockThesaurus.hasKeyword("#term")).thenReturn(false);
         when(mockThesaurus.getKeyword(TEST_VALUE, TEST_LANG)).thenThrow(new TermNotFoundException("term not found"));
         return mockManager;
     }
 
     private ThesaurusManager mockThesaurusWithBroaderTerms() {
         Thesaurus mockThesaurus = mock(Thesaurus.class);
-        KeywordBean mockKeywordBean = mockKeyword("#1", "sea surface temperature"); 
-        KeywordBean mockKeywordBeanBroader = mockKeyword("#2", "ocean temperature");
-        KeywordBean mockKeywordBeanBroadest = mockKeyword("", "ocean");
+        KeywordBean mockKeywordBean = mockKeyword("#term", "sea surface temperature", true); 
+        KeywordBean mockKeywordBeanBroader = mockKeyword("#1", "ocean temperature", true);
+        KeywordBean mockKeywordBeanBroadest = mockKeyword("#2", "ocean", false);
 
+        when(mockThesaurus.hasKeyword("#term")).thenReturn(true);
         when(mockThesaurus.getKeyword("#term", TEST_LANG)).thenReturn(mockKeywordBean);
-        when(mockThesaurus.getKeyword("#1", TEST_LANG)).thenReturn(mockKeywordBeanBroader);
-        when(mockThesaurus.getKeyword("#2", TEST_LANG)).thenReturn(mockKeywordBeanBroadest);
+        when(mockThesaurus.getBroader("#term", TEST_LANG)).thenReturn(Arrays.asList(mockKeywordBeanBroader));
+        when(mockThesaurus.getBroader("#1", TEST_LANG)).thenReturn(Arrays.asList(mockKeywordBeanBroadest));
 
         return mockManager(mockThesaurus);
     }
+
+    private ThesaurusManager mockThesaurusWithMultipleBroaderTerms() {
+        Thesaurus mockThesaurus = mock(Thesaurus.class);
+        KeywordBean mockKeywordBean = mockKeyword("#term", "air sea flux", true); 
+        KeywordBean mockKeywordBeanBroader1 = mockKeyword("#1", "physical - water", false);
+        KeywordBean mockKeywordBeanBroader2 = mockKeyword("#2", "physical - air", false);
+
+        when(mockThesaurus.hasKeyword("#term")).thenReturn(true);
+        when(mockThesaurus.getKeyword("#term", TEST_LANG)).thenReturn(mockKeywordBean);
+        when(mockThesaurus.getBroader("#term", TEST_LANG)).thenReturn(Arrays.asList(mockKeywordBeanBroader1, mockKeywordBeanBroader2));
+
+        return mockManager(mockThesaurus);
+	}
 
     private ThesaurusManager mockManager(Thesaurus mockThesaurus) {
         ThesaurusManager mockManager = mock(ThesaurusManager.class);
@@ -87,11 +114,11 @@ public class BroaderTermTest {
         return mockManager;
     }
 
-    private KeywordBean mockKeyword(String theBroaderTerm, String label) {
+    private KeywordBean mockKeyword(String uri, String label, boolean hasBroader) {
         KeywordBean mockKeywordBean = mock(KeywordBean.class);
-        when(mockKeywordBean.getBroaderRelationship()).thenReturn(theBroaderTerm);
-        when(mockKeywordBean.hasBroader()).thenReturn(!theBroaderTerm.equals(""));
+        when(mockKeywordBean.hasBroader()).thenReturn(hasBroader);
         when(mockKeywordBean.getPreferredLabel(TEST_LANG)).thenReturn(label);
+        when(mockKeywordBean.getUriCode()).thenReturn(uri);
         return mockKeywordBean;
     }
 }

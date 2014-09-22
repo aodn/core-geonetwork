@@ -1489,15 +1489,8 @@ public class SearchManager {
                         }
                     }
                     doc.add(f);
-                    
-                    // Add dimension categories for term as defined in config-summary to the taxonomy 
-                    for (Dimension dimension : _luceneConfig.getDimensions(name)) {
-                        CategoryPath categoryPath = getCategoryPath(dimension, string);
-                        if(Log.isDebugEnabled(Geonet.INDEX_ENGINE)) {
-                            Log.debug(Geonet.INDEX_ENGINE, "Adding category path: " + categoryPath);
-                        }
-                        categories.add(categoryPath);
-                   } 
+
+                    categories.addAll(getCategoryPathsForAllIndexKeyDimensions(name, string));
             }
         }
         
@@ -1508,21 +1501,29 @@ public class SearchManager {
         return Pair.write(doc, categories);
 }
 
-	//TODO: Can we move this to dimension class
-	private CategoryPath getCategoryPath(Dimension dimension, String value) {
-		ArrayList<String> dimensionCategories = new ArrayList<String>();
-		
+	private List<CategoryPath> getCategoryPathsForAllIndexKeyDimensions(String indexKey, String value) {
+		List<CategoryPath> result = new ArrayList<CategoryPath>();
+
+		for (Dimension dimension : _luceneConfig.getDimensions(indexKey)) {
+			result.addAll(getDimensionCategoryPaths(dimension, value));
+		}
+
+		return result;
+	}
+
+	private List<CategoryPath> getDimensionCategoryPaths(Dimension dimension, String value) {
+		List<CategoryPath> result = new ArrayList<CategoryPath>();
+
 		try {
 			Classifier classifier = _luceneConfig.getClassifier(dimension);
-			dimensionCategories.add(dimension.getLabel());
-			dimensionCategories.addAll(classifier.classify(value));
+			result.addAll(classifier.classify(value));
 		} catch (Exception e) {
 			Log.warning(Geonet.SEARCH_ENGINE,
 			        "  Error loading classifier for dimension: " + dimension.getName());
 			e.printStackTrace();
 		}
-		
-		return new CategoryPath(dimensionCategories.toArray(new String[0]));
+
+		return result;
 	}
 
 	/**
