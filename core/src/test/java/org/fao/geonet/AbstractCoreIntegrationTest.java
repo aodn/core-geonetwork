@@ -4,11 +4,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.TreeTraverser;
 import com.google.common.io.Files;
 import com.vividsolutions.jts.geom.MultiPolygon;
+
 import jeeves.constants.ConfigFile;
 import jeeves.server.ServiceConfig;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
 import jeeves.server.sources.ServiceRequest;
+
 import org.apache.commons.io.FileUtils;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.domain.*;
@@ -50,6 +52,7 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
+
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -58,7 +61,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
-
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -160,7 +162,7 @@ public abstract class AbstractCoreIntegrationTest extends AbstractSpringDataTest
             final String schemaPluginsCatalogFile = new File(schemaPluginsDir, "/schemaplugin-uri-catalog.xml").getPath();
             deploySchema(webappDir, schemaPluginsDir);
 
-            _applicationContext.getBean(LuceneConfig.class).configure("WEB-INF/config-lucene.xml");
+            _applicationContext.getBean(LuceneConfig.class).configure(getTestResourceDir(), "WEB-INF/config-lucene.xml");
             SchemaManager.registerXmlCatalogFiles(webappDir, schemaPluginsCatalogFile);
 
             schemaManager.configure(_applicationContext, webappDir, resourcePath,
@@ -446,6 +448,15 @@ public abstract class AbstractCoreIntegrationTest extends AbstractSpringDataTest
         }
 
         return new File(here.getParentFile(), "web/src/main/webapp/").getAbsolutePath() + File.separator;
+    }
+
+    /**
+     * Look up the test resources directory.
+     *
+     * @return
+     */
+    private String getTestResourceDir() {
+        return getClass().getResource("/").getFile();
     }
 
     protected static File getClassFile(Class<?> cl) {

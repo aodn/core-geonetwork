@@ -1,0 +1,9 @@
+<summary count="2" type="local">
+  <dimension name="keywordToken" label="Keyword Tokens">
+    <category value="Oceans" label="Oceans" count="2">
+      <category value="Ocean Chemistry" label="Ocean Chemistry" count="2">
+        <category value="Oxygen" label="Oxygen" count="2" />
+      </category>
+    </category>
+  </dimension>
+</summary>
