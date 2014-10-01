@@ -85,11 +85,11 @@ Add geonetwork-main
 
 There are four client interfaces included in version 2.10.x to run an interface other than the default 'classic' interface (xsl generated html) add a config override property to the servers startup parameters (Run > Run Configurations > Apache Tomcat > Tomcat 7 server > Arguments):
 
-html5ui -> -Dgeonetwork.jeeves.configuration.overrides.file={eclipse workspace}/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/geonetwork-main/WEB-INF/config-overrides-html5ui.xml
+html5ui -> -Dgeonetwork.jeeves.configuration.overrides.file=${workspace_loc}/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/geonetwork-main/WEB-INF/config-overrides-html5ui.xml
 
-widget (deprecated) -> -Dgeonetwork.jeeves.configuration.overrides.file={eclipse workspace}/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/geonetwork-main/WEB-INF/config-overrides-widget.xml
+widget (deprecated) -> -Dgeonetwork.jeeves.configuration.overrides.file=${workspace_loc}/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/geonetwork-main/WEB-INF/config-overrides-widget.xml
 
-widgettab (deprecated) -> -Dgeonetwork.jeeves.configuration.overrides.file={eclipse workspace}/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/geonetwork-main/WEB-INF/config-overrides-widgettab.xml
+widgettab (deprecated) -> -Dgeonetwork.jeeves.configuration.overrides.file=${workspace_loc}/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/geonetwork-main/WEB-INF/config-overrides-widgettab.xml
 
 
 
