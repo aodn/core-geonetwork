@@ -57,7 +57,6 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -368,7 +367,26 @@ public class ThesaurusManager implements ThesaurusFinder {
     @Override
     public Thesaurus getThesaurusByName(String thesaurusName) {
 		return thesauriMap.get(thesaurusName);
-	}	
+	}
+
+	@Override
+	public Thesaurus getThesaurusByConceptScheme(String uri) {
+		
+		for (Map.Entry<String, Thesaurus> entry : thesauriMap.entrySet()) {
+			try {
+				Thesaurus thesaurus = entry.getValue();
+				
+				if (thesaurus.hasConceptScheme(uri)) {
+					return thesaurus;
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return null;	
+	}
 
 	/**
 	 * @param name

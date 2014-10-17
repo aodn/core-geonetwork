@@ -61,6 +61,14 @@ public class KeywordsSearcherTest extends AbstractThesaurusBasedTest {
             }
             
             @Override
+            public Thesaurus getThesaurusByConceptScheme(String conceptSchemeUri) {
+                for (Thesaurus thesaurus: getThesauriMap().values()) {
+                    if (thesaurus.hasConceptScheme(conceptSchemeUri)) return thesaurus;
+                }
+                return null;
+            }
+
+            @Override
             public Map<String, Thesaurus> getThesauriMap() {
                 return Collections.unmodifiableMap(map);
             }

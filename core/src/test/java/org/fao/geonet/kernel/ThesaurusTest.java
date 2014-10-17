@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.exceptions.TermNotFoundException;
 import org.fao.geonet.kernel.rdf.Query;
 import org.fao.geonet.kernel.rdf.QueryBuilder;
 import org.fao.geonet.kernel.rdf.Selectors;
@@ -28,6 +29,7 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 public class ThesaurusTest extends AbstractThesaurusBasedTest {
 
     private Thesaurus writableThesaurus;
+    private static final String TEST_KEYWORD = "http://test.com/keywords#testKeyword";
 
     @Before
     public void prepareEmptyThesaurus() throws ConfigurationException {
@@ -409,4 +411,58 @@ public class ThesaurusTest extends AbstractThesaurusBasedTest {
         assertEquals(code2, result.get(0).getUriCode());
     }
 
+    @Test
+    public void testHasConceptSchemeTrue() throws Exception {
+        writableThesaurus.addTitleElement("testScheme");
+
+        boolean hasConceptScheme = writableThesaurus.hasConceptScheme("http://geonetwork-opensource.org/testScheme");
+
+        assertTrue(hasConceptScheme);
+    }
+
+    @Test
+    public void testHasConceptSchemeFalse() throws Exception {
+        writableThesaurus.addTitleElement("testScheme");
+
+        boolean hasConceptScheme = writableThesaurus.hasConceptScheme("http://geonetwork-opensource.org/anotherScheme");
+
+        assertFalse(hasConceptScheme);
+    }
+
+    @Test
+    public void testGetKeywordFound() throws Exception {
+        addKeywordToWritableThesaurus(TEST_KEYWORD);
+
+        KeywordBean result = writableThesaurus.getKeyword(TEST_KEYWORD);
+
+        assertEquals(result.getUriCode(), TEST_KEYWORD);
+    }
+
+    @Test(expected=TermNotFoundException.class)
+    public void testGetKeywordNotFound() throws Exception {
+        writableThesaurus.getKeyword("http://test.com/keywords#testKeyword");
+    }
+
+    @Test
+    public void testHasKeyword() throws Exception {
+        addKeywordToWritableThesaurus(TEST_KEYWORD);
+
+        boolean result = writableThesaurus.hasKeyword(TEST_KEYWORD);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void testDoesntHavekeyword() throws Exception {
+        boolean result = writableThesaurus.hasKeyword("http://test.com/keywords#testKeyword");
+
+        assertFalse(result);
+    }
+
+    private void addKeywordToWritableThesaurus(String uri)
+            throws IOException, AccessDeniedException, GraphException {
+        KeywordBean keyword = new KeywordBean(isoLangMapper);
+        keyword.setUriCode(uri);
+        writableThesaurus.addElement(keyword);
+    }
 }

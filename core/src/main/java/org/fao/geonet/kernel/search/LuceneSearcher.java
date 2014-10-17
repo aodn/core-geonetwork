@@ -26,10 +26,12 @@ package org.fao.geonet.kernel.search;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
+
 import jeeves.constants.Jeeves;
 import jeeves.server.ServiceConfig;
 import jeeves.server.UserSession;
 import jeeves.server.context.ServiceContext;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.TokenStream;
@@ -59,9 +61,10 @@ import org.fao.geonet.kernel.AccessManager;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.region.Region;
 import org.fao.geonet.kernel.region.RegionsDAO;
-import org.fao.geonet.kernel.search.LuceneConfig.FacetConfig;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
 import org.fao.geonet.kernel.search.SearchManager.TermFrequency;
+import org.fao.geonet.kernel.search.facet.ItemBuilder;
+import org.fao.geonet.kernel.search.facet.ItemConfig;
 import org.fao.geonet.kernel.search.index.GeonetworkMultiReader;
 import org.fao.geonet.kernel.search.log.SearcherLogger;
 import org.fao.geonet.kernel.search.lucenequeries.DateRangeQuery;
@@ -76,11 +79,11 @@ import org.jdom.JDOMException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.text.CharacterIterator;
-import java.text.DecimalFormat;
 import java.text.StringCharacterIterator;
 import java.util.*;
 
@@ -109,7 +112,7 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
 	 */
 	private String _geomWKT = null;
     private long _versionToken = -1;
-    private Map<String, FacetConfig> _summaryConfig;
+    private Map<String, ItemConfig> _summaryConfig;
     private boolean _logSearch = true;
 
     /**
@@ -579,13 +582,13 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
             child.detach();
         }
 
-        _summaryConfig = _luceneConfig.getTaxonomy().get(resultType);
+        _summaryConfig = _luceneConfig.getSummaryTypes().get(resultType);
 
         final Element summaryItemsEl = request.getChild(Geonet.SearchResult.SUMMARY_ITEMS);
         if (summaryItemsEl != null) {
             summaryItemsEl.detach();
 
-            Map<String, FacetConfig> tmpConfig = new HashMap<String, FacetConfig>();
+            Map<String, ItemConfig> tmpConfig = new HashMap<String, ItemConfig>();
             String[] items = summaryItemsEl.getValue().split(",");
 
             for (String item : items) {
@@ -593,9 +596,9 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
                     tmpConfig = _summaryConfig;
                     break;
                 }
-                final FacetConfig facetConfig = _summaryConfig.get(item.trim());
-                if (facetConfig != null) {
-                    tmpConfig.put(item.trim(), facetConfig);
+                final ItemConfig itemConfig = _summaryConfig.get(item.trim());
+                if (itemConfig != null) {
+                    tmpConfig.put(item.trim(), itemConfig);
                 } else {
                     throw new BadParameterEx(Geonet.SearchResult.SUMMARY_ITEMS, item + " Legal values are: " + _summaryConfig.keySet());
                 }
@@ -721,7 +724,7 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
                 LuceneQueryInput luceneQueryInput = new LuceneQueryInput(request);
                 luceneQueryInput.setRequestedLanguageOnly(requestedLanguageOnly);
 
-                _query = new LuceneQueryBuilder(_tokenizedFieldSet, _luceneConfig.getNumericFields(), SearchManager.getAnalyzer(_language.analyzerLanguage, true), _language.presentationLanguage).build(luceneQueryInput);
+                _query = new LuceneQueryBuilder(_tokenizedFieldSet, _luceneConfig.getNumericFields(), _luceneConfig.getTaxonomyConfiguration(), SearchManager.getAnalyzer(_language.analyzerLanguage, true), _language.presentationLanguage).build(luceneQueryInput);
                 if(Log.isDebugEnabled(Geonet.SEARCH_ENGINE))
                     Log.debug(Geonet.SEARCH_ENGINE,"Lucene query: " + _query);
 
@@ -1206,7 +1209,7 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
 	 * @throws Exception hmm
 	 */
 	public static Pair<TopDocs, Element> doSearchAndMakeSummary(int numHits, int startHit, int endHit, String langCode, 
-			Map<String, FacetConfig> summaryConfig, FacetsConfig facetConfiguration, IndexReader reader,
+			Map<String, ItemConfig> summaryConfig, FacetsConfig facetConfiguration, IndexReader reader,
 			Query query, Filter cFilter, Sort sort, TaxonomyReader taxonomyReader, boolean buildSummary, boolean trackDocScores,
 			boolean trackMaxScore, boolean docsScoredInOrder) throws Exception {
         if (Log.isDebugEnabled(Geonet.SEARCH_ENGINE)) {
@@ -1264,139 +1267,18 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
 	 * @throws IOException
 	 */
     private static void buildFacetSummary(Element elSummary,
-            Map<String, FacetConfig> summaryConfigValues,
+            Map<String, ItemConfig> summaryConfigValues,
             FacetsConfig facetConfiguration,
             FacetsCollector facetCollector, TaxonomyReader taxonomyReader,
             String langCode) throws IOException {
-        DecimalFormat doubleFormat = new DecimalFormat("0");
-
         try {
-            for (Map.Entry<String, FacetConfig> fEntry : summaryConfigValues.entrySet()) {
-                FacetConfig facetConfig = fEntry.getValue();
-                String facetFieldName = facetConfig.getIndexKey() +
-                        SearchManager.FACET_FIELD_SUFFIX;
-                OrdinalsReader ordsReader = new DocValuesOrdinalsReader(facetFieldName);
+            for (ItemConfig itemConfig : summaryConfigValues.values()) {
+                OrdinalsReader ordsReader = new DocValuesOrdinalsReader(itemConfig.getDimension().getName());
                 Facets facets = new TaxonomyFacetCounts(ordsReader, taxonomyReader, facetConfiguration, facetCollector);
-
-                FacetResult facetResults = facets.getTopChildren(facetConfig.getMax(), facetFieldName); // facetConfig.getIndexKey()
-                if (facetResults != null) {
-                    // Create the XML element for the response
-                    String facetName = facetConfig.getPlural();
-                    Element facetsSummaryElement = new Element(facetName);
-
-                    // Get the optional translator for the facet
-                    final Translator translator;
-                    if (ServiceContext.get() != null) {
-                        try {
-                            ServiceContext context = ServiceContext.get();
-                            translator = facetConfig.getTranslator(context, langCode);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    } else {
-                        translator = Translator.NULL_TRANSLATOR;
-                    }
-
-
-                    // Collecting all values and sort them
-                    Map<String, Number> facetValues = new LinkedHashMap<String, Number>();
-                    if (Log.isDebugEnabled(Geonet.FACET_ENGINE)) {
-                        Log.debug(Geonet.FACET_ENGINE, facetName
-                                + ":\tSorting facet by " + facetConfig.getSortBy().toString()
-                                + " (" + facetConfig.getSortOrder().toString() + ")");
-                    }
-
-                    for (LabelAndValue result : facetResults.labelValues) {
-                        facetValues.put(result.label, result.value);
-                    }
-
-                    List<Map.Entry<String, Number>> entries =
-                            new ArrayList<Map.Entry<String, Number>>(facetValues.entrySet());
-                    //No need for a custom comparator Lucene facet request is
-                    // made by count descending order
-                    if (LuceneConfig.Facet.SortBy.COUNT != facetConfig.getSortBy()) {
-                        Comparator<Map.Entry<String, Number>> comparator;
-                        if (LuceneConfig.Facet.SortBy.LABEL == facetConfig.getSortBy()) {
-                            comparator = new Comparator<Map.Entry<String, Number>>() {
-
-                                @Override
-                                public int compare(Map.Entry<String, Number> o1, Map.Entry<String, Number> o2) {
-                                    String label1 = null;
-                                    String label2 = null;
-                                    if (translator != null) {
-                                        label1 = translator.translate(o1.getKey());
-                                        label2 = translator.translate(o2.getKey());
-                                    }
-                                    if (label1 == null) {
-                                        label1 = o1.getKey();
-                                    }
-                                    if (label2 == null) {
-                                        label2 = o2.getKey();
-                                    }
-                                    return label1.compareTo(label2);
-                                }
-                            };
-                        } else if (LuceneConfig.Facet.SortBy.NUMVALUE == facetConfig.getSortBy()) {
-                            // Create a numeric comparator
-                            comparator = new Comparator<Map.Entry<String, Number>>() {
-                                public int compare(final Map.Entry<String, Number> e1, final Map.Entry<String, Number> e2) {
-                                    try {
-                                        Double d1 = Double.valueOf(e1.getKey());
-                                        Double d2 = Double.valueOf(e2.getKey());
-
-                                        return d1.compareTo(d2);
-                                    } catch (NumberFormatException e) {
-                                        // String comparison
-                                        Log.warning(Geonet.FACET_ENGINE,
-                                                "Failed to compare numeric values (" + e1.getKey() + " / " + e2.getKey()
-                                                        + ") for facet. Check sortBy option in summary configuration.");
-                                        return e1.getKey().compareTo(e2.getKey());
-                                    }
-                                }
-                            };
-                        } else {
-                            comparator = new Comparator<Map.Entry<String, Number>>() {
-                                public int compare(final Map.Entry<String, Number> e1, final Map.Entry<String, Number> e2) {
-                                    return e1.getKey().compareTo(e2.getKey());
-                                }
-                            };
-                        }
-                        Collections.sort(entries, comparator);
-
-
-                        if (LuceneConfig.Facet.SortOrder.DESCENDING == facetConfig.getSortOrder()) {
-                            Collections.reverse(entries);
-                        }
-                    }
-
-                    for (Map.Entry<String, Number> entry : entries) {
-                        String facetValue = entry.getKey();
-                        String facetCount = doubleFormat.format(entry
-                                .getValue());
-
-                        if (Log.isDebugEnabled(Geonet.FACET_ENGINE)) {
-                            Log.debug(Geonet.FACET_ENGINE, " - " + facetValue
-                                    + " (" + facetCount + ")");
-                        }
-
-                        String translatedValue = translator.translate(facetValue);
-
-                        Element facetElement = new Element(facetConfig.getName());
-                        facetElement.setAttribute("count", facetCount);
-                        facetElement.setAttribute("name", facetValue);
-                        if (translatedValue != null) {
-                            facetElement.setAttribute("label", translatedValue);
-                        }
-                        facetsSummaryElement.addContent(facetElement);
-                    }
-                    elSummary.addContent(facetsSummaryElement);
-                } else {
-                    Log.warning(
-                            Geonet.FACET_ENGINE,
-                            "Null facet results for field " + facetConfig.getIndexKey());
-                }
+                ItemBuilder builder = new ItemBuilder(itemConfig, langCode, facets);
+                Element facetSummary = builder.build();
+                elSummary.addContent(facetSummary);
             }
-
         } catch (ArrayIndexOutOfBoundsException e) {
             Log.error(
                     Geonet.FACET_ENGINE,

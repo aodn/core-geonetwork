@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <summary>
     <dimensions>
+        <!-- Single level dimensions -->
         <dimension name= "keyword" indexKey="keyword" label="keywords"/>
         <dimension name="inspireTheme" indexKey="inspiretheme" label="inspireThemes"/>
         <dimension name="denominator" indexKey="denominator" label="denominators"/>
@@ -12,9 +13,14 @@
         <dimension name="type" indexKey="type" label="types"/>
         <dimension name="createDateYear" indexKey="createDateYear" label="createDateYears"/>
         <dimension name="title" indexKey="title" label="titles"/>
-        <dimension name="keywordToken" indexKey="keyword" label="Keyword Tokens"
+        <!-- Multi level dimensions - not currently supported by GeoNetwork UI -->
+        <dimension name="Keyword" indexKey="keyword" label="Keywords"
             classifier="org.fao.geonet.kernel.search.classifier.Split">
-            <param name="regex" type="java.lang.String" value="-| *\| *"/>
+            <param name="regex" type="java.lang.String" value="-"/>
+        </dimension>
+        <dimension name="organisation" indexKey="orgName" label="Organisations" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
+            <param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
+            <param name="conceptScheme" type="java.lang.String" value="http://geonetwork-opensource.org/regions"/>
         </dimension>
     </dimensions>
     <def>
@@ -29,6 +35,15 @@
             <item dimension="type" translator="codelist:gmd:MD_ScopeCode"/>
             <item dimension="createDateYear" sortBy="value" sortOrder="desc" max="40"/>
         </hits>
+        <keyword>
+            <item dimension="Keyword" max="100" format="DIMENSION" depth="2"/>
+        </keyword>
+        <default_attributes>
+            <item dimension="Keyword"/>
+        </default_attributes>
+        <all_attributes>
+            <item dimension="Keyword" depth="3" sortBy="numValue" sortOrder="asc" max="17" format="DIMENSION" translator="codelist:gmd:MD_ScopeCode"/>
+        </all_attributes>
         <titles>
             <item dimension="title" sortBy="freq" sortOrder="desc" max="100"/>
         </titles>
@@ -46,14 +61,8 @@
             <item dimension="type" translator="codelist:gmd:MD_ScopeCode"/>
             <item dimension="createDateYear" sortOrder="asc" max="40"/>
         </results_with_summary>
-        <keyword_token>
-            <item dimension="keywordToken" max="100" format="DIMENSION"/>
-        </keyword_token>
-        <default_attributes>
-            <item dimension="keywordToken"/>
-        </default_attributes>
-        <all_attributes>
-            <item dimension="keywordToken" depth="3" sortBy="numValue" sortOrder="asc" max="17" format="DIMENSION" translator="codelist:gmd:MD_ScopeCode"/>
-        </all_attributes>
+        <hierarchical_summary>
+            <item dimension="Keyword" max="100" format="DIMENSION" depth="2"/>
+        </hierarchical_summary>
     </def>
 </summary>

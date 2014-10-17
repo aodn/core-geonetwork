@@ -1,0 +1,19 @@
+<summary count="6" type="local">
+  <dimension name="keywordToken" label="Keyword Tokens">
+    <category value="Oceans" label="Oceans" count="6">
+      <category value="Ocean Chemistry" label="Ocean Chemistry" count="3">
+        <category value="Oxygen" label="Oxygen" count="2" />
+        <category value="Nitrate" label="Nitrate" count="1" />
+      </category>
+      <category value="Ocean Temperature" label="Ocean Temperature" count="1">
+        <category value="Water Temperature" label="Water Temperature" count="1" />
+      </category>
+      <category value="Salinity/density" label="Salinity/density" count="1">
+        <category value="Salinity" label="Salinity" count="1" />
+      </category>
+      <category value="Ocean Pressure" label="Ocean Pressure" count="1">
+        <category value="Water Pressure" label="Water Pressure" count="1" />
+      </category>
+    </category>
+  </dimension>
+</summary>
