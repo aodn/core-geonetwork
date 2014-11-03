@@ -130,7 +130,7 @@ public class ItemBuilder {
 
         // No need for a custom comparator Lucene facet request is
         // made by count descending order
-        if (Facet.SortBy.COUNT != config.getSortBy()) {
+        if (SortBy.COUNT != config.getSortBy()) {
             Collections.sort(categories, getComparator());
         }
 
@@ -140,15 +140,15 @@ public class ItemBuilder {
     private Comparator<CategorySummary> getComparator() {
         Comparator<CategorySummary> comparator;
 
-        if (Facet.SortBy.LABEL == config.getSortBy()) {
+        if (SortBy.LABEL == config.getSortBy()) {
             comparator = labelComparator();
-        } else if (Facet.SortBy.NUMVALUE == config.getSortBy()) { 
+        } else if (SortBy.NUMVALUE == config.getSortBy()) { 
             comparator = numericComparator();
         } else {
             comparator = valueComparator();
         }
         
-        if (Facet.SortOrder.DESCENDING == config.getSortOrder()) {
+        if (SortOrder.DESCENDING == config.getSortOrder()) {
             comparator = descendingComparator(comparator); 
         }
 

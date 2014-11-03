@@ -46,7 +46,6 @@ import org.opengis.filter.Filter;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.persistence.EntityManager;
@@ -58,10 +57,8 @@ import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.sql.Connection;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * A helper class for testing services.  This super-class loads in the spring beans for Spring-data repositories and mocks for
@@ -71,7 +68,10 @@ import static org.junit.Assert.assertNotNull;
  * Date: 10/12/13
  * Time: 8:31 PM
  */
-@ContextConfiguration(inheritLocations = true, locations = "classpath:core-repository-test-context.xml")
+@ContextConfiguration(
+    inheritLocations = true,
+    locations = {"classpath:core-repository-test-context.xml", "classpath:web-test-context.xml"}
+)
 public abstract class AbstractCoreIntegrationTest extends AbstractSpringDataTest {
     private static final String DATA_DIR_LOCK_NAME = "lock";
     @Autowired

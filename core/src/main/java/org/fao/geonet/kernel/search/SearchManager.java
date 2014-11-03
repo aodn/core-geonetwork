@@ -120,8 +120,6 @@ public class SearchManager {
 	private static final Configuration FILTER_1_0_0 = new org.geotools.filter.v1_0.OGCConfiguration();
     private static final Configuration FILTER_1_1_0 = new org.geotools.filter.v1_1.OGCConfiguration();
     private static final Configuration FILTER_2_0_0 = new org.geotools.filter.v2_0.FESConfiguration();
-    public static final String FACET_FIELD_SUFFIX = "_facet";
-
     private File _stylesheetsDir;
     private static File _stopwordsDir;
 	Map<String, ItemConfig> _summaryConfigValues = null;
@@ -1477,7 +1475,7 @@ public class SearchManager {
     private List<Field> getFacetFieldsFor(String indexKey, String value) {
         List<Field> result = new ArrayList<Field>();
 
-        for (Dimension dimension : _luceneConfig.getDimensions(indexKey)) {
+        for (Dimension dimension : _luceneConfig.getDimensionsUsing(indexKey)) {
             result.addAll(getFacetFieldsFor(dimension, value));
         }
 
@@ -1487,16 +1485,10 @@ public class SearchManager {
     private List<Field> getFacetFieldsFor(Dimension dimension, String value) {
         List<Field> result = new ArrayList<Field>();
 
-        try {
-            Classifier classifier = _luceneConfig.getClassifier(dimension);
+        Classifier classifier = dimension.getClassifier();
 
-            for (CategoryPath categoryPath: classifier.classify(value)) {
-                result.add(new FacetField(dimension.getName(), categoryPath.components));
-            }
-        } catch (Exception e) {
-            Log.warning(Geonet.SEARCH_ENGINE,
-                    "  Error loading classifier for dimension: " + dimension.getName());
-            e.printStackTrace();
+        for (CategoryPath categoryPath: classifier.classify(value)) {
+            result.add(new FacetField(dimension.getName(), categoryPath.components));
         }
 
         return result;

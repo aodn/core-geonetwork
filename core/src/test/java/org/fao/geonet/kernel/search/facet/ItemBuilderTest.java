@@ -6,11 +6,12 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
 
 import org.apache.lucene.facet.FacetResult;
 import org.apache.lucene.facet.Facets;
 import org.apache.lucene.facet.LabelAndValue;
+import org.fao.geonet.kernel.search.Translator;
+import org.fao.geonet.kernel.search.classifier.Split;
 import org.fao.geonet.utils.Xml;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -19,12 +20,11 @@ import org.junit.Test;
 public class ItemBuilderTest {
 
     private static final String DIMENSION_NAME = "keywordToken";
-    private static final String SUMMARY_TYPE = "keyword_token";
     private static final int MAX_RESULTS = 100;
 
     @Test
     public void testItemBuild() throws JDOMException, IOException {
-        ItemConfig itemConfig = loadTestItemConfig();
+        ItemConfig itemConfig = buildKeywordTokenItemConfig();
         Facets facets = buildFacets();
 
         ItemBuilder builder = new ItemBuilder(itemConfig, "eng", facets);
@@ -33,16 +33,15 @@ public class ItemBuilderTest {
         assertEquals(loadExpectedResult("itemBuild.xml"), Xml.getString(summary));
     }
 
-    private ItemConfig loadTestItemConfig() throws JDOMException, IOException {
-        URL url = this.getClass().getResource("/WEB-INF/config-summary.xml");
-        Element facetConfig = Xml.loadFile(url);
-        Element item = Xml.selectElement(facetConfig, "def/" + SUMMARY_TYPE + "/item");
-
-        Element dimension = Xml.selectElement(facetConfig, "dimensions/dimension[@name='" + DIMENSION_NAME + "']");
-        HashMap<String, Dimension> dimensions = new HashMap<String, Dimension>();
-        dimensions.put(DIMENSION_NAME, new Dimension(dimension));
-
-        return new ItemConfig(item, dimensions);
+    private ItemConfig buildKeywordTokenItemConfig() {
+        Dimension dimension = new Dimension(DIMENSION_NAME, "keyword", "Keyword Tokens");
+        dimension.setClassifier(new Split("-| *\\| *"));
+        TranslatorFactory mockFactory = mock(TranslatorFactory.class);
+        when(mockFactory.createTranslator(null, "eng")).thenReturn(Translator.NULL_TRANSLATOR);
+        ItemConfig itemConfig = new ItemConfig(dimension, mockFactory);
+        itemConfig.setMax(100);
+        itemConfig.setFormat(Format.DIMENSION);
+        return itemConfig;
     }
 
     private Facets buildFacets() throws IOException {

@@ -1,5 +1,4 @@
-//=============================================================================
-//===    Copyright (C) 2010 Food and Agriculture Organization of the
+//===    Copyright (C) 2001-2007 Food and Agriculture Organization of the
 //===    United Nations (FAO-UN), United Nations World Food Programme (WFP)
 //===    and United Nations Environment Programme (UNEP)
 //===
@@ -23,60 +22,37 @@
 
 package org.fao.geonet.kernel.search.facet;
 
-import org.fao.geonet.kernel.search.classifier.Classifier;
-import org.fao.geonet.kernel.search.classifier.Value;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-public class Dimension {
-
-    public static final String FACET_FIELD_SUFFIX = "_facet";
+public class SummaryType {
 
     private String name;
 
-    private String indexKey;
+    private List<ItemConfig> items;
 
-    private String label;
-
-    private Classifier classifier;
-
-    public Dimension(String name, String indexKey, String label) {
+    public SummaryType(String name, List<ItemConfig> items) {
         this.name = name;
-        this.indexKey = indexKey;
-        this.label = label;
-        this.classifier = new Value();
+        this.items = items;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getIndexKey() {
-        return indexKey;
+    public List<ItemConfig> getItems() {
+        return items;
     }
 
-    public String getLabel() {
-        return label;
-    }
+    public Map<String, ItemConfig> getItemMap() {
+        // Use linked hash map so that results in output are same as ordered in summary file
+        Map<String, ItemConfig> result = new LinkedHashMap<String, ItemConfig>();
 
-    public Classifier getClassifier() {
-        return classifier;
-    }
+        for (ItemConfig item: items) {
+            result.put(item.getDimension().getName(), item);
+        }
 
-    public void setClassifier(Classifier classifier) {
-        this.classifier = classifier;
+        return result;
     }
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer("dimension: ");
-        sb.append(name);
-        sb.append("\tindexKey: ");
-        sb.append(indexKey);
-        sb.append("\tclassifier: ");
-        sb.append(classifier.getClass().getName());
-        return sb.toString();
-    }
-
-    public String getFacetFieldName() {
-        return name + FACET_FIELD_SUFFIX;
-    }
-
 }

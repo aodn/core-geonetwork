@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,18 +19,24 @@ import org.apache.lucene.facet.FacetsConfig;
 import org.apache.lucene.search.Query;
 import org.fao.geonet.kernel.GeonetworkDataDirectory;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
+import org.fao.geonet.kernel.search.facet.Facets;
+import org.fao.geonet.kernel.search.facet.Dimension;
+import org.fao.geonet.kernel.search.facet.SummaryType;
+import org.fao.geonet.kernel.search.facet.SummaryTypes;
 import org.jdom.DefaultJDOMFactory;
 import org.jdom.Element;
 import org.jdom.JDOMFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Unit test for building Lucene queries.
  *
  * @author heikki doeleman
  */
+@ContextConfiguration(locations = "classpath:web-test-context.xml")
 public class LuceneQueryTest {
 
     private Set<String> _tokenizedFieldSet;
@@ -50,7 +58,9 @@ public class LuceneQueryTest {
         final String appDir = new File(LuceneQueryTest.class.getResource(configFile).getFile()).getParentFile().getParent()+"/";
         final GeonetworkDataDirectory dataDirectory = new GeonetworkDataDirectory();
         dataDirectory.init("test", appDir, new ServiceConfig(), null);
-        LuceneConfig lc = new LuceneConfig();
+        Facets facets = new Facets(new ArrayList<Dimension>());
+        SummaryTypes summaryTypes = new SummaryTypes(new ArrayList<SummaryType>());
+        LuceneConfig lc = new LuceneConfig(facets, summaryTypes);
         lc._geonetworkDataDirectory = dataDirectory;
         final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext();
         lc._appContext = context;
@@ -2327,7 +2337,7 @@ public class LuceneQueryTest {
         Element request = buildSingleDrilldownQuery("keyword/ocean/salinity");
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _taxonomyConfiguration, _analyzer, null).build(lQI);
-        assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore(keyword:keywordoceansalinity)^0.0", query.toString());
+        assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore($facets:keywordoceansalinity)^0.0", query.toString());
     }
 
     /**
@@ -2338,7 +2348,7 @@ public class LuceneQueryTest {
         Element request = buildSingleDrilldownQuery("keyword/oceans%2Frivers/salinity");
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _taxonomyConfiguration, _analyzer, null).build(lQI);
-        assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore(keyword:keywordoceans/riverssalinity)^0.0", query.toString());
+        assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore($facets:keywordoceans/riverssalinity)^0.0", query.toString());
     }
 
     /**
@@ -2354,7 +2364,7 @@ public class LuceneQueryTest {
         );
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _taxonomyConfiguration, _analyzer, null).build(lQI);
-        assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore(keyword:keywordoceansalinity keyword:keywordoceanchemistry keyword:keywordoceantemperature)^0.0", query.toString());
+        assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore($facets:keywordoceansalinity $facets:keywordoceanchemistry $facets:keywordoceantemperature)^0.0", query.toString());
     }
 
     /**
@@ -2370,7 +2380,7 @@ public class LuceneQueryTest {
         );
         LuceneQueryInput lQI = new LuceneQueryInput(request);
         Query query = new LuceneQueryBuilder(_tokenizedFieldSet, _numericFieldSet, _taxonomyConfiguration, _analyzer, null).build(lQI);
-        assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore(keyword:keywordoceanchemistry keyword:keywordoceansalinity keyword:keywordoceantemperature)^0.0", query.toString());
+        assertEquals("unexpected Lucene query", "+(+_isTemplate:n) +ConstantScore($facets:keywordoceanchemistry $facets:keywordoceansalinity $facets:keywordoceantemperature)^0.0", query.toString());
     }
 
     private Element buildSingleDrilldownQuery(String drilldownPath) {

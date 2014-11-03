@@ -20,54 +20,36 @@
 //===    Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.search.facet;
+package org.fao.geonet.spring.xml;
 
-public class Facet {
-    /**
-     * Default number of values for a facet
-     */
-    public static final int DEFAULT_MAX_KEYS = 10;
-    /**
-     * Max number of values for a facet
-     */
-    public static final int MAX_SUMMARY_KEY = 1000;
-    /**
-     * Define the sorting order of a facet.
-     */
-    public enum SortBy {
-        /**
-         * Use a text comparator for sorting values
-         */
-        VALUE, 
-        /**
-         * Use a numeric comparator for sorting values
-         */
-        NUMVALUE, 
-        /**
-         * Sort by count
-         */
-        COUNT,
-        /**
-         * Sort by translated label
-         */
-        LABEL;
+import org.fao.geonet.kernel.search.facet.Dimension;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
+import org.w3c.dom.Element;
 
-        public static SortBy find(String lookupName, SortBy defaultValue) {
-            for (SortBy sortBy : values()) {
-                if(sortBy.name().equalsIgnoreCase(lookupName)) {
-                    return sortBy;
-                }
-            }
-            return defaultValue;
+public class FacetBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
+
+    @Override
+    protected Class<Dimension> getBeanClass(Element element) {
+        return Dimension.class;
+    }
+
+    @Override
+    protected void doParse(Element element, BeanDefinitionBuilder bean) {
+        bean.addConstructorArgValue(element.getAttribute("name"));
+        bean.addConstructorArgValue(element.getAttribute("indexKey"));
+        bean.addConstructorArgValue(element.getAttribute("label"));
+
+        String classifier = element.getAttribute("classifier");
+
+        if (!classifier.isEmpty()) {
+            bean.addPropertyReference("classifier", element.getAttribute("classifier"));
         }
     }
 
-    public enum SortOrder {
-        ASCENDING, DESCENDING
+    @Override
+    protected boolean shouldGenerateIdAsFallback() {
+        return true;
     }
 
-    /**
-     * Default depth of sub categories to count
-     */
-    public static final int DEFAULT_DEPTH = 1;
 }

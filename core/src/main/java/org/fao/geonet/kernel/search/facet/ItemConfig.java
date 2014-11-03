@@ -22,72 +22,37 @@
 
 package org.fao.geonet.kernel.search.facet;
 
-import java.util.Map;
-
-import jeeves.server.context.ServiceContext;
-
 import org.fao.geonet.kernel.search.Translator;
-import org.jdom.Element;
 
 public class ItemConfig {
+    /**
+     * Default number of values for a facet
+     */
+    public static final int DEFAULT_MAX_KEYS = 10;
+
+    /**
+     * Default depth of sub categories to count
+     */
+    public static final int DEFAULT_DEPTH = 1;
+
     private final Dimension dimension;
-    private final Facet.SortBy sortBy;
-    private final Facet.SortOrder sortOrder;
+    private SortBy sortBy;
+    private SortOrder sortOrder;
     private int max;
-    private final int depth;
-    private final Format format;
-    private final String translator;
+    private int depth;
+    private Format format;
+    private String translator;
+    private TranslatorFactory translatorFactory;
 
-    public ItemConfig(Element item, Map<String, Dimension> dimensions) {
-        String dimensionName = item.getAttributeValue("dimension");
-
-        if (dimensionName == null) {
-            throw new RuntimeException("Check facet configuration. Dimension attribute for item not found");
-        }
-
-        dimension = dimensions.get(dimensionName);
-
-        if (dimension == null) {
-            throw new RuntimeException("Check facet configuration. Dimension " + dimensionName + " not found");
-        }
-
-        translator = item.getAttributeValue("translator");
-
-        String maxString = item.getAttributeValue("max");
-        if (maxString == null) {
-            max = Facet.DEFAULT_MAX_KEYS;
-        } else {
-            max = Integer.parseInt(maxString);
-        }
-
-        max = Math.min(Facet.MAX_SUMMARY_KEY, max);
-
-        String sortByConfig = item.getAttributeValue("sortBy");
-        String sortOrderConfig = item.getAttributeValue("sortOrder");
-
-        sortBy = Facet.SortBy.find(sortByConfig, Facet.SortBy.COUNT);
-
-        if("asc".equals(sortOrderConfig)){
-            sortOrder = Facet.SortOrder.ASCENDING;
-        } else {
-            sortOrder = Facet.SortOrder.DESCENDING;
-        }
-
-        String depthString = item.getAttributeValue("depth");
-
-        if (depthString == null) {
-            depth = Facet.DEFAULT_DEPTH;
-        } else {
-            depth = Integer.parseInt(depthString);
-        }
-
-        String formatString = item.getAttributeValue("format");
-
-        if (formatString == null) {
-            format = Format.FACET_NAME;
-        } else {
-            format = Format.valueOf(formatString);
-        }
+    public ItemConfig(Dimension dimension, TranslatorFactory translatorFactory) {
+        this.dimension = dimension;
+        this.translatorFactory = translatorFactory;
+        // Defaults
+        max = DEFAULT_MAX_KEYS;
+        sortBy = SortBy.COUNT;
+        sortOrder = SortOrder.DESCENDING;
+        depth = DEFAULT_DEPTH;
+        format = Format.FACET_NAME;
     }
 
     /**
@@ -96,6 +61,74 @@ public class ItemConfig {
 
     public Dimension getDimension() {
         return dimension; 
+    }
+
+    public void setFormat(Format format) {
+        this.format = format;
+    }
+
+    public Format getFormat() {
+        return format;
+    }
+
+    public void setSortBy(SortBy sortBy) {
+        this.sortBy = sortBy;
+    }
+
+    /**
+     * @return the ordering for the facet. Defaults is by {@link Facet.SortBy#COUNT}.
+     */
+
+    public SortBy getSortBy() {
+        return sortBy;
+    }
+
+    /**
+     * @return asc or desc. Defaults is {@link Facet.SortOrder#DESCENDING}.
+     */
+    public SortOrder getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    /**
+     * @return the depth to go to returning facet values
+     */
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
+    }
+
+    /**
+     * @return (optional) the number of values to be returned for the facet.
+     * Defaults is {@link ItemConfig#DEFAULT_MAX_KEYS} and never greater than
+     * {@link ItemConfig#MAX_SUMMARY_KEY}.
+     */
+
+    public int getMax() {
+        return max;
+    }
+
+    /**
+     * @return a formatter for creating item summaries
+     */
+
+    public Formatter getFormatter() {
+        return format.getFormatter(this.dimension);
+    }
+
+    public Translator getTranslator(String langCode) {
+        return translatorFactory.createTranslator(translator, langCode);
     }
 
     /**
@@ -115,59 +148,6 @@ public class ItemConfig {
         sb.append("\tformat:");
         sb.append(format);
         return sb.toString();
-    }
-
-    /**
-     * @return the ordering for the facet. Defaults is by {@link Facet.SortBy#COUNT}.
-     */
-
-    public Facet.SortBy getSortBy() {
-        return sortBy;
-    }
-
-    /**
-     * @return asc or desc. Defaults is {@link Facet.SortOrder#DESCENDING}.
-     */
-    public Facet.SortOrder getSortOrder() {
-        return sortOrder;
-    }
-
-    /**
-     * @return the depth to go to returning facet values
-     */
-    public int getDepth() {
-        return depth;
-    }
-
-    /**
-     * @return (optional) the number of values to be returned for the facet.
-     * Defaults is {@link Facet#DEFAULT_MAX_KEYS} and never greater than
-     * {@link Facet#MAX_SUMMARY_KEY}.
-     */
-
-    public int getMax() {
-        return max;
-    }
-
-    /**
-     * @return a formatter for creating item summaries
-     */
-
-    public Formatter getFormatter() {
-        return format.getFormatter(this.dimension);
-    }
-
-    public Translator getTranslator(String langCode) {
-        //TODO: refactor this so dependency injection is used to get context
-        ServiceContext context = ServiceContext.get();
-        if (context == null)
-            return Translator.NULL_TRANSLATOR;
-
-        try {
-            return Translator.createTranslator(translator, context, langCode);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

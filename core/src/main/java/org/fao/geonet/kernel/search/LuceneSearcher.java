@@ -1273,7 +1273,7 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
             String langCode) throws IOException {
         try {
             for (ItemConfig itemConfig : summaryConfigValues.values()) {
-                OrdinalsReader ordsReader = new DocValuesOrdinalsReader(itemConfig.getDimension().getName());
+                OrdinalsReader ordsReader = new DocValuesOrdinalsReader(itemConfig.getDimension().getFacetFieldName());
                 Facets facets = new TaxonomyFacetCounts(ordsReader, taxonomyReader, facetConfiguration, facetCollector);
                 ItemBuilder builder = new ItemBuilder(itemConfig, langCode, facets);
                 Element facetSummary = builder.build();
