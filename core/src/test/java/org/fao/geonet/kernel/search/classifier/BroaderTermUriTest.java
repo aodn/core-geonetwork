@@ -34,31 +34,31 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.sesame.config.ConfigurationException;
 
-public class BroaderTermTest extends AbstractBroaderTermTest {
+public class BroaderTermUriTest extends AbstractBroaderTermTest{
 
-    private Classifier broaderTermClassifier;
-    
+    private Classifier broaderTermUriClassifier;
+
     @Before 
     public void setup() throws IOException, ConfigurationException {
         ThesaurusManager manager = mockThesaurusManagerWith("BroaderTerm.rdf");
-        broaderTermClassifier = new BroaderTerm(manager, "scheme", "eng");
+        broaderTermUriClassifier = new BroaderTermUri(manager, "scheme");
     }
 
     @Test
     public void testWithTermWithBroaderTermWithBroaderTerm() {
-        List<CategoryPath> testTermHierarchy = broaderTermClassifier.classify("http://www.my.com/#sea_surface_temperature");
-        assertCategoryListEquals(testTermHierarchy, "ocean>ocean temperature>sea surface temperature");
+        List<CategoryPath> testTermHierarchy = broaderTermUriClassifier.classify("http://www.my.com/#sea_surface_temperature");
+        assertCategoryListEquals(testTermHierarchy, "http://www.my.com/#ocean>http://www.my.com/#ocean_temperature>http://www.my.com/#sea_surface_temperature");
     }
 
     @Test
     public void testWithTermWithTwoBroaderTerms() {
-        List<CategoryPath> testTermHierarchy = broaderTermClassifier.classify("http://www.my.com/#air_sea_flux");
-        assertCategoryListEquals(testTermHierarchy, "physical - air>air sea flux", "physical - water>air sea flux");
+        List<CategoryPath> testTermHierarchy = broaderTermUriClassifier.classify("http://www.my.com/#air_sea_flux");
+        assertCategoryListEquals(testTermHierarchy, "http://www.my.com/#physical_air>http://www.my.com/#air_sea_flux", "http://www.my.com/#physical_water>http://www.my.com/#air_sea_flux");
     }
 
     @Test
     public void testWithUnknownTerm() {
-        List<CategoryPath> testTermHierarchy = broaderTermClassifier.classify("http://www.my.com/#unkown-term");
+        List<CategoryPath> testTermHierarchy = broaderTermUriClassifier.classify("http://www.my.com/#unkown-term");
         assertEquals(0, testTermHierarchy.size());
     }
 

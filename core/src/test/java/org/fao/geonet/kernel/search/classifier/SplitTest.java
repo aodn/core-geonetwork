@@ -12,7 +12,7 @@ public class SplitTest {
 
         List<CategoryPath> result = splitClassifier.classify("ant-bat-car");
 
-        assertCategoryListEquals(result, "ant/bar/car");
+        assertCategoryListEquals(result, "ant>bar>car");
     }
 
 }

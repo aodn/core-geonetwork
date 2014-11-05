@@ -26,17 +26,14 @@ package org.fao.geonet.kernel.search.classifier;
 import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.ThesaurusManager;
 
-public class BroaderTerm extends AbstractBroaderTerm {
+public class BroaderTermUri extends AbstractBroaderTerm {
 
-    private final String langCode;
-
-    public BroaderTerm(ThesaurusManager thesaurusManager, String conceptScheme, String langCode) {
-        super(thesaurusManager, conceptScheme, langCode);
-        this.langCode = langCode;
+    public BroaderTermUri(ThesaurusManager thesaurusManager, String conceptScheme) {
+        super(thesaurusManager, conceptScheme);
     }
 
     protected String getCategory(KeywordBean term) {
-        return term.getPreferredLabel(langCode);
+        return term.getUriCode();
     }
 
 }

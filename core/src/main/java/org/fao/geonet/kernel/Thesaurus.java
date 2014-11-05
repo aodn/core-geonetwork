@@ -94,6 +94,8 @@ public class Thesaurus {
     
     private String keywordUrl;
 
+    private IsoLanguagesMapper isoLanguageMapper;
+
 /*    @SuppressWarnings("unused")
 	private String version;
 
@@ -112,7 +114,6 @@ public class Thesaurus {
 	@SuppressWarnings("unused")
 	private String authority;
 */
-	private ApplicationContext context;
 
 	/**
 	 * @param fname
@@ -120,12 +121,12 @@ public class Thesaurus {
 	 * @param type
 	 * @param dname category/domain name of thesaurus
 	 */
-	public Thesaurus(ApplicationContext context, String fname, String type, String dname, File thesaurusFile, String siteUrl) {
-	    this(context, fname, null, null, type, dname, thesaurusFile, siteUrl, false);
+	public Thesaurus(IsoLanguagesMapper isoLanguageMapper, String fname, String type, String dname, File thesaurusFile, String siteUrl) {
+	    this(isoLanguageMapper, fname, null, null, type, dname, thesaurusFile, siteUrl, false);
 	}
-    public Thesaurus(ApplicationContext context, String fname, String tname, String tnamespace, String type, String dname, File thesaurusFile, String siteUrl, boolean ignoreMissingError) {
+    public Thesaurus(IsoLanguagesMapper isoLanguageMapper, String fname, String tname, String tnamespace, String type, String dname, File thesaurusFile, String siteUrl, boolean ignoreMissingError) {
 		super();
-		this.context = context;
+		this.isoLanguageMapper = isoLanguageMapper;
 		this.fname = fname;
 		this.type = type;
 		this.dname = dname;
@@ -817,7 +818,7 @@ public class Thesaurus {
 		}
 
         public IsoLanguagesMapper getIsoLanguageMapper() {
-            return context.getBean(IsoLanguagesMapper.class);
+            return isoLanguageMapper;
         }
 
         /**
