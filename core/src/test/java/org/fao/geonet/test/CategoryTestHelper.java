@@ -21,11 +21,10 @@ public class CategoryTestHelper {
 
     public static void assertCategoryListEquals(List<CategoryPath> result, String... categories) {
         assertEquals(categories.length, result.size());
-    
+
         for (int i=0; i < categories.length; i++) {
-            assertEquals(categories[i], result.get(i).toString());
+            assertEquals(categories[i], result.get(i).toString('>'));
         }
     }
-    
 
 }
