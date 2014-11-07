@@ -9,9 +9,7 @@
     "
 >
 
-    <bean:bean id="SchemaManager" class="org.fao.geonet.kernel.SchemaManager"/>
-
-    <bean:bean id="translatorFactory" class="org.fao.geonet.kernel.search.facet.TranslatorFactory"/>
+    <bean:bean id="translatorFactory" class="org.fao.geonet.kernel.search.TranslatorFactory"/>
 
     <facets>
         <facet name="keyword" indexKey="keyword" label="keywords"/>

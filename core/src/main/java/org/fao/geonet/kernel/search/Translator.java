@@ -30,18 +30,8 @@ import java.io.Serializable;
  * 
  * @author jesse
  */
-public abstract class Translator implements Serializable {
+public interface Translator extends Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    public static final Translator IDENTITY_TRANSLATOR = new Translator() {
-        private static final long serialVersionUID = 1L;
-
-        public String translate(String key) {
-            return key;
-        }
-    };
-
-    public abstract String translate(String key);
+    public String translate(String key);
 
 }

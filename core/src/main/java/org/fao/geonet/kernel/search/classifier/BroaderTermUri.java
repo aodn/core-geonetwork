@@ -24,12 +24,12 @@
 package org.fao.geonet.kernel.search.classifier;
 
 import org.fao.geonet.kernel.KeywordBean;
-import org.fao.geonet.kernel.ThesaurusManager;
+import org.fao.geonet.kernel.ThesaurusFinder;
 
 public class BroaderTermUri extends AbstractBroaderTerm {
 
-    public BroaderTermUri(ThesaurusManager thesaurusManager, String conceptScheme) {
-        super(thesaurusManager, conceptScheme);
+    public BroaderTermUri(ThesaurusFinder finder, String conceptScheme) {
+        super(finder, conceptScheme);
     }
 
     protected String getCategory(KeywordBean term) {

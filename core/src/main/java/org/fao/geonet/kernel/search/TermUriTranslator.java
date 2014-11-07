@@ -1,5 +1,4 @@
-//=============================================================================
-//===    Copyright (C) 2010 Food and Agriculture Organization of the
+//===    Copyright (C) 2001-2007 Food and Agriculture Organization of the
 //===    United Nations (FAO-UN), United Nations World Food Programme (WFP)
 //===    and United Nations Environment Programme (UNEP)
 //===
@@ -21,22 +20,49 @@
 //===    Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.search.classifier;
+package org.fao.geonet.kernel.search;
 
+import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.exceptions.LabelNotFoundException;
+import org.fao.geonet.exceptions.TermNotFoundException;
 import org.fao.geonet.kernel.KeywordBean;
+import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusFinder;
+import org.fao.geonet.utils.Log;
 
-public class BroaderTerm extends AbstractBroaderTerm {
+public class TermUriTranslator implements Translator {
 
-    private final String langCode;
+    private static final long serialVersionUID = 1L;
 
-    public BroaderTerm(ThesaurusFinder finder, String conceptScheme, String langCode) {
-        super(finder, conceptScheme, langCode);
+    private Thesaurus thesaurus;
+
+    private String langCode;
+
+    public TermUriTranslator(ThesaurusFinder finder, String langCode, String conceptSchemeUri) {
+        this.thesaurus = finder.getThesaurusByConceptScheme(conceptSchemeUri);
         this.langCode = langCode;
     }
 
-    protected String getCategory(KeywordBean term) {
-        return term.getPreferredLabel(langCode);
+    @Override
+    public String translate(String key) {
+        KeywordBean keyword;
+
+        try {
+            keyword = thesaurus.getKeyword(key, langCode);
+        } catch (TermNotFoundException e) {
+            Log.error(Geonet.THESAURUS, "Term not found: " + key);
+            return key;
+        }
+
+        String label;
+        
+        try {
+            label = keyword.getPreferredLabel(langCode);
+        } catch (LabelNotFoundException e) {
+            return keyword.getUriCode();
+        }
+
+        return label;
     }
 
 }

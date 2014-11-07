@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import org.fao.geonet.kernel.search.Translator;
+import org.fao.geonet.kernel.search.TranslatorFactory;
 import org.fao.geonet.kernel.search.classifier.Split;
 import org.jdom.JDOMException;
 import org.junit.Before;
@@ -53,6 +53,5 @@ public class ItemConfigTest {
         assertEquals(SortBy.NUMVALUE, itemConfig.getSortBy());
         assertEquals(SortOrder.ASCENDING, itemConfig.getSortOrder());
         assertTrue(itemConfig.getFormatter() instanceof DimensionFormatter);
-        // Can't test non-default getTranslator as implemented using static methods
     }
 }

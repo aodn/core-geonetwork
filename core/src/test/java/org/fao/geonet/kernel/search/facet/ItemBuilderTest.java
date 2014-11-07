@@ -10,7 +10,7 @@ import java.net.URL;
 import org.apache.lucene.facet.FacetResult;
 import org.apache.lucene.facet.Facets;
 import org.apache.lucene.facet.LabelAndValue;
-import org.fao.geonet.kernel.search.Translator;
+import org.fao.geonet.kernel.search.TranslatorFactory;
 import org.fao.geonet.kernel.search.classifier.Split;
 import org.fao.geonet.utils.Xml;
 import org.jdom.Element;
