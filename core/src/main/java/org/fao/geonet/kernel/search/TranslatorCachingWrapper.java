@@ -1,5 +1,4 @@
-//=============================================================================
-//===    Copyright (C) 2010 Food and Agriculture Organization of the
+//===    Copyright (C) 2001-2007 Food and Agriculture Organization of the
 //===    United Nations (FAO-UN), United Nations World Food Programme (WFP)
 //===    and United Nations Environment Programme (UNEP)
 //===
@@ -21,22 +20,36 @@
 //===    Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.search.classifier;
+package org.fao.geonet.kernel.search;
 
-import org.fao.geonet.kernel.KeywordBean;
-import org.fao.geonet.kernel.ThesaurusFinder;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class BroaderTerm extends AbstractBroaderTerm {
+public class TranslatorCachingWrapper implements Translator {
 
-    private final String langCode;
+    private static final long serialVersionUID = 1L;
 
-    public BroaderTerm(ThesaurusFinder finder, String conceptScheme, String langCode) {
-        super(finder, conceptScheme, langCode);
-        this.langCode = langCode;
+    private static final int CONCURRENCY_LEVEL = 1;
+    private static final float LOAD_FACTOR = 0.9f;
+    private static final int INITIAL_CAPACITY = 16;
+
+    private Translator wrapperTranslator;
+
+    private ConcurrentHashMap<String, String> cache = new ConcurrentHashMap<String, String>(INITIAL_CAPACITY, LOAD_FACTOR, CONCURRENCY_LEVEL);
+
+    public TranslatorCachingWrapper(Translator wrappedTranslator) {
+        this.wrapperTranslator = wrappedTranslator;
     }
 
-    protected String getCategory(KeywordBean term) {
-        return term.getPreferredLabel(langCode);
+    @Override
+    public String translate(String key) {
+        String value = cache.get(key);
+
+        if (value == null) {
+            value = wrapperTranslator.translate(key);
+            cache.put(key, value);
+        }
+
+        return value;
     }
 
 }

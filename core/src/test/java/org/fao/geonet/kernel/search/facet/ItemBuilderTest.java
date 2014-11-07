@@ -10,7 +10,7 @@ import java.net.URL;
 import org.apache.lucene.facet.FacetResult;
 import org.apache.lucene.facet.Facets;
 import org.apache.lucene.facet.LabelAndValue;
-import org.fao.geonet.kernel.search.Translator;
+import org.fao.geonet.kernel.search.TranslatorFactory;
 import org.fao.geonet.kernel.search.classifier.Split;
 import org.fao.geonet.utils.Xml;
 import org.jdom.Element;
@@ -37,7 +37,7 @@ public class ItemBuilderTest {
         Dimension dimension = new Dimension(DIMENSION_NAME, "keyword", "Keyword Tokens");
         dimension.setClassifier(new Split("-| *\\| *"));
         TranslatorFactory mockFactory = mock(TranslatorFactory.class);
-        when(mockFactory.createTranslator(null, "eng")).thenReturn(Translator.NULL_TRANSLATOR);
+        when(mockFactory.getTranslator(null, "eng")).thenReturn(TranslatorFactory.NULL_TRANSLATOR);
         ItemConfig itemConfig = new ItemConfig(dimension, mockFactory);
         itemConfig.setMax(100);
         itemConfig.setFormat(Format.DIMENSION);

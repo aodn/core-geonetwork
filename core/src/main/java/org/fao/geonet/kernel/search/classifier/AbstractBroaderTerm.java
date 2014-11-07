@@ -31,15 +31,15 @@ import java.util.List;
 import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.Thesaurus;
-import org.fao.geonet.kernel.ThesaurusManager;
+import org.fao.geonet.kernel.ThesaurusFinder;
 
 public abstract class AbstractBroaderTerm implements Classifier {
 
     private Thesaurus thesaurus;
     private final String[] languages;
 
-    protected AbstractBroaderTerm(ThesaurusManager thesaurusManager, String conceptScheme, String... languages) {
-        thesaurus = thesaurusManager.getThesaurusByConceptScheme(conceptScheme);
+    protected AbstractBroaderTerm(ThesaurusFinder finder, String conceptScheme, String... languages) {
+        thesaurus = finder.getThesaurusByConceptScheme(conceptScheme);
         this.languages = languages;
     }
 
