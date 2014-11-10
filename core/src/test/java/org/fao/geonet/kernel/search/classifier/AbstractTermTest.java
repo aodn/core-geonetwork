@@ -35,7 +35,7 @@ import org.fao.geonet.languages.IsoLanguagesMapper;
 import org.openrdf.sesame.config.ConfigurationException;
 import org.springframework.core.io.ClassPathResource;
 
-public abstract class AbstractBroaderTermTest {
+public abstract class AbstractTermTest {
 
     private final IsoLanguagesMapper isoLangMapper = new IsoLanguagesMapper() {
         {

@@ -34,32 +34,38 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.sesame.config.ConfigurationException;
 
-public class BroaderTermTest extends AbstractBroaderTermTest {
+public class TermLabelTest extends AbstractTermTest {
 
-    private Classifier broaderTermClassifier;
+    private TermLabel termLabelClassifier;
     
     @Before 
     public void setup() throws IOException, ConfigurationException {
         ThesaurusManager manager = mockThesaurusManagerWith("BroaderTerm.rdf");
-        broaderTermClassifier = new BroaderTerm(manager, "scheme", "eng");
+        termLabelClassifier = new TermLabel(manager, "scheme", "eng");
     }
 
     @Test
     public void testWithTermWithBroaderTermWithBroaderTerm() {
-        List<CategoryPath> testTermHierarchy = broaderTermClassifier.classify("http://www.my.com/#sea_surface_temperature");
-        assertCategoryListEquals(testTermHierarchy, "ocean>ocean temperature>sea surface temperature");
+        List<CategoryPath> testTermHierarchy = termLabelClassifier.classify("sea surface temperature");
+        assertCategoryListEquals(testTermHierarchy, "http://www.my.com/#ocean>http://www.my.com/#ocean_temperature>http://www.my.com/#sea_surface_temperature");
     }
 
     @Test
     public void testWithTermWithTwoBroaderTerms() {
-        List<CategoryPath> testTermHierarchy = broaderTermClassifier.classify("http://www.my.com/#air_sea_flux");
-        assertCategoryListEquals(testTermHierarchy, "physical - air>air sea flux", "physical - water>air sea flux");
+        List<CategoryPath> testTermHierarchy = termLabelClassifier.classify("air sea flux");
+        assertCategoryListEquals(testTermHierarchy, "http://www.my.com/#physical_air>http://www.my.com/#air_sea_flux", "http://www.my.com/#physical_water>http://www.my.com/#air_sea_flux");
     }
 
     @Test
     public void testWithUnknownTerm() {
-        List<CategoryPath> testTermHierarchy = broaderTermClassifier.classify("http://www.my.com/#unkown-term");
+        List<CategoryPath> testTermHierarchy = termLabelClassifier.classify("unkown term");
         assertEquals(0, testTermHierarchy.size());
     }
 
+    @Test
+    public void testIndexLabel() {
+        termLabelClassifier.setIndexLabel(true);
+        List<CategoryPath> testTermHierarchy = termLabelClassifier.classify("sea surface temperature");
+        assertCategoryListEquals(testTermHierarchy, "ocean>ocean temperature>sea surface temperature");
+    }
 }
