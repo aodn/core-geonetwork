@@ -33,30 +33,45 @@ import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusFinder;
 
-public abstract class AbstractBroaderTerm implements Classifier {
+public abstract class AbstractTerm implements Classifier {
 
-    private Thesaurus thesaurus;
-    private final String[] languages;
+    private ThesaurusFinder finder;
 
-    protected AbstractBroaderTerm(ThesaurusFinder finder, String conceptScheme, String... languages) {
-        thesaurus = finder.getThesaurusByConceptScheme(conceptScheme);
-        this.languages = languages;
+    private String conceptScheme;
+
+    private String languageToIndex;
+
+    protected AbstractTerm(ThesaurusFinder finder, String conceptScheme) {
+        this.finder = finder;
+        this.conceptScheme = conceptScheme;
     }
 
-    public List<CategoryPath> classify(String value) {
+    protected void setLanguageToIndex(String language) {
+        this.languageToIndex = language;
+    }
+
+    protected List<CategoryPath> classifyUri(String uri) {
         List<CategoryPath> result = new ArrayList<CategoryPath>();
 
-        if (thesaurus.hasKeyword(value)) {
-            KeywordBean term = thesaurus.getKeyword(value, languages);
+        Thesaurus thesaurus = getThesaurus();
+
+        if (thesaurus.hasKeyword(uri)) {
+            KeywordBean term = thesaurus.getKeyword(uri, getLanguages());
             result.addAll(classify(term));
         }
 
         return result;
     }
 
+    protected Thesaurus getThesaurus() {
+        return finder.getThesaurusByConceptScheme(conceptScheme);
+    }
+
     private List<CategoryPath> classify(KeywordBean term) {
         List<CategoryPath> result = new ArrayList<CategoryPath>();
     
+        Thesaurus thesaurus = getThesaurus();
+
         if (thesaurus.hasBroader(term.getUriCode())) {
             result.addAll(classifyTermWithBroaderTerms(term));
         } else {
@@ -68,13 +83,11 @@ public abstract class AbstractBroaderTerm implements Classifier {
 
     private List<CategoryPath> classifyTermWithBroaderTerms(KeywordBean term) {
         List<CategoryPath> result = new ArrayList<CategoryPath>();
-    
+
         for (CategoryPath categoryPathToBroaderTerm: classifyBroaderTerms(term)) {
-            String category = getCategory(term);
-    
             CategoryPath categoryPathToTerm = addSubCategory(
                 categoryPathToBroaderTerm,
-                category
+                getCategoryToIndex(term)
             );
     
             result.add(categoryPathToTerm);
@@ -83,20 +96,39 @@ public abstract class AbstractBroaderTerm implements Classifier {
         return result;
     }
 
-    List<CategoryPath> classifyBroaderTerms(KeywordBean term) {
+    private List<CategoryPath> classifyBroaderTerms(KeywordBean term) {
         List<CategoryPath> result = new ArrayList<CategoryPath>();
 
-        for (KeywordBean broaderTerm: thesaurus.getBroader(term.getUriCode(), languages)) {
+        Thesaurus thesaurus = getThesaurus();
+
+        for (KeywordBean broaderTerm: thesaurus.getBroader(term.getUriCode(), getLanguages())) {
             result.addAll(classify(broaderTerm));
         }
 
         return result;
     }
 
-    CategoryPath classifyTermWithNoBroaderTerms(KeywordBean term) {
-        return new CategoryPath(getCategory(term));
+    private CategoryPath classifyTermWithNoBroaderTerms(KeywordBean term) {
+        return new CategoryPath(getCategoryToIndex(term));
     }
 
-    protected abstract String getCategory(KeywordBean term);
+    private String getCategoryToIndex(KeywordBean term) {
+        if (indexUri()) {
+            return term.getUriCode();
+        } else {
+            return term.getPreferredLabel(languageToIndex);
+        }
+    }
 
+    private boolean indexUri() {
+        return languageToIndex == null || languageToIndex.isEmpty();
+    }
+
+    private String[] getLanguages() {
+        if (indexUri()) {
+            return new String[]{};
+        } else {
+            return new String[]{languageToIndex};
+        }
+    }
 }

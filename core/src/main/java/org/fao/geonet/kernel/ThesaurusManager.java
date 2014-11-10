@@ -48,7 +48,6 @@ import org.openrdf.sesame.config.SailConfig;
 import org.openrdf.sesame.constants.RDFFormat;
 import org.openrdf.sesame.repository.local.LocalRepository;
 import org.openrdf.sesame.repository.local.LocalService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -70,8 +69,6 @@ public class ThesaurusManager implements ThesaurusFinder {
 	private String thesauriDirectory = null;
     private boolean initialized = false;
 
-    @Autowired
-    private IsoLanguagesMapper isoLanguagesMapper;
 
     /**
 	 * Initialize ThesaurusManager.
@@ -239,10 +236,10 @@ public class ThesaurusManager implements ThesaurusFinder {
                     continue;
                 }
 
-                gst = new Thesaurus(isoLanguagesMapper, aRdfDataFile, root, thesauriDirectory.getName(), outputRdf, siteURL);
+                gst = new Thesaurus(getIsoLanguagesMapper(context), aRdfDataFile, root, thesauriDirectory.getName(), outputRdf, siteURL);
 
             } else {
-                gst = new Thesaurus(isoLanguagesMapper, aRdfDataFile, root, thesauriDirectory.getName(), new File(thesauriDirectory, aRdfDataFile), siteURL);
+                gst = new Thesaurus(getIsoLanguagesMapper(context), aRdfDataFile, root, thesauriDirectory.getName(), new File(thesauriDirectory, aRdfDataFile), siteURL);
             }
 
             try {
@@ -419,7 +416,7 @@ public class ThesaurusManager implements ThesaurusFinder {
         String thesaurusFile = buildThesaurusFilePath(aRdfDataFile, root, type);
         File outputRdf = new File(thesaurusFile);
         final String siteURL = context.getBean(SettingManager.class).getSiteURL(context);
-        Thesaurus gst = new Thesaurus(isoLanguagesMapper, aRdfDataFile, root, type, outputRdf, siteURL);
+        Thesaurus gst = new Thesaurus(getIsoLanguagesMapper(context), aRdfDataFile, root, type, outputRdf, siteURL);
 
 		FileOutputStream outputRdfStream = null;
 		try {
@@ -449,5 +446,9 @@ public class ThesaurusManager implements ThesaurusFinder {
 
 		return theKey;
 	}
+
+    private IsoLanguagesMapper getIsoLanguagesMapper(ServiceContext context) {
+        return context.getBean(IsoLanguagesMapper.class);
+    }
 
 }

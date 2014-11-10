@@ -23,20 +23,25 @@
 
 package org.fao.geonet.kernel.search.classifier;
 
-import org.fao.geonet.kernel.KeywordBean;
+import java.util.List;
+
+import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.fao.geonet.kernel.ThesaurusFinder;
 
-public class BroaderTerm extends AbstractBroaderTerm {
+public class TermUri extends AbstractTerm {
 
-    private final String langCode;
-
-    public BroaderTerm(ThesaurusFinder finder, String conceptScheme, String langCode) {
-        super(finder, conceptScheme, langCode);
-        this.langCode = langCode;
+    public TermUri(ThesaurusFinder finder, String conceptScheme) {
+        super(finder, conceptScheme);
     }
 
-    protected String getCategory(KeywordBean term) {
-        return term.getPreferredLabel(langCode);
+    @Override
+    public List<CategoryPath> classify(String value) {
+        return super.classifyUri(value);
+    }
+
+    @Override
+    public void setLanguageToIndex(String language) {
+        super.setLanguageToIndex(language);
     }
 
 }

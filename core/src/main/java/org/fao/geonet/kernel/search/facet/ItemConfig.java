@@ -42,7 +42,7 @@ public class ItemConfig {
     private int max;
     private int depth;
     private Format format;
-    private String translatorString;
+    private String translator;
     private TranslatorFactory translatorFactory;
 
     public ItemConfig(Dimension dimension, TranslatorFactory translatorFactory) {
@@ -128,8 +128,12 @@ public class ItemConfig {
         return format.getFormatter(this.dimension);
     }
 
+    public void setTranslator(String translator) {
+        this.translator = translator;
+    }
+
     public Translator getTranslator(String langCode) {
-        return translatorFactory.getTranslator(translatorString, langCode);
+        return translatorFactory.getTranslator(translator, langCode);
     }
 
     /**

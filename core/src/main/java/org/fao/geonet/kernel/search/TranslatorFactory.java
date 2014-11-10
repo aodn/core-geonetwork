@@ -36,11 +36,12 @@ import org.springframework.context.ApplicationContext;
 public class TranslatorFactory {
     
     private final ApplicationContext context;
-    public static final Translator NULL_TRANSLATOR = new Translator() {
+
+    public static final Translator IDENTITY_TRANSLATOR = new Translator() {
         private static final long serialVersionUID = 1L;
     
         public String translate(String key) {
-            return null;
+            return key;
         }
     };
 
@@ -58,14 +59,14 @@ public class TranslatorFactory {
                 "Error creating translator " + translatorString + " (" + langCode + ")",
                 e
             );
-            return Translator.IDENTITY_TRANSLATOR;
+            return IDENTITY_TRANSLATOR;
         }
     }
 
     private Translator getTranslatorUnhandled(String translatorString, final String langCode) 
             throws Exception {
         if (translatorString == null || translatorString.length() == 0) {
-            return Translator.IDENTITY_TRANSLATOR;
+            return IDENTITY_TRANSLATOR;
         }
         String key = translatorString + langCode;
 
