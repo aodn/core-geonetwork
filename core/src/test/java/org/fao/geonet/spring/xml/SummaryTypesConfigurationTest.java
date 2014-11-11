@@ -1,18 +1,16 @@
 package org.fao.geonet.spring.xml;
 
-import static org.junit.Assert.assertEquals;
-import static org.fao.geonet.kernel.search.facet.ItemConfig.DEFAULT_MAX_KEYS;
 import static org.fao.geonet.kernel.search.facet.ItemConfig.DEFAULT_DEPTH;
+import static org.fao.geonet.kernel.search.facet.ItemConfig.DEFAULT_MAX_KEYS;
+import static org.junit.Assert.assertEquals;
 
-import org.fao.geonet.kernel.search.CodeListTranslator;
-import org.fao.geonet.kernel.search.Translator;
+import org.fao.geonet.kernel.search.TranslatorFactory;
 import org.fao.geonet.kernel.search.facet.Format;
 import org.fao.geonet.kernel.search.facet.ItemConfig;
 import org.fao.geonet.kernel.search.facet.SortBy;
 import org.fao.geonet.kernel.search.facet.SortOrder;
 import org.fao.geonet.kernel.search.facet.SummaryType;
 import org.fao.geonet.kernel.search.facet.SummaryTypes;
-import org.fao.geonet.kernel.search.facet.TranslatorFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

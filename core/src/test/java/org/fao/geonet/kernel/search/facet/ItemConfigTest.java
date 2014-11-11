@@ -1,6 +1,6 @@
 package org.fao.geonet.kernel.search.facet;
 
-import static org.fao.geonet.kernel.search.Translator.NULL_TRANSLATOR;
+import static org.fao.geonet.kernel.search.TranslatorFactory.NULL_TRANSLATOR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import org.fao.geonet.kernel.search.Translator;
+import org.fao.geonet.kernel.search.TranslatorFactory;
 import org.fao.geonet.kernel.search.classifier.Split;
 import org.jdom.JDOMException;
 import org.junit.Before;
@@ -24,7 +24,7 @@ public class ItemConfigTest {
         keywordTokenDimension = new Dimension(TEST_DIMENSION, "keyword", "Keyword Tokens");
         keywordTokenDimension.setClassifier(new Split("-| *\\| *"));
         mockFactory = mock(TranslatorFactory.class);
-        when(mockFactory.createTranslator(null, "eng")).thenReturn(Translator.NULL_TRANSLATOR);
+        when(mockFactory.getTranslator(null, "eng")).thenReturn(NULL_TRANSLATOR);
     }
 
     @Test
@@ -53,6 +53,5 @@ public class ItemConfigTest {
         assertEquals(SortBy.NUMVALUE, itemConfig.getSortBy());
         assertEquals(SortOrder.ASCENDING, itemConfig.getSortOrder());
         assertTrue(itemConfig.getFormatter() instanceof DimensionFormatter);
-        // Can't test non-default getTranslator as implemented using static methods
     }
 }

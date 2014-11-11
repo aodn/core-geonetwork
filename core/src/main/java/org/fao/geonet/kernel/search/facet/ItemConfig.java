@@ -23,6 +23,7 @@
 package org.fao.geonet.kernel.search.facet;
 
 import org.fao.geonet.kernel.search.Translator;
+import org.fao.geonet.kernel.search.TranslatorFactory;
 
 public class ItemConfig {
     /**
@@ -127,8 +128,12 @@ public class ItemConfig {
         return format.getFormatter(this.dimension);
     }
 
+    public void setTranslator(String translator) {
+        this.translator = translator;
+    }
+
     public Translator getTranslator(String langCode) {
-        return translatorFactory.createTranslator(translator, langCode);
+        return translatorFactory.getTranslator(translator, langCode);
     }
 
     /**

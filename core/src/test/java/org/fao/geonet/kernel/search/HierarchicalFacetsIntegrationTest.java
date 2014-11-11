@@ -32,12 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class HierarchicalFacetsIntegrationTest extends AbstractCoreIntegrationTest {
 
     final private static String[] METADATA_KEYWORD = {
-        "Oceans | Ocean Chemistry | Nitrate",
-        "Oceans | Ocean Chemistry | Oxygen", 
-        "Oceans | Ocean Chemistry | Oxygen", 
-        "Oceans | Ocean Temperature | Water Temperature",
-        "Oceans | Salinity/density | Salinity",
-        "Oceans | Ocean Pressure | Water Pressure"
+        "Australia",
+        "Zimbabwe", 
+        "All fishing areas", 
+        "Australia",
+        "France"
     };
 
     final private static List<String> TEST_METADATA = new ArrayList<String>();
@@ -82,7 +81,7 @@ public class HierarchicalFacetsIntegrationTest extends AbstractCoreIntegrationTe
         .addContent(new Element(Geonet.SearchResult.FAST).setText("true"))
         .addContent(new Element("from").setText("1"))
         .addContent(new Element("to").setText("50"));
-        ServiceConfig config = createServiceConfig("keyword_token");
+        ServiceConfig config = createServiceConfig("region_keyword");
 
         luceneSearcher.search(serviceContext, request, config);
         Element result = luceneSearcher.present(serviceContext, request, config);
@@ -91,13 +90,28 @@ public class HierarchicalFacetsIntegrationTest extends AbstractCoreIntegrationTe
     }
 
     @Test
+    public void searchReturnsInternationalisedHierarchicalFacetCounts() throws Exception {
+        Element request = new Element("request")
+        .addContent(new Element(Geonet.SearchResult.FAST).setText("true"))
+        .addContent(new Element("from").setText("1"))
+        .addContent(new Element("to").setText("50"))
+        .addContent(new Element("requestedLanguage").setText("fre"));
+        ServiceConfig config = createServiceConfig("region_keyword");
+
+        luceneSearcher.search(serviceContext, request, config);
+        Element result = luceneSearcher.present(serviceContext, request, config);
+
+        assertEquals(loadExpectedResult("search-returns-internationalised-hierarchical-facet-counts.xml"), getSummary(result));
+    }
+
+    @Test
     public void drilldownReturnsFilteredResults() throws Exception {
         Element request = new Element("request")
         .addContent(new Element(Geonet.SearchResult.FAST).setText("true"))
-        .addContent(new Element(SearchParameter.FACET_QUERY).setText("keywordToken/Oceans/Ocean Chemistry/Oxygen"))
+        .addContent(new Element(SearchParameter.FACET_QUERY).setText("regionKeyword/http%3A%2F%2Fgeonetwork-opensource.org%2Fregions%23country/http%3A%2F%2Fgeonetwork-opensource.org%2Fregions%231220"))
         .addContent(new Element("from").setText("1"))
         .addContent(new Element("to").setText("50"));
-        ServiceConfig config = createServiceConfig("keyword_token");
+        ServiceConfig config = createServiceConfig("region_keyword");
 
         luceneSearcher.search(serviceContext, request, config);
         Element result = luceneSearcher.present(serviceContext, request, config);

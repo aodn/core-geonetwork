@@ -20,7 +20,7 @@
 //===    Rome - Italy. email: geonetwork@osgeo.org
 //==============================================================================
 
-package org.fao.geonet.kernel.search.facet;
+package org.fao.geonet.kernel.search;
 
 import java.util.concurrent.Callable;
 
@@ -28,9 +28,7 @@ import jeeves.JeevesCacheManager;
 
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.SchemaManager;
-import org.fao.geonet.kernel.search.CodeListTranslator;
-import org.fao.geonet.kernel.search.DbDescTranslator;
-import org.fao.geonet.kernel.search.Translator;
+import org.fao.geonet.kernel.ThesaurusManager;
 import org.fao.geonet.utils.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -38,31 +36,36 @@ import org.springframework.context.ApplicationContext;
 public class TranslatorFactory {
     
     private final ApplicationContext context;
-    private final SchemaManager schemaManager;
+    public static final Translator NULL_TRANSLATOR = new Translator() {
+        private static final long serialVersionUID = 1L;
+    
+        public String translate(String key) {
+            return null;
+        }
+    };
 
     @Autowired
-    public TranslatorFactory(ApplicationContext context, SchemaManager schemaManager) {
+    public TranslatorFactory(ApplicationContext context) {
         this.context = context;
-        this.schemaManager = schemaManager;
     }
 
-    public Translator createTranslator(String translatorString, final String langCode) {
+    public Translator getTranslator(String translatorString, final String langCode) {
         try {
-            return createTranslatorUnhandled(translatorString, langCode);
+            return getTranslatorUnhandled(translatorString, langCode);
         } catch (Exception e) {
             Log.error(
                 Geonet.SEARCH_ENGINE,
                 "Error creating translator " + translatorString + " (" + langCode + ")",
                 e
             );
-            return Translator.NULL_TRANSLATOR;
+            return TranslatorFactory.NULL_TRANSLATOR;
         }
     }
 
-    private Translator createTranslatorUnhandled(String translatorString, final String langCode) 
+    private Translator getTranslatorUnhandled(String translatorString, final String langCode) 
             throws Exception {
         if (translatorString == null || translatorString.length() == 0) {
-            return Translator.NULL_TRANSLATOR;
+            return TranslatorFactory.NULL_TRANSLATOR;
         }
         String key = translatorString + langCode;
 
@@ -76,7 +79,18 @@ public class TranslatorFactory {
 
         Translator translator;
         if (type.equals("codelist")) {
-                return new CodeListTranslator(schemaManager, langCode, param);
+            translator = new CodeListTranslator(context.getBean(SchemaManager.class), langCode, param);
+        } else if (type.equals("term")) {
+            translator = JeevesCacheManager.findInEternalCache(key, new Callable<Translator>() {
+                public Translator call() {
+                    try {
+                        Translator termUriTranslator = new TermUriTranslator(context.getBean(ThesaurusManager.class), langCode, param);
+                        return new TranslatorCachingWrapper(termUriTranslator);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
         } else if (type.equals("db")) {
             translator = JeevesCacheManager.findInTenSecondCache(key, new Callable<Translator>() {
                 public Translator call() {
