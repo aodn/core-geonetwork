@@ -63,8 +63,10 @@ import org.fao.geonet.kernel.region.Region;
 import org.fao.geonet.kernel.region.RegionsDAO;
 import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
 import org.fao.geonet.kernel.search.SearchManager.TermFrequency;
+import org.fao.geonet.kernel.search.facet.Format;
 import org.fao.geonet.kernel.search.facet.ItemBuilder;
 import org.fao.geonet.kernel.search.facet.ItemConfig;
+import org.fao.geonet.kernel.search.facet.SummaryType;
 import org.fao.geonet.kernel.search.index.GeonetworkMultiReader;
 import org.fao.geonet.kernel.search.log.SearcherLogger;
 import org.fao.geonet.kernel.search.lucenequeries.DateRangeQuery;
@@ -112,7 +114,7 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
 	 */
 	private String _geomWKT = null;
     private long _versionToken = -1;
-    private Map<String, ItemConfig> _summaryConfig;
+    private SummaryType _summaryConfig;
     private boolean _logSearch = true;
 
     /**
@@ -588,23 +590,18 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
         if (summaryItemsEl != null) {
             summaryItemsEl.detach();
 
-            Map<String, ItemConfig> tmpConfig = new HashMap<String, ItemConfig>();
+            List<ItemConfig> requestedItems = new ArrayList<ItemConfig>();
             String[] items = summaryItemsEl.getValue().split(",");
 
             for (String item : items) {
                 if (item.startsWith("any")) {
-                    tmpConfig = _summaryConfig;
+                    requestedItems.addAll(_summaryConfig.getItems());
                     break;
                 }
-                final ItemConfig itemConfig = _summaryConfig.get(item.trim());
-                if (itemConfig != null) {
-                    tmpConfig.put(item.trim(), itemConfig);
-                } else {
-                    throw new BadParameterEx(Geonet.SearchResult.SUMMARY_ITEMS, item + " Legal values are: " + _summaryConfig.keySet());
-                }
+                requestedItems.add(_summaryConfig.get(item.trim()));
             }
 
-            _summaryConfig = tmpConfig;
+            _summaryConfig = new SummaryType(_summaryConfig.getName(), requestedItems);
         }
 
         _language = determineLanguage(srvContext, request, _sm.getSettingInfo());
@@ -1209,7 +1206,7 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
 	 * @throws Exception hmm
 	 */
 	public static Pair<TopDocs, Element> doSearchAndMakeSummary(int numHits, int startHit, int endHit, String langCode, 
-			Map<String, ItemConfig> summaryConfig, FacetsConfig facetConfiguration, IndexReader reader,
+			SummaryType summaryConfig, FacetsConfig facetConfiguration, IndexReader reader,
 			Query query, Filter cFilter, Sort sort, TaxonomyReader taxonomyReader, boolean buildSummary, boolean trackDocScores,
 			boolean trackMaxScore, boolean docsScoredInOrder) throws Exception {
         if (Log.isDebugEnabled(Geonet.SEARCH_ENGINE)) {
@@ -1267,15 +1264,16 @@ public class LuceneSearcher extends MetaSearcher implements MetadataRecordSelect
 	 * @throws IOException
 	 */
     private static void buildFacetSummary(Element elSummary,
-            Map<String, ItemConfig> summaryConfigValues,
+            SummaryType summaryConfigValues,
             FacetsConfig facetConfiguration,
             FacetsCollector facetCollector, TaxonomyReader taxonomyReader,
             String langCode) throws IOException {
         try {
-            for (ItemConfig itemConfig : summaryConfigValues.values()) {
+            Format format = summaryConfigValues.getFormat();
+            for (ItemConfig itemConfig : summaryConfigValues.getItems()) {
                 OrdinalsReader ordsReader = new DocValuesOrdinalsReader(itemConfig.getDimension().getFacetFieldName());
                 Facets facets = new TaxonomyFacetCounts(ordsReader, taxonomyReader, facetConfiguration, facetCollector);
-                ItemBuilder builder = new ItemBuilder(itemConfig, langCode, facets);
+                ItemBuilder builder = new ItemBuilder(itemConfig, langCode, facets, format);
                 Element facetSummary = builder.build();
                 elSummary.addContent(facetSummary);
             }

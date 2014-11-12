@@ -28,7 +28,7 @@ public class ItemBuilderTest {
         ItemConfig itemConfig = buildKeywordTokenItemConfig();
         Facets facets = buildFacets();
 
-        ItemBuilder builder = new ItemBuilder(itemConfig, "eng", facets);
+        ItemBuilder builder = new ItemBuilder(itemConfig, "eng", facets, Format.DIMENSION);
         Element summary = builder.build();
 
         assertEquals(loadExpectedResult("itemBuild.xml"), Xml.getString(summary));
@@ -41,7 +41,6 @@ public class ItemBuilderTest {
         when(mockFactory.getTranslator(null, "eng")).thenReturn(IDENTITY_TRANSLATOR);
         ItemConfig itemConfig = new ItemConfig(dimension, mockFactory);
         itemConfig.setMax(100);
-        itemConfig.setFormat(Format.DIMENSION);
         return itemConfig;
     }
 

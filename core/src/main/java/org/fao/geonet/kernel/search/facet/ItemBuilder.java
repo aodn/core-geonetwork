@@ -42,11 +42,13 @@ public class ItemBuilder {
     private ItemConfig config;
     private Facets facets;
     private Translator translator;
+    private Formatter formatter;
 
-    public ItemBuilder(ItemConfig config, String langCode, Facets facets) {
+    public ItemBuilder(ItemConfig config, String langCode, Facets facets, Format format) {
         this.config = config;
         this.facets = facets;
         this.translator = config.getTranslator(langCode);
+        this.formatter = format.getFormatter(config.getDimension());
     }
 
     public Element build() {
@@ -61,7 +63,7 @@ public class ItemBuilder {
     }
 
     private Element buildDimensionElement(FacetResult facetResults) {
-        return getFormatter().buildDimensionTag(getCount(facetResults));
+        return formatter.buildDimensionTag(getCount(facetResults));
     }
 
     private int getCount(FacetResult facetResult) {
@@ -161,17 +163,13 @@ public class ItemBuilder {
                     + " (" + result.count + ")");
         }
 
-        return getFormatter().buildCategoryTag(result);
+        return formatter.buildCategoryTag(result);
     }
 
     private String[] addCategoryToPath(String category, String... parentPath) {
         String[] path = Arrays.copyOf(parentPath, parentPath.length + 1);
         path[parentPath.length] = category;
         return path;
-    }
-
-    private Formatter getFormatter() {
-        return config.getFormatter();
     }
 
     private Comparator<CategorySummary> valueComparator() {

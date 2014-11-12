@@ -2,7 +2,6 @@ package org.fao.geonet.kernel.search.facet;
 
 import static org.fao.geonet.kernel.search.TranslatorFactory.IDENTITY_TRANSLATOR;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +34,6 @@ public class ItemConfigTest {
         assertEquals(ItemConfig.DEFAULT_DEPTH, itemConfig.getDepth());
         assertEquals(SortBy.COUNT, itemConfig.getSortBy());
         assertEquals(SortOrder.DESCENDING, itemConfig.getSortOrder());
-        assertTrue(itemConfig.getFormatter() instanceof FacetNameFormatter);
         assertEquals(itemConfig.getTranslator("eng"), IDENTITY_TRANSLATOR);
     }
 
@@ -43,7 +41,6 @@ public class ItemConfigTest {
     public void testItemConfigAll() throws JDOMException {
         ItemConfig itemConfig = new ItemConfig(keywordTokenDimension, mockFactory);
         itemConfig.setDepth(3);
-        itemConfig.setFormat(Format.DIMENSION);
         itemConfig.setMax(17);
         itemConfig.setSortBy(SortBy.NUMVALUE);
         itemConfig.setSortOrder(SortOrder.ASCENDING);
@@ -52,6 +49,5 @@ public class ItemConfigTest {
         assertEquals(3, itemConfig.getDepth());
         assertEquals(SortBy.NUMVALUE, itemConfig.getSortBy());
         assertEquals(SortOrder.ASCENDING, itemConfig.getSortOrder());
-        assertTrue(itemConfig.getFormatter() instanceof DimensionFormatter);
     }
 }
