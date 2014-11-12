@@ -24,14 +24,6 @@
 package org.fao.geonet.kernel.search;
 
 import java.io.Serializable;
-import java.util.concurrent.Callable;
-
-import org.fao.geonet.GeonetContext;
-import org.fao.geonet.constants.Geonet;
-import org.fao.geonet.kernel.SchemaManager;
-
-import jeeves.JeevesCacheManager;
-import jeeves.server.context.ServiceContext;
 
 /**
  * Takes a key and looks up a translation for that key.
@@ -41,50 +33,15 @@ import jeeves.server.context.ServiceContext;
 public abstract class Translator implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    public static final Translator NULL_TRANSLATOR = new Translator() {
+
+    public static final Translator IDENTITY_TRANSLATOR = new Translator() {
         private static final long serialVersionUID = 1L;
+
         public String translate(String key) {
-            return null;
+            return key;
         }
     };
 
     public abstract String translate(String key);
-
-    public static Translator createTranslator(String translatorString, final ServiceContext context, final String langCode)
-            throws Exception {
-        if (translatorString == null || translatorString.length() == 0) {
-            return Translator.NULL_TRANSLATOR;
-        }
-        String key = translatorString + langCode;
-
-        String[] parts = translatorString.split(":", 2);
-        if (parts.length != 2) {
-            throw new AssertionError(
-                    "the 'translation' element of the config-summary.xml must be of the form nameOfTranslator:TranslatorParam");
-        }
-        String type = parts[0];
-        final String param = parts[1];
-
-        final GeonetContext gc = (GeonetContext) context.getHandlerContext(Geonet.CONTEXT_NAME);
-
-        Translator translator;
-        if (type.equals("codelist")) {
-                return new CodeListTranslator(gc.getBean(SchemaManager.class), langCode, param);
-        } else if (type.equals("db")) {
-            translator = JeevesCacheManager.findInTenSecondCache(key, new Callable<Translator>() {
-                public Translator call() {
-                    try {
-                        return new DbDescTranslator(context.getApplicationContext(), langCode, param);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-        } else {
-            throw new AssertionError(type + " is not a recognized type of translator");
-        }
-
-        return translator;
-    }
 
 }
