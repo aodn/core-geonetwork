@@ -55,14 +55,14 @@ public class TranslatorFactory {
                 "Error creating translator " + translatorString + " (" + langCode + ")",
                 e
             );
-            return Translator.NULL_TRANSLATOR;
+            return Translator.IDENTITY_TRANSLATOR;
         }
     }
 
     private Translator createTranslatorUnhandled(String translatorString, final String langCode) 
             throws Exception {
         if (translatorString == null || translatorString.length() == 0) {
-            return Translator.NULL_TRANSLATOR;
+            return Translator.IDENTITY_TRANSLATOR;
         }
         String key = translatorString + langCode;
 

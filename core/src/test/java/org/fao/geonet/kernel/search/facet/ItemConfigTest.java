@@ -1,6 +1,6 @@
 package org.fao.geonet.kernel.search.facet;
 
-import static org.fao.geonet.kernel.search.Translator.NULL_TRANSLATOR;
+import static org.fao.geonet.kernel.search.Translator.IDENTITY_TRANSLATOR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -24,7 +24,7 @@ public class ItemConfigTest {
         keywordTokenDimension = new Dimension(TEST_DIMENSION, "keyword", "Keyword Tokens");
         keywordTokenDimension.setClassifier(new Split("-| *\\| *"));
         mockFactory = mock(TranslatorFactory.class);
-        when(mockFactory.createTranslator(null, "eng")).thenReturn(Translator.NULL_TRANSLATOR);
+        when(mockFactory.createTranslator(null, "eng")).thenReturn(Translator.IDENTITY_TRANSLATOR);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class ItemConfigTest {
         assertEquals(SortBy.COUNT, itemConfig.getSortBy());
         assertEquals(SortOrder.DESCENDING, itemConfig.getSortOrder());
         assertTrue(itemConfig.getFormatter() instanceof FacetNameFormatter);
-        assertEquals(itemConfig.getTranslator("eng"), NULL_TRANSLATOR);
+        assertEquals(itemConfig.getTranslator("eng"), IDENTITY_TRANSLATOR);
     }
 
     @Test

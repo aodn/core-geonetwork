@@ -152,19 +152,20 @@ public class KeywordBean {
 	public String getPreferredLabel(String langCode) {
 		String preferredLabel = values.get(langCode);
 
-		if (notPreferredLabel(preferredLabel))
+		if (hasPreferredLabel(preferredLabel))
 		{
+			return preferredLabel;
+		} else {
 			throw new LabelNotFoundException(noPreferredLabelMessage(langCode));
 		}
-		return preferredLabel;
 	}
 
 	private String noPreferredLabelMessage(String langCode) {
 		return "Could not find preferred label for language code " + langCode + " for the keyword uri " + getUriCode();
 	}
 
-	private boolean notPreferredLabel(String preferredLabel) {
-		return preferredLabel == null || preferredLabel.equals("");
+	private boolean hasPreferredLabel(String preferredLabel) {
+		return preferredLabel != null && !preferredLabel.isEmpty();
 	}
 
     /**

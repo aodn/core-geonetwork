@@ -872,8 +872,7 @@ public class Thesaurus {
         }
 
         private String getTermNotFoundMessage(String uri) {
-            String couldNotFindTermMessage = "Could not find "+uri+" in file "+thesaurusFile;
-            return couldNotFindTermMessage;
+            return "Could not find "+uri+" in file "+thesaurusFile;
         }
 
         /**

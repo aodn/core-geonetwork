@@ -37,7 +37,7 @@ public class ItemBuilderTest {
         Dimension dimension = new Dimension(DIMENSION_NAME, "keyword", "Keyword Tokens");
         dimension.setClassifier(new Split("-| *\\| *"));
         TranslatorFactory mockFactory = mock(TranslatorFactory.class);
-        when(mockFactory.createTranslator(null, "eng")).thenReturn(Translator.NULL_TRANSLATOR);
+        when(mockFactory.createTranslator(null, "eng")).thenReturn(Translator.IDENTITY_TRANSLATOR);
         ItemConfig itemConfig = new ItemConfig(dimension, mockFactory);
         itemConfig.setMax(100);
         itemConfig.setFormat(Format.DIMENSION);

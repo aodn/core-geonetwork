@@ -107,8 +107,7 @@ public class ItemBuilder {
     private CategorySummary toCategoryResult(LabelAndValue labelAndValue) {
         CategorySummary result = new CategorySummary();
         result.value = labelAndValue.label;
-        String translation = translator.translate(labelAndValue.label);
-        result.label = translation!=null?translation:labelAndValue.label;
+        result.label = translator.translate(labelAndValue.label);
         result.count = labelAndValue.value.intValue();
         return result;
     }
