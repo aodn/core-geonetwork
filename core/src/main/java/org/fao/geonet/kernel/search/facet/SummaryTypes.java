@@ -23,11 +23,14 @@
 package org.fao.geonet.kernel.search.facet;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.exceptions.BadParameterEx;
 
 public class SummaryTypes {
+
+    private static final String SUMMARY_TYPES_HEADER = " * Summary Type Configuration:\n";
 
     private List<SummaryType>  summaryTypes;
 
@@ -39,13 +42,28 @@ public class SummaryTypes {
         return new ArrayList<SummaryType>(summaryTypes);
     }
 
-    public Map<String, Map<String, ItemConfig>> getSummaryTypeMap() {
-        Map<String, Map<String, ItemConfig>> result = new HashMap<String, Map<String, ItemConfig>>();
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(SUMMARY_TYPES_HEADER);
 
         for (SummaryType summaryType : summaryTypes) {
-            result.put(summaryType.getName(), summaryType.getItemMap());
+            sb.append(summaryType);
         }
 
-        return result;
+        return sb.toString();
     }
+
+    public SummaryType get(String resultType) {
+        for (SummaryType summaryType: summaryTypes) {
+            if (summaryType.getName().equals(resultType)) {
+                return summaryType;
+            }
+        }
+
+        throw new BadParameterEx(
+            Geonet.SearchResult.SUMMARY_ITEMS,
+            "Could not find summary type '" + resultType + "'. Check your summaryType configuration"
+        );
+    }
+
 }

@@ -41,7 +41,6 @@ import org.apache.lucene.facet.FacetsConfig;
 import org.fao.geonet.kernel.GeonetworkDataDirectory;
 import org.fao.geonet.kernel.search.facet.Facets;
 import org.fao.geonet.kernel.search.facet.Dimension;
-import org.fao.geonet.kernel.search.facet.ItemConfig;
 import org.fao.geonet.kernel.search.facet.SummaryTypes;
 import org.fao.geonet.utils.Log;
 import org.fao.geonet.utils.Xml;
@@ -766,9 +765,8 @@ public class LuceneConfig {
         return facets.getDimensionsUsing(indexKey);
     }
 
-
-    public Map<String, Map<String, ItemConfig>> getSummaryTypes() {
-        return summaryTypes.getSummaryTypeMap();
+    public SummaryTypes getSummaryTypes() {
+        return summaryTypes;
     }
 
 	/**
@@ -800,23 +798,8 @@ public class LuceneConfig {
 		sb.append("  * trackMaxScore: " + isTrackMaxScore() + " \n");
 		sb.append("  * docsScoredInOrder: " + isDocsScoredInOrder() + " \n");
 
-		sb.append(" * Facet configuration:\n");
-
-		for (Dimension dimension: facets.getDimensions()) {
-			sb.append("  * ");
-			sb.append(dimension.toString());
-			sb.append("\n");
-		}
-
-		sb.append(" * Summary types: "
-				+ getSummaryTypes().keySet().toString() + "\n");
-
-		for (String key : getSummaryTypes().keySet()) {
-			sb.append("  * type: " + key + " ");
-			Map<String, ItemConfig> facetsConfig = getSummaryTypes().get(key);
-			sb.append(facetsConfig.toString());
-			sb.append("\n");
-		}
+		sb.append(facets.toString());
+		sb.append(summaryTypes.toString());
 
 		return sb.toString();
 	}

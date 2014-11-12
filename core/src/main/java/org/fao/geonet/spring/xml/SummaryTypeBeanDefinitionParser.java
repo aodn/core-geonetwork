@@ -22,8 +22,11 @@
 
 package org.fao.geonet.spring.xml;
 
+import static org.fao.geonet.spring.xml.BeanDefinitionParserUtils.addPropertyValueUsingValueOf;
+
 import java.util.List;
 
+import org.fao.geonet.kernel.search.facet.Format;
 import org.fao.geonet.kernel.search.facet.SummaryType;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -45,6 +48,8 @@ public class SummaryTypeBeanDefinitionParser extends AbstractBeanDefinitionParse
     private AbstractBeanDefinition parseSummaryTypesElement(Element element, ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SummaryType.class);
         factory.addConstructorArgValue(element.getAttribute("name"));
+        addPropertyValueUsingValueOf(factory, element, "format", Format.class);
+
         List<Element> childElements = DomUtils.getChildElementsByTagName(element, "item");
 
         if (childElements != null && childElements.size() > 0) {
@@ -54,7 +59,7 @@ public class SummaryTypeBeanDefinitionParser extends AbstractBeanDefinitionParse
         return factory.getBeanDefinition();
     }
 
-    private static void parseChildItems(List<Element> childElements, ParserContext parserContext, BeanDefinitionBuilder factory) {
+    private void parseChildItems(List<Element> childElements, ParserContext parserContext, BeanDefinitionBuilder factory) {
         ManagedList<BeanDefinition> children = new ManagedList<BeanDefinition>(childElements.size());
 
         ParserContext nestedContext = new ParserContext(

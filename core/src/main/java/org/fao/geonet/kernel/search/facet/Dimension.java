@@ -28,6 +28,8 @@ import org.fao.geonet.kernel.search.classifier.Value;
 
 public class Dimension {
 
+    private static final String TEMPLATE = "  * %s: {indexKey=%s, label=%s, classifier=%s}\n";
+
     public static final String FACET_FIELD_SUFFIX = "_facet";
 
     private String name;
@@ -66,13 +68,7 @@ public class Dimension {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer("dimension: ");
-        sb.append(name);
-        sb.append("\tindexKey: ");
-        sb.append(indexKey);
-        sb.append("\tclassifier: ");
-        sb.append(classifier.getClass().getName());
-        return sb.toString();
+        return String.format(TEMPLATE, name, indexKey, label, classifier.getClass().getName());
     }
 
     public String getFacetFieldName() {

@@ -31,7 +31,19 @@
     <summaryTypes>
         <summaryType name="hits">
             <item facet="keyword"/>
-            <item facet="inspireTheme" sortBy="value" sortOrder="asc" max="35" depth="10" format="DIMENSION"/>
+            <item facet="inspireTheme" sortBy="value" sortOrder="asc" max="35" depth="10"/>
+            <item facet="denominator" sortBy="numValue" sortOrder="desc"/>
+            <item facet="spatialRepresentationType" translator="codelist:gmd:MD_SpatialRepresentationTypeCode"/>
+            <item facet="orgName" max="15"/>
+            <item facet="metadataPOC" max="15"/>
+            <item facet="serviceType"/>
+            <item facet="type" translator="codelist:gmd:MD_ScopeCode"/>
+            <item facet="createDateYear" sortBy="value" sortOrder="desc" max="40"/>
+            <item facet="format" max="15" sortBy="value"/>
+        </summaryType>
+        <summaryType name="hits_dimension" format="DIMENSION">
+            <item facet="keyword"/>
+            <item facet="inspireTheme" sortBy="value" sortOrder="asc" max="35" depth="10"/>
             <item facet="denominator" sortBy="numValue" sortOrder="desc"/>
             <item facet="spatialRepresentationType" translator="codelist:gmd:MD_SpatialRepresentationTypeCode"/>
             <item facet="orgName" max="15"/>

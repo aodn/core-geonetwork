@@ -29,7 +29,7 @@ public class SummaryTypesConfigurationTest {
 
     @Test
     public void testMandatoryParametersSet() {
-        SummaryType hits = summaryTypes.getSummaryTypes().get(0);
+        SummaryType hits = summaryTypes.get("hits");
         assertEquals("hits", hits.getName());
         ItemConfig serviceType = hits.getItems().get(6);
         assertEquals("serviceType", serviceType.getDimension().getName());
@@ -37,23 +37,25 @@ public class SummaryTypesConfigurationTest {
 
     @Test
     public void testDefaultParametersSet() {
-        ItemConfig serviceType = summaryTypes.getSummaryTypes().get(0).getItems().get(6);
+        SummaryType hits = summaryTypes.get("hits");
+        assertEquals(Format.FACET_NAME, hits.getFormat());
+        ItemConfig serviceType = hits.getItems().get(6);
         assertEquals(DEFAULT_MAX_KEYS, serviceType.getMax());
         assertEquals(DEFAULT_DEPTH, serviceType.getDepth());
         assertEquals(SortBy.COUNT, serviceType.getSortBy());
         assertEquals(SortOrder.DESCENDING, serviceType.getSortOrder());
         assertEquals(DEFAULT_DEPTH, serviceType.getDepth());
-        assertEquals(Format.FACET_NAME, serviceType.getFormat());
     }
 
     @Test
     public void testDefaultParametersOverridden() {
-        ItemConfig inspireTheme = summaryTypes.getSummaryTypes().get(0).getItems().get(1);
+        SummaryType hits = summaryTypes.get("hits_dimension");
+        assertEquals(Format.DIMENSION, hits.getFormat());
+        ItemConfig inspireTheme = hits.getItems().get(1);
         assertEquals(35, inspireTheme.getMax());
         assertEquals(SortBy.VALUE, inspireTheme.getSortBy());
         assertEquals(SortOrder.ASCENDING, inspireTheme.getSortOrder());
         assertEquals(10, inspireTheme.getDepth());
-        assertEquals(Format.DIMENSION, inspireTheme.getFormat());
     }
 
 }
