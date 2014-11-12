@@ -63,6 +63,7 @@ import org.fao.geonet.kernel.search.LuceneConfig.LuceneConfigNumericField;
 import org.fao.geonet.kernel.search.classifier.Classifier;
 import org.fao.geonet.kernel.search.facet.Dimension;
 import org.fao.geonet.kernel.search.facet.ItemConfig;
+import org.fao.geonet.kernel.search.facet.SummaryType;
 import org.fao.geonet.kernel.search.function.DocumentBoosting;
 import org.fao.geonet.kernel.search.index.GeonetworkMultiReader;
 import org.fao.geonet.kernel.search.index.LuceneIndexLanguageTracker;
@@ -122,7 +123,6 @@ public class SearchManager {
     private static final Configuration FILTER_2_0_0 = new org.geotools.filter.v2_0.FESConfiguration();
     private File _stylesheetsDir;
     private static File _stopwordsDir;
-	Map<String, ItemConfig> _summaryConfigValues = null;
 
     /**
      * Used when adding documents to the Lucene index.
@@ -486,7 +486,6 @@ public class SearchManager {
      */
 	public void init(boolean logAsynch, boolean logSpatialObject, String luceneTermsToExclude,
                      int maxWritesInTransaction) throws Exception {
-        _summaryConfigValues = _luceneConfig.getSummaryTypes().get("hits");
 
         String appPath = _geonetworkDataDirectory.getWebappDir();
 		_stylesheetsDir = new File(appPath, SEARCH_STYLESHEETS_DIR_PATH);

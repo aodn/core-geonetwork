@@ -29,6 +29,8 @@ import org.apache.lucene.facet.FacetsConfig;
 
 public class Facets {
 
+    private static final String FACET_CONFIGURATION_HEADER = " * Facet configuration:\n";
+
     private List<Dimension> dimensions;
 
     public Facets(List<Dimension> dimensions) {
@@ -63,6 +65,17 @@ public class Facets {
         }
 
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(FACET_CONFIGURATION_HEADER);
+
+        for (Dimension dimension: dimensions) {
+            sb.append(dimension);
+        }
+
+        return sb.toString();
     }
 
 

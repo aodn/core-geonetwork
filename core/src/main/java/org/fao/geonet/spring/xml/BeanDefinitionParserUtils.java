@@ -22,33 +22,40 @@
 
 package org.fao.geonet.spring.xml;
 
-import static org.fao.geonet.spring.xml.BeanDefinitionParserUtils.addOptionalPropertyValue;
-import static org.fao.geonet.spring.xml.BeanDefinitionParserUtils.addPropertyValueUsingFind;
-
-import org.fao.geonet.kernel.search.facet.ItemConfig;
-import org.fao.geonet.kernel.search.facet.SortBy;
-import org.fao.geonet.kernel.search.facet.SortOrder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.w3c.dom.Element;
 
-public class ItemBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
+public class BeanDefinitionParserUtils {
 
-    protected Class<ItemConfig> getBeanClass(Element element) {
-        return ItemConfig.class;
+    public static void addPropertyValueUsingFind(BeanDefinitionBuilder bean,
+            Element element, String propertyName, Class<?> enumClass) {
+        addPropertyValueUsingMethod(bean, element, propertyName, enumClass, "find");
     }
 
-    protected void doParse(Element element, BeanDefinitionBuilder bean) {
-        bean.addConstructorArgReference(element.getAttribute("facet"));
-        bean.addConstructorArgReference("translatorFactory");
+    public static void addPropertyValueUsingValueOf(BeanDefinitionBuilder bean,
+            Element element, String propertyName, Class<?> enumClass) {
+        addPropertyValueUsingMethod(bean, element, propertyName, enumClass, "valueOf");
+    }
 
-        addPropertyValueUsingFind(bean, element, "sortBy", SortBy.class);
-        addPropertyValueUsingFind(bean, element, "sortOrder", SortOrder.class);
+    public static void addOptionalPropertyValue(Element element,
+            BeanDefinitionBuilder bean, String propertyName) {
+        String value = element.getAttribute(propertyName);
 
-        addOptionalPropertyValue(element, bean, "max");
-        addOptionalPropertyValue(element, bean, "depth");
+        if (!value.isEmpty()) {
+            bean.addPropertyValue(propertyName, value);
+        }
+    }
 
-        addOptionalPropertyValue(element, bean, "translator");
+    private static void addPropertyValueUsingMethod(BeanDefinitionBuilder bean,
+            Element element, String propertyName, Class<?> enumClass,
+            String methodName) {
+        String enumValue = element.getAttribute(propertyName);
+
+        if (!enumValue.isEmpty()) {
+            BeanDefinitionBuilder enumBean = BeanDefinitionBuilder.rootBeanDefinition(enumClass, methodName);
+            enumBean.addConstructorArgValue(enumValue);
+            bean.addPropertyValue(propertyName, enumBean.getBeanDefinition());
+        }
     }
 
 }

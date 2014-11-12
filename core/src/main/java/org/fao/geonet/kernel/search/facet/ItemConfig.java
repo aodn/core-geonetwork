@@ -26,6 +26,8 @@ import org.fao.geonet.kernel.search.Translator;
 import org.fao.geonet.kernel.search.TranslatorFactory;
 
 public class ItemConfig {
+    private static final String TEMPLATE = "   * %s: {max=%s, sort by=%s, sort order=%s, translator=%s, depth=%s}\n";
+
     /**
      * Default number of values for a facet
      */
@@ -41,7 +43,6 @@ public class ItemConfig {
     private SortOrder sortOrder;
     private int max;
     private int depth;
-    private Format format;
     private String translator;
     private TranslatorFactory translatorFactory;
 
@@ -53,7 +54,6 @@ public class ItemConfig {
         sortBy = SortBy.COUNT;
         sortOrder = SortOrder.DESCENDING;
         depth = DEFAULT_DEPTH;
-        format = Format.FACET_NAME;
     }
 
     /**
@@ -62,14 +62,6 @@ public class ItemConfig {
 
     public Dimension getDimension() {
         return dimension; 
-    }
-
-    public void setFormat(Format format) {
-        this.format = format;
-    }
-
-    public Format getFormat() {
-        return format;
     }
 
     public void setSortBy(SortBy sortBy) {
@@ -120,14 +112,6 @@ public class ItemConfig {
         return max;
     }
 
-    /**
-     * @return a formatter for creating item summaries
-     */
-
-    public Formatter getFormatter() {
-        return format.getFormatter(this.dimension);
-    }
-
     public void setTranslator(String translator) {
         this.translator = translator;
     }
@@ -140,19 +124,7 @@ public class ItemConfig {
      * @return a string representation of this configuration item
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer("dimension: ");
-        sb.append(dimension.getName());
-        sb.append("\tmax:");
-        sb.append(getMax() + "");
-        sb.append("\tsort by");
-        sb.append(getSortBy().toString());
-        sb.append("\tsort order:");
-        sb.append(getSortOrder().toString());
-        sb.append("\tdepth:");
-        sb.append(Integer.toString(depth));
-        sb.append("\tformat:");
-        sb.append(format);
-        return sb.toString();
+        return String.format(TEMPLATE, dimension.getName(), max, sortBy, sortOrder, translator, depth);
     }
 
 }

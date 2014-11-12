@@ -22,19 +22,26 @@
 
 package org.fao.geonet.kernel.search.facet;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.exceptions.BadParameterEx;
 
 public class SummaryType {
+
+    private static final String TEMPLATE = "  * %s {format=%s}\n";
 
     private String name;
 
     private List<ItemConfig> items;
 
+    private Format format;
+
     public SummaryType(String name, List<ItemConfig> items) {
         this.name = name;
         this.items = items;
+        format = Format.FACET_NAME;
     }
 
     public String getName() {
@@ -45,14 +52,47 @@ public class SummaryType {
         return items;
     }
 
-    public Map<String, ItemConfig> getItemMap() {
-        // Use linked hash map so that results in output are same as ordered in summary file
-        Map<String, ItemConfig> result = new LinkedHashMap<String, ItemConfig>();
+    public void setFormat(Format format) {
+        this.format = format;
+    }
+
+    public Format getFormat() {
+        return format;
+    }
+
+   public ItemConfig get(String name) {
+        for (ItemConfig item: items) {
+            if (item.getDimension().getName().equals(name)) {
+                return item;
+            }
+        }
+
+        throw new BadParameterEx(
+            Geonet.SearchResult.SUMMARY_ITEMS,
+            name + " Legal values are: " + getDimensionNames()
+        );
+    }
+
+    private List<String> getDimensionNames() {
+        List<String> result = new ArrayList<String>();
 
         for (ItemConfig item: items) {
-            result.put(item.getDimension().getName(), item);
+            result.add(item.getDimension().getName());
         }
 
         return result;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format(TEMPLATE, name, format));
+
+        for (ItemConfig item: items) {
+            sb.append(item);
+        }
+
+        return sb.toString();
+    }
+
 }
