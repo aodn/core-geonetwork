@@ -17,6 +17,7 @@ import org.fao.geonet.domain.*;
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.GeonetworkDataDirectory;
 import org.fao.geonet.kernel.SchemaManager;
+import org.fao.geonet.kernel.ThesaurusManager;
 import org.fao.geonet.kernel.mef.Importer;
 import org.fao.geonet.kernel.search.LuceneConfig;
 import org.fao.geonet.kernel.search.SearchManager;
@@ -150,6 +151,10 @@ public abstract class AbstractCoreIntegrationTest extends AbstractSpringDataTest
                 serviceConfig, null);
 
         _directoryFactory.resetIndex();
+
+        ThesaurusManager thesaurusManager = _applicationContext.getBean(ThesaurusManager.class);
+        ServiceContext context = createServiceContext();
+        thesaurusManager.init(context, webappDir, "WEB-INF/data/config/codelist");
 
         final String schemaPluginsDir = geonetworkDataDirectory.getSchemaPluginsDir().getPath();
 

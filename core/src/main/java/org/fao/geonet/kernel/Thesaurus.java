@@ -94,6 +94,8 @@ public class Thesaurus {
     
     private String keywordUrl;
 
+    private IsoLanguagesMapper isoLanguageMapper;
+
 /*    @SuppressWarnings("unused")
 	private String version;
 
@@ -112,7 +114,6 @@ public class Thesaurus {
 	@SuppressWarnings("unused")
 	private String authority;
 */
-	private ApplicationContext context;
 
 	/**
 	 * @param fname
@@ -120,12 +121,12 @@ public class Thesaurus {
 	 * @param type
 	 * @param dname category/domain name of thesaurus
 	 */
-	public Thesaurus(ApplicationContext context, String fname, String type, String dname, File thesaurusFile, String siteUrl) {
-	    this(context, fname, null, null, type, dname, thesaurusFile, siteUrl, false);
+	public Thesaurus(IsoLanguagesMapper isoLanguageMapper, String fname, String type, String dname, File thesaurusFile, String siteUrl) {
+	    this(isoLanguageMapper, fname, null, null, type, dname, thesaurusFile, siteUrl, false);
 	}
-    public Thesaurus(ApplicationContext context, String fname, String tname, String tnamespace, String type, String dname, File thesaurusFile, String siteUrl, boolean ignoreMissingError) {
+    public Thesaurus(IsoLanguagesMapper isoLanguageMapper, String fname, String tname, String tnamespace, String type, String dname, File thesaurusFile, String siteUrl, boolean ignoreMissingError) {
 		super();
-		this.context = context;
+		this.isoLanguageMapper = isoLanguageMapper;
 		this.fname = fname;
 		this.type = type;
 		this.dname = dname;
@@ -817,7 +818,7 @@ public class Thesaurus {
 		}
 
         public IsoLanguagesMapper getIsoLanguageMapper() {
-            return context.getBean(IsoLanguagesMapper.class);
+            return isoLanguageMapper;
         }
 
         /**
@@ -871,8 +872,8 @@ public class Thesaurus {
             return keywords.get(0);
         }
 
-        private String getTermNotFoundMessage(String uri) {
-            return "Could not find "+uri+" in file "+thesaurusFile;
+        private String getTermNotFoundMessage(String searchValue) {
+            return "Could not find "+searchValue+" in file "+thesaurusFile;
         }
 
         /**
@@ -930,6 +931,53 @@ public class Thesaurus {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        /**
+         * Returns whether there is a keyword for a label
+         * 
+         * @param label the preferred label of the keyword
+         * @param langCode the language of the label
+         * @param languages the languages to return
+         * @return boolean 
+         */
+        public boolean hasKeywordWithLabel(String label, String langCode) {
+            try {
+                getKeywordWithLabel(label, langCode);
+            } catch (TermNotFoundException e) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * Gets a keyword using its label.
+         * 
+         * @param label the preferred label of the keyword
+         * @param langCode the language of the label
+         * @return keyword 
+         * @throws TermNotFoundException
+         */
+        public KeywordBean getKeywordWithLabel(String label, String langCode) {
+            Query<KeywordBean> query = QueryBuilder
+                    .keywordQueryBuilder(getIsoLanguageMapper(), langCode)
+                    .where(Wheres.prefLabel(langCode, label))
+                    .build();
+
+            List<KeywordBean> matchingKeywords;
+
+            try {
+                matchingKeywords = query.execute(this);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            if (matchingKeywords.size() == 0) {
+                throw new TermNotFoundException(label);
+            }
+
+            return matchingKeywords.get(0);
         }
 
         // ------------------------------- Deprecated methods -----------------------------

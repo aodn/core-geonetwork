@@ -47,6 +47,8 @@ public class ItemBeanDefinitionParser extends AbstractSingleBeanDefinitionParser
         addOptionalPropertyValue(element, bean, "depth");
 
         addPropertyValueUsingValueOf(bean, element, "format", Format.class);
+
+        addOptionalPropertyValue(element, bean, "translator");
     }
 
     protected void addPropertyValueUsingFind(BeanDefinitionBuilder bean,
