@@ -151,7 +151,7 @@ public class KeywordsSearcher {
      */
     public void searchForRelated(String id, String sThesaurusName, KeywordRelation request, String... languages) {
         Thesaurus thesaurus = _thesaurusFinder.getThesaurusByName(sThesaurusName);
-        _results = thesaurus.getRelated(id, request, languages);
+        _results = new ArrayList<KeywordBean>(thesaurus.getRelated(id, request, languages));
     }
 
     /**

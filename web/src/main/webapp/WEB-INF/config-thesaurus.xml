@@ -21,7 +21,6 @@
 
     <service name="xml.search.keywordlink" type="xml">
       <class name=".services.thesaurus.GetNarrowerBroader"/>
-      <output sheet="thesaurus/thesaurus-autosearchlist.xsl"/>
     </service>
 
     <service name="xml.keyword.get" type="xml">
