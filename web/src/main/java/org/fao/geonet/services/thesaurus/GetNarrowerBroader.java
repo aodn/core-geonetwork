@@ -87,7 +87,7 @@ public class GetNarrowerBroader implements Service {
 			
 			// Build response
 			Element keywordType = new Element(reqType.name);
-			keywordType.addContent(searcher.getResults());
+			keywordType.addContent(searcher.getXmlResults());
 			response.addContent(keywordType);
 		}else  
 			throw new Exception("unknown request type: " + request);
