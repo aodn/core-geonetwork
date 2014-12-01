@@ -1146,19 +1146,17 @@
 										<xsl:value-of select="/root/gui/strings/thesaurus/thesaurus"/>
 									</td>
 									<td>
-										<a href="{@xlink:href}">
-											<xsl:choose>
-												<xsl:when test="normalize-space($thesaurusTitle)!=''">
-													<xsl:value-of select="$thesaurusTitle"/>
-												</xsl:when>
-												<xsl:when test="normalize-space()!=''">
-													<xsl:value-of select="text()"/>
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:value-of select="@src"/>
-												</xsl:otherwise>
-											</xsl:choose>
-										</a>
+										<xsl:choose>
+											<xsl:when test="normalize-space($thesaurusTitle)!=''">
+												<xsl:value-of select="$thesaurusTitle"/>
+											</xsl:when>
+											<xsl:when test="normalize-space()!=''">
+												<xsl:value-of select="text()"/>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:value-of select="@src"/>
+											</xsl:otherwise>
+										</xsl:choose>
 									</td>
 								</tr>
 							</xsl:for-each>
