@@ -22,17 +22,16 @@ public class JeevesApplicationContext extends XmlWebApplicationContext {
     
     public JeevesApplicationContext(final ConfigurationOverrides configurationOverrides) {
         this._configurationOverrides = configurationOverrides;
-        addApplicationListener(new ApplicationListener<ApplicationEvent>() {
+    }
 
-            @Override
-            public void onApplicationEvent(ApplicationEvent event) {
-                try {
-                    configurationOverrides.applyNonImportSpringOverides(JeevesApplicationContext.this, getServletContext(), appPath);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+    @Override
+    protected void finishRefresh() {
+        try {
+            _configurationOverrides.applyNonImportSpringOverides(JeevesApplicationContext.this, getServletContext(), appPath);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        super.finishRefresh();
     }
 
     public void setAppPath(String appPath) {
