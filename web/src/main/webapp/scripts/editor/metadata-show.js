@@ -170,6 +170,8 @@
 			function runFileDownload(href,title) {
 				if (href.include("resources.get")) { // do the file download direct
 					location.replace(getGNServiceURL(href));
+                } else if (href.toLowerCase().include("http")) { // do the file download direct
+                    location.replace(href)
 				} else { // show some dialog beforehand eg. constraints
 					Modalbox.show(getGNServiceURL(href),{title:title, height:400, width:600});
 				}
