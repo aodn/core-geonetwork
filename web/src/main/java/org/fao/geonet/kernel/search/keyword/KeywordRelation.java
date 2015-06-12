@@ -28,6 +28,22 @@ public enum KeywordRelation {
             return NARROWER;
         }
         
+    },
+    NARROWER_MATCH("narrowMatch") {
+
+        @Override
+        public KeywordRelation opposite() {
+            return BROADER_MATCH;
+        }
+        
+    },
+    BROADER_MATCH("broadMatch") {
+
+        @Override
+        public KeywordRelation opposite() {
+            return NARROWER_MATCH;
+        }
+        
     };
     
     public final String name;

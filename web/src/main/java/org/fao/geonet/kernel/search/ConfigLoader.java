@@ -37,6 +37,7 @@ import jeeves.server.context.ServiceContext;
 
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
+import org.fao.geonet.kernel.ThesaurusFinder;
 import org.fao.geonet.kernel.ThesaurusManager;
 import org.jdom.Element;
 
@@ -98,6 +99,8 @@ public class ConfigLoader {
 				result.add(LUCENE_VERSION);
 			} else if (ThesaurusManager.class.getName().equals(paramType)) {
 				result.add(getThesaurusManager());
+			} else if (ThesaurusFinder.class.getName().equals(paramType)) {
+				result.add((ThesaurusFinder) getThesaurusManager());
 			}
 			else if ("java.io.File".equals(paramType) && value != null) {
 				File f = new File(value);

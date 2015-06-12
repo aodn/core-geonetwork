@@ -68,6 +68,17 @@ public class KeywordsSearcherTest extends AbstractThesaurusBasedTest {
             public boolean existsThesaurus(String name) {
                 return getThesauriMap().containsKey(name);
             }
+            @Override
+            
+            public Thesaurus getThesaurusByConceptScheme(String uri) {
+                for (Thesaurus thesaurus : map.values()) {
+                    if (thesaurus.hasConceptScheme(uri)) {
+                        return thesaurus;
+                    }
+                }
+                return null;
+            }
+            
         };
     }
     

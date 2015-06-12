@@ -30,5 +30,13 @@ public class SingleThesaurusFinder implements ThesaurusFinder {
         return Collections.singletonMap(thesaurus.getKey(), thesaurus);
     }
 
+    @Override
+    public Thesaurus getThesaurusByConceptScheme(String uri) {
+        if (thesaurus.hasConceptScheme(uri)) {
+            return thesaurus;
+        }
+        return null;
+    }
+
 
 }

@@ -32,6 +32,7 @@ import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusManager;
+import org.fao.geonet.kernel.search.keyword.KeywordRelation;
 
 public class BroaderTerm implements Classifier {
 
@@ -86,7 +87,7 @@ public class BroaderTerm implements Classifier {
 	private List<CategoryPath> classifyBroaderTerms(KeywordBean term) {
 		List<CategoryPath> result = new ArrayList<CategoryPath>();
 
-		for (KeywordBean broaderTerm: thesaurus.getBroader(term.getUriCode(), LANG_CODE)) {
+		for (KeywordBean broaderTerm: thesaurus.getRelated(term.getUriCode(), KeywordRelation.NARROWER, LANG_CODE)) {
 			result.addAll(classify(broaderTerm));
 		}
 

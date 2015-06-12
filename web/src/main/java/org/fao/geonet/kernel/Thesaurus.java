@@ -846,17 +846,6 @@ public class Thesaurus {
         }
 
         /**
-         * Gets broader keywords
-         * 
-         * @param the keyword whose broader terms should be retrieved
-         * @return keywords
-         */
-
-        public List<KeywordBean> getBroader(String uri, String... languages) {
-            return getRelated(uri, KeywordRelation.NARROWER, languages);
-        }
-
-        /**
          * Gets related keywords
          * 
          * @param uri the keyword whose related terms should be retrieved
@@ -945,5 +934,4 @@ public class Thesaurus {
         public String getDefaultNamespace() {
             return this.defaultNamespace;
         }
-
 }

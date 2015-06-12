@@ -1,8 +1,10 @@
 package org.fao.geonet.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.facet.taxonomy.CategoryPath;
@@ -22,8 +24,8 @@ public class CategoryTestHelper {
 	public static void assertCategoryListEquals(List<CategoryPath> result, String... categories) {
 		assertEquals(categories.length, result.size());
 	
-		for (int i=0; i < categories.length; i++) {
-			assertEquals(categories[i], result.get(i).toString());
+		for (CategoryPath resultCategoryPath : result) {
+			assertTrue(Arrays.asList(categories).contains(resultCategoryPath.toString()));
 		}
 	}
 	
