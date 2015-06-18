@@ -32,6 +32,15 @@ public interface ThesaurusFinder {
     Thesaurus getThesaurusByName(String thesaurusName);
 
     /**
+     * Find a thesaurus containing a concept scheme
+     * 
+     * @param uri the uri of the concept scheme to look for.
+     * 
+     * @return the thesaurus containing the concept scheme or null.
+     */
+    Thesaurus getThesaurusByConceptScheme(String uri);
+
+    /**
      * Return a read-only mapping of the thesaurus name/id to Thesauri
      * @return a read-only mapping of the thesaurus name/id to Thesauri
      */

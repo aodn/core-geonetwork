@@ -16,7 +16,7 @@ import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.ThesaurusManager;
-import org.fao.geonet.kernel.search.classifier.BroaderTerm;
+import org.fao.geonet.kernel.search.classifier.ClassificationScheme;
 import org.fao.geonet.kernel.search.classifier.Split;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -58,8 +58,8 @@ public class ConfigLoaderTest {
 		ConfigLoader loader = new ConfigLoader(context);
 
 		@SuppressWarnings("unused")
-		BroaderTerm broaderClassifier = (BroaderTerm) loader.newInstance(
-			"org.fao.geonet.kernel.search.classifier.BroaderTerm",
+		ClassificationScheme broaderClassifier = (ClassificationScheme) loader.newInstance(
+			"org.fao.geonet.kernel.search.classifier.ClassificationScheme",
 			orgParams
 		);
 

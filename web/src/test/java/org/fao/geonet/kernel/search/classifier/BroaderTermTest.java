@@ -35,6 +35,7 @@ import org.fao.geonet.exceptions.TermNotFoundException;
 import org.fao.geonet.kernel.KeywordBean;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.ThesaurusManager;
+import org.fao.geonet.kernel.search.keyword.KeywordRelation;
 import org.junit.Test;
 
 public class BroaderTermTest {
@@ -89,8 +90,8 @@ public class BroaderTermTest {
 
         when(mockThesaurus.hasKeyword("#term")).thenReturn(true);
         when(mockThesaurus.getKeyword("#term", TEST_LANG)).thenReturn(mockKeywordBean);
-        when(mockThesaurus.getBroader("#term", TEST_LANG)).thenReturn(Arrays.asList(mockKeywordBeanBroader));
-        when(mockThesaurus.getBroader("#1", TEST_LANG)).thenReturn(Arrays.asList(mockKeywordBeanBroadest));
+        when(mockThesaurus.getRelated("#term", KeywordRelation.NARROWER, TEST_LANG)).thenReturn(Arrays.asList(mockKeywordBeanBroader));
+        when(mockThesaurus.getRelated("#1", KeywordRelation.NARROWER, TEST_LANG)).thenReturn(Arrays.asList(mockKeywordBeanBroadest));
 
         return mockManager(mockThesaurus);
     }
@@ -103,7 +104,7 @@ public class BroaderTermTest {
 
         when(mockThesaurus.hasKeyword("#term")).thenReturn(true);
         when(mockThesaurus.getKeyword("#term", TEST_LANG)).thenReturn(mockKeywordBean);
-        when(mockThesaurus.getBroader("#term", TEST_LANG)).thenReturn(Arrays.asList(mockKeywordBeanBroader1, mockKeywordBeanBroader2));
+        when(mockThesaurus.getRelated("#term", KeywordRelation.NARROWER, TEST_LANG)).thenReturn(Arrays.asList(mockKeywordBeanBroader1, mockKeywordBeanBroader2));
 
         return mockManager(mockThesaurus);
 	}

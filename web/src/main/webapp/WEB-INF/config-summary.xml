@@ -64,13 +64,15 @@
 			<param name="regex" type="java.lang.String" value=" *\| *"/>
 		</dimension>
 		<dimension name="organisationCategories" label="Organisation" indexKey="orgName"/>
-		<dimension name="platformCategories" indexKey="platformUri" label="Platform" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
-			<param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
-			<param name="conceptScheme" type="java.lang.String" value="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+		<dimension name="platformCategories" indexKey="platformUri" label="Platform" classifier="org.fao.geonet.kernel.search.classifier.ClassificationScheme">
+			<param name="thesaurusFinder" type="org.fao.geonet.kernel.ThesaurusFinder"/> 
+			<param name="vocabularyScheme" type="java.lang.String" value="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
+			<param name="classificationScheme" type="java.lang.String" value="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
 		</dimension>
-		<dimension name="parameterCategories" indexKey="parameterUri" label="Measured parameter" classifier="org.fao.geonet.kernel.search.classifier.BroaderTerm">
-			<param name="thesaurusManager" type="org.fao.geonet.kernel.ThesaurusManager"/> 
-			<param name="conceptScheme" type="java.lang.String" value="http://vocab.aodn.org.au/ParameterClassificationScheme/SchemeNumber1"/>
+		<dimension name="parameterCategories" indexKey="parameterUri" label="Measured parameter" classifier="org.fao.geonet.kernel.search.classifier.ClassificationScheme">
+			<param name="thesaurusFinder" type="org.fao.geonet.kernel.ThesaurusFinder"/> 
+			<param name="vocabularyScheme" type="java.lang.String" value="http://vocab.aodn.org.au/ParameterClassificationScheme/SchemeNumber1"/>
+			<param name="classificationScheme" type="java.lang.String" value="http://vocab.aodn.org.au/ParameterClassificationScheme/SchemeNumber1"/>
 		</dimension>
 	</dimensions>
 	<def>

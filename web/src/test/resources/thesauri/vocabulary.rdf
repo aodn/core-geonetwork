@@ -1,0 +1,36 @@
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#">
+
+    <skos:ConceptScheme rdf:about="http://www.my.com/test_vocabulary">
+        <dcterms:title xml:lang="en">Test classification scheme</dcterms:title>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/#sea_surface_temperature"/>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/#air_sea_flux"/>
+    </skos:ConceptScheme>
+    
+    <!-- term with broader term in classification scheme with broader term -->
+
+    <skos:Concept rdf:about="http://www.my.com/#sea_surface_temperature">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">sea surface temperature</skos:prefLabel>
+        <skos:broadMatch rdf:resource="http://www.my.com/#ocean_temperature"/>
+    </skos:Concept>
+
+    <!-- term with two broader terms in classification scheme -->
+
+    <skos:Concept rdf:about="http://www.my.com/#air_sea_flux">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">air sea flux</skos:prefLabel>
+        <skos:broadMatch rdf:resource="http://www.my.com/#physical_air"/>
+        <skos:broadMatch rdf:resource="http://www.my.com/#physical_water"/>
+    </skos:Concept>
+
+    <!-- term with no broader terms in classification scheme -->
+
+    <skos:Concept rdf:about="http://www.my.com/#longitude">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">longitude</skos:prefLabel>
+    </skos:Concept>
+
+</rdf:RDF>
