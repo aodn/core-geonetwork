@@ -33,4 +33,19 @@
         <skos:prefLabel xml:lang="en">longitude</skos:prefLabel>
     </skos:Concept>
 
+    <!-- term with broader terms in vocabulary and in classification scheme -->
+
+    <skos:Concept rdf:about="http://www.my.com/#hubble">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">hubble telescope</skos:prefLabel>
+        <skos:broader rdf:resource="http://www.my.com/#orbitting_satellite"/>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/#orbitting_satellite">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">orbitting satellite</skos:prefLabel>
+        <skos:narrower rdf:resource="http://www.my.com/#hubble"/>
+        <skos:broadMatch rdf:resource="http://www.my.com/#satellite"/>
+    </skos:Concept>
+
 </rdf:RDF>

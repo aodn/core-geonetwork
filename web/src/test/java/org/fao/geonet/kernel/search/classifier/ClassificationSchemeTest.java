@@ -79,4 +79,10 @@ public class ClassificationSchemeTest {
         assertEquals(0, result.size());
     }
 
+    @Test
+    public void testDeepDrilldownFacet() {
+        List<CategoryPath> result = classificationSchemeClassifier.classify("http://www.my.com/#hubble");
+        assertCategoryListEquals(result, "space junk/satellite/orbitting satellite/hubble telescope");
+    }
+
 }
