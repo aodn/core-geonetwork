@@ -41,4 +41,20 @@
         <skos:narrowMatch rdf:resource="http://www.my.com/#air_sea_flux"/>
     </skos:Concept>
 
+    <!-- term with broader terms in vocabulary and in classification scheme -->
+
+    <skos:Concept rdf:about="http://www.my.com/#satellite">
+        <skos:inScheme rdf:resource="http://www.my.com/test_classification"/>
+        <skos:prefLabel xml:lang="en">satellite</skos:prefLabel>
+        <skos:broader rdf:resource="http://www.my.com/#space_junk"/>
+        <skos:narrowMatch rdf:resource="http://www.my.com/#orbitting_satellite"/>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/#space_junk">
+        <skos:inScheme rdf:resource="http://www.my.com/test_classification"/>
+        <skos:prefLabel xml:lang="en">space junk</skos:prefLabel>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification"/>
+        <skos:narrower rdf:resource="http://www.my.com/#satellite"/>
+    </skos:Concept>
+
 </rdf:RDF>
