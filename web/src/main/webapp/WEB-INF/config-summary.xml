@@ -113,9 +113,9 @@
 			<item dimension="platformName" max="100"/>
 		</portal_summary>
 		<portal_hierarchical_summary>
-			<item dimension="organisationCategories" format="DIMENSION" max="100" depth="2"/>
-			<item dimension="parameterCategories" format="DIMENSION" max="100" depth="3"/>
-			<item dimension="platformCategories" format="DIMENSION" max="100" depth="2"/>
+			<item dimension="organisationCategories" format="DIMENSION" max="100" depth="10"/>
+			<item dimension="parameterCategories" format="DIMENSION" max="100" depth="10"/>
+			<item dimension="platformCategories" format="DIMENSION" max="100" depth="10"/>
 		</portal_hierarchical_summary>
 	</def>
 </summary>
