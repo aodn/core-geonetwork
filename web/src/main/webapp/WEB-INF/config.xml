@@ -368,7 +368,7 @@
         <param name="DBHeartBeatFixedDelaySeconds" value="20"/>
 
         <param name="LinkMonitorEnabled" value="false"/>
-        <param name="LinkMonitorClass" value=""/>
+        <param name="LinkMonitorClass" value="org.fao.geonet.monitor.link.LinkMonitorService"/>
         <param name="LinkMonitorInitialDelaySeconds" value="5"/>
         <param name="LinkMonitorFixedDelaySeconds" value="60"/>
         <param name="LinkMonitorReindexIntervalSeconds" value="1800"/>

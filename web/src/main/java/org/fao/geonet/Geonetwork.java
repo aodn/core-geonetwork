@@ -480,7 +480,7 @@ public class Geonetwork implements ApplicationHandler {
 
         boolean linkMonitorEnabled = Boolean.parseBoolean(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_ENABLED, "false"));
         if(linkMonitorEnabled) {
-            String linkMonitorClass = handlerConfig.getValue(Geonet.Config.LINK_MONITOR_CLASS, "");
+            String linkMonitorClass = handlerConfig.getValue(Geonet.Config.LINK_MONITOR_CLASS, "org.fao.geonet.monitor.link.LinkMonitorService");
             Integer linkMonitorInitialDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_INITIALDELAYSECONDS, "5"));
             Integer linkMonitorFixedDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_FIXEDDELAYSECONDS, "60"));
             Integer linkMonitorReindexInterval = Integer.parseInt(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_REINDEXINTERVALSECONDS, "1800"));
