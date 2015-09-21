@@ -56,6 +56,7 @@ import jeeves.utils.Xml;
 import jeeves.utils.XmlResolver;
 import jeeves.xlink.Processor;
 
+import org.apache.log4j.Level;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.Csw;
 import org.fao.geonet.kernel.AccessManager;
@@ -83,6 +84,7 @@ import org.fao.geonet.languages.LanguageDetector;
 import org.fao.geonet.lib.DatabaseType;
 import org.fao.geonet.lib.Lib;
 import org.fao.geonet.lib.ServerLib;
+import org.fao.geonet.monitor.link.LinkMonitorInterface;
 import org.fao.geonet.notifier.MetadataNotifierControl;
 import org.fao.geonet.notifier.MetadataNotifierManager;
 import org.fao.geonet.resources.Resources;
@@ -475,6 +477,16 @@ public class Geonetwork implements ApplicationHandler {
             Integer dbHeartBeatFixedDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.DB_HEARTBEAT_FIXEDDELAYSECONDS, "60"));
             createDBHeartBeat(context.getResourceManager(), gnContext, dbHeartBeatInitialDelay, dbHeartBeatFixedDelay);
         }
+
+        boolean linkMonitorEnabled = Boolean.parseBoolean(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_ENABLED, "false"));
+        if(linkMonitorEnabled) {
+            String linkMonitorClass = handlerConfig.getValue(Geonet.Config.LINK_MONITOR_CLASS, "");
+            Integer linkMonitorInitialDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_INITIALDELAYSECONDS, "5"));
+            Integer linkMonitorFixedDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_FIXEDDELAYSECONDS, "60"));
+            Integer linkMonitorReindexInterval = Integer.parseInt(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_REINDEXINTERVALSECONDS, "1800"));
+            createLinkMonitor(context.getResourceManager(), gnContext, linkMonitorClass, linkMonitorInitialDelay, linkMonitorFixedDelay, linkMonitorReindexInterval);
+        }
+
 		return gnContext;
 	}
 
@@ -556,6 +568,39 @@ public class Geonetwork implements ApplicationHandler {
             }
         };
         scheduledExecutorService.scheduleWithFixedDelay(DBHeartBeat, initialDelay, fixedDelay, TimeUnit.SECONDS);
+    }
+
+    private void createLinkMonitor(final ResourceManager rm, final GeonetContext gc, String linkMonitorClass,
+                                   Integer initialDelay, Integer fixedDelay, Integer reindexInterval) {
+        logger.info("Creating Link Monitor...");
+
+        try {
+            Class classz = Class.forName(linkMonitorClass);
+            gc.linkMonitor = (LinkMonitorInterface) classz.newInstance();
+            gc.linkMonitor.init(rm, gc, logger, reindexInterval);
+            logger.info(String.format("Link Monitor with class '%s' initialized", linkMonitorClass));
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(String.format("Failed initializing Link Monitor with class '%s'", linkMonitorClass));
+            return;
+        }
+
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        Runnable LinkMonitorThread = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    gc.getLinkMonitor().check();
+                }
+                // any uncaught exception would cause the scheduled execution to silently stop
+                catch(Throwable x) {
+                    logger.error("Link Monitor error: " + x.getMessage() + " This error is ignored.");
+                    x.printStackTrace();
+                }
+            }
+        };
+
+        scheduledExecutorService.scheduleWithFixedDelay(LinkMonitorThread, initialDelay, fixedDelay, TimeUnit.SECONDS);
     }
 
     /**

@@ -366,6 +366,12 @@
         <param name="DBHeartBeatEnabled" value="false"/>
         <param name="DBHeartBeatInitialDelaySeconds" value="20"/>
         <param name="DBHeartBeatFixedDelaySeconds" value="20"/>
+
+        <param name="LinkMonitorEnabled" value="false"/>
+        <param name="LinkMonitorClass" value=""/>
+        <param name="LinkMonitorInitialDelaySeconds" value="5"/>
+        <param name="LinkMonitorFixedDelaySeconds" value="60"/>
+        <param name="LinkMonitorReindexIntervalSeconds" value="1800"/>
 		
 		<!-- Define if the schema catalog should be updated on startup.
 		Default is true. -->

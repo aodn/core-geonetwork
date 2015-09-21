@@ -403,6 +403,9 @@ public final class Geonet {
 		public static final String SUMMARY_ONLY = "summaryOnly";
         public static final String REQUESTED_LANGUAGE = "requestedLanguage";
 
+        /** Parameter name: {@value #FILTERS} - Filter classes to apply */
+        public static final String FILTERS = "filters";
+
         /**
          * TODO javadoc.
          */
@@ -505,6 +508,11 @@ public final class Geonet {
         public static final String DB_HEARTBEAT_ENABLED = "DBHeartBeatEnabled";
         public static final String DB_HEARTBEAT_INITIALDELAYSECONDS = "DBHeartBeatInitialDelaySeconds";
         public static final String DB_HEARTBEAT_FIXEDDELAYSECONDS = "DBHeartBeatFixedDelaySeconds";
+        public static final String LINK_MONITOR_ENABLED = "LinkMonitorEnabled";
+        public static final String LINK_MONITOR_CLASS = "LinkMonitorClass";
+        public static final String LINK_MONITOR_INITIALDELAYSECONDS = "LinkMonitorInitialDelaySeconds";
+        public static final String LINK_MONITOR_FIXEDDELAYSECONDS = "LinkMonitorFixedDelaySeconds";
+        public static final String LINK_MONITOR_REINDEXINTERVALSECONDS = "LinkMonitorReindexIntervalSeconds";
         public static final String SCHEMA_PLUGINS_CATALOG_UPDATE = "createOrUpdateSchemaCatalog";
     }
 

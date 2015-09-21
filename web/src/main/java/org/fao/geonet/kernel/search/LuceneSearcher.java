@@ -43,6 +43,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import jeeves.constants.Jeeves;
+import jeeves.exceptions.BadInputEx;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.ServiceConfig;
 import jeeves.server.UserSession;
@@ -717,15 +718,15 @@ public class LuceneSearcher extends MetaSearcher {
             spatialfilter = _sm.getSpatial().filter(_query, Integer.MAX_VALUE, geometry, request);
         }
 
-        Filter duplicateRemovingFilter = new DuplicateDocFilter(_query, 1000000);
-        Filter filter;
-        if (spatialfilter == null) {
-            filter = duplicateRemovingFilter;
-        } else {
-            Filter[] filters = new Filter[]{duplicateRemovingFilter, spatialfilter};
-            filter = new ChainedFilter(filters, ChainedFilter.AND);
+        List<Filter> filters = new ArrayList<Filter>();
+        filters.add(new DuplicateDocFilter(_query, 1000000));
+        filters.addAll(getUserFilters(request, srvContext));
+
+        if (spatialfilter != null) {
+            filters.add(spatialfilter);
         }
 
+        Filter filter = new ChainedFilter(filters.toArray(new Filter[filters.size()]), ChainedFilter.AND);
         _filter = new CachingWrapperFilter(filter);
 
         String sortBy = Util.getParam(request, Geonet.SearchResult.SORT_BY, Geonet.SearchResult.SortBy.RELEVANCE);
@@ -751,6 +752,27 @@ public class LuceneSearcher extends MetaSearcher {
         }
 			*/
 	}
+
+    private List<Filter> getUserFilters(Element request, ServiceContext srvContext) {
+        List<Filter> filters = new ArrayList<Filter>();
+
+        try {
+            String filtersStr = Util.getParam(request, Geonet.SearchResult.FILTERS);
+            for (String filterName : filtersStr.split(",")) {
+                filterName = filterName.trim().toLowerCase();
+                if (0 == filterName.compareTo("collectionavailability")) {
+                    Log.info(Geonet.SEARCH_ENGINE, String.format("Applying search filter '%s'", filterName));
+                    filters.add(new CollectionAvailabilityFilter(_query, srvContext));
+                } else {
+                    Log.info(Geonet.SEARCH_ENGINE, String.format("No such filter '%s'", filterName));
+                }
+            }
+        } catch (BadInputEx e) {
+            // No filters? No big deal.
+        }
+
+        return filters;
+    }
 
     /**
      * TODO javadoc.
