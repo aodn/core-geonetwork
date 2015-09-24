@@ -55,6 +55,10 @@ public class LinkMonitorService implements LinkMonitorInterface {
 
     private long reindexTimestamp = -1;
 
+    // Prevent ourselves from being triggered while there is an ongoing check
+    private static long UNDEFINED_THREAD_ID;
+    private long runningThreadId = UNDEFINED_THREAD_ID;
+
     public LinkMonitorService() {
         this.recordMap = new HashMap<String, MetadataRecordInfo>();
     }
@@ -72,14 +76,52 @@ public class LinkMonitorService implements LinkMonitorInterface {
         this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
     }
 
+    private void setStopRunning() {
+        setRunning(false);
+    }
+
+    private boolean setStartRunning() {
+        return setRunning(true);
+    }
+
+    private synchronized boolean setRunning(boolean running) {
+        long currentThreadId = Thread.currentThread().getId();
+
+        if (running) {
+            if (runningThreadId == UNDEFINED_THREAD_ID) {
+                runningThreadId = currentThreadId;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        if (!running) {
+            if (runningThreadId == currentThreadId) {
+                runningThreadId = UNDEFINED_THREAD_ID;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public void run() {
         try {
-            check();
-        }
-        catch(Throwable e) {
+            if (setStartRunning()) {
+                check();
+            } else {
+                logger.info("Check is already in progress, skipping...");
+                logger.info(String.format("You might want to tune '%s'", Geonet.Config.LINK_MONITOR_FIXEDDELAYSECONDS));
+            }
+        } catch(Throwable e) {
             logger.error("Link Monitor error: " + e.getMessage() + " This error is ignored.");
             logger.info(e);
+        } finally {
+            setStopRunning();
         }
     }
 
