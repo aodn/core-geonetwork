@@ -53,17 +53,16 @@ public class MetadataRecordInfo {
                     String protocol = protocolElement.getText();
 
                     if (protocol != null) {
-                        LinkCheckerInterface linkChecker = getCheckerForLinkType(protocol);
+                        LinkCheckerInterface linkChecker = getCheckerForLinkType(protocol, onlineResource);
                         if (linkChecker == null) {
                             logger.debug(String.format("Cannot find checker for '%s'", protocol));
                         }
                         else {
                             logger.info(String.format("Configuring checker '%s' for '%s'", linkChecker.toString(), protocol));
-                            linkInfoList.add(new LinkInfo(onlineResource, linkChecker));
+                            linkInfoList.add(new LinkInfo(linkChecker));
                         }
                     }
                 }
-
             }
         } catch (JDOMException e) {
             logger.info(e);
@@ -132,11 +131,13 @@ public class MetadataRecordInfo {
         }
     }
 
-    private static LinkCheckerInterface getCheckerForLinkType(String linkType) {
+    private static LinkCheckerInterface getCheckerForLinkType(String linkType, final Element onlineResource) {
         Class linkCheckerClass = linkCheckerMap.get(linkType);
         if (linkCheckerClass != null) {
             try {
-                return (LinkCheckerInterface) linkCheckerClass.newInstance();
+                LinkCheckerInterface linkCheckerInterface = (LinkCheckerInterface) linkCheckerClass.newInstance();
+                linkCheckerInterface.setOnlineResource(onlineResource);
+                return linkCheckerInterface;
             } catch (Exception e) {
                 logger.info(e);
             }

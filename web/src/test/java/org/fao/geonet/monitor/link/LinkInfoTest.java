@@ -10,12 +10,15 @@ public class LinkInfoTest extends TestCase {
         public LinkCheckerMock() {}
 
         @Override
-        public boolean check(Element element) {
+        public void setOnlineResource(final Element onlineResource) {}
+
+        @Override
+        public boolean check() {
             return testResult;
         }
 
         @Override
-        public String toString(Element element) {
+        public String toString() {
             return "";
         }
     }
@@ -24,7 +27,7 @@ public class LinkInfoTest extends TestCase {
         LinkMonitorService.maxChecks = 3;
         LinkMonitorService.percentWorkingThreshold = 50;
 
-        LinkInfo linkInfo = new LinkInfo(null, new LinkCheckerMock());
+        LinkInfo linkInfo = new LinkInfo(new LinkCheckerMock());
         testResult = true;
 
         // No checks done - status should be UNKNOWN
@@ -53,7 +56,7 @@ public class LinkInfoTest extends TestCase {
         LinkMonitorService.maxChecks = 10;
         LinkMonitorService.percentWorkingThreshold = 10;
 
-        LinkInfo linkInfo = new LinkInfo(null, new LinkCheckerMock());
+        LinkInfo linkInfo = new LinkInfo(new LinkCheckerMock());
         testResult = false;
 
         // Not enough checks done, but all have failed
@@ -66,7 +69,7 @@ public class LinkInfoTest extends TestCase {
     public void testCheck() throws Exception {
         // Verify we save only 3 checks back
         LinkMonitorService.maxChecks = 3;
-        LinkInfo linkInfo = new LinkInfo(null, new LinkCheckerMock());
+        LinkInfo linkInfo = new LinkInfo(new LinkCheckerMock());
         for (int i = 0; i < 10; i++) {
             linkInfo.check();
         }

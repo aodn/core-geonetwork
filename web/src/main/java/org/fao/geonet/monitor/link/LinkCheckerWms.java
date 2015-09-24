@@ -2,31 +2,13 @@ package org.fao.geonet.monitor.link;
 
 import org.jdom.Element;
 
-public class LinkCheckerWms implements LinkCheckerInterface {
+public class LinkCheckerWms extends LinkCheckerDefault {
     private static String WMS_GET_MAP = "?service=WMS&request=GetMap&version=1.1.1&format=image/png&bbox=-180,-90,180,90&srs=EPSG:4326&width=1&height=1&STYLES=&layers=";
 
-    private String getCheckUrl(Element onlineResource) {
-        String url = LinkCheckerUtils.parseOnlineResource(onlineResource, LinkCheckerUtils.URL_XPATH);
+    @Override
+    public void setOnlineResource(final Element onlineResource) {
+        super.setOnlineResource(onlineResource);
         String name = LinkCheckerUtils.parseOnlineResource(onlineResource, LinkCheckerUtils.NAME_XPATH);
-
-        if (url != null && name != null) {
-            return url + WMS_GET_MAP + name;
-        }
-
-        return null;
-    }
-
-    @Override
-    public boolean check(Element onlineResource) {
-        String checkUrl = getCheckUrl(onlineResource);
-        if (checkUrl != null)
-            return LinkCheckerUtils.checkHttpUrl(checkUrl);
-
-        return true;
-    }
-
-    @Override
-    public String toString(Element onlineResource) {
-        return getCheckUrl(onlineResource);
+        url += WMS_GET_MAP + name;
     }
 }

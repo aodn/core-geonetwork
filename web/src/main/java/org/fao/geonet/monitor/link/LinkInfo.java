@@ -12,20 +12,26 @@ public class LinkInfo {
 
     private List<CheckInfo> checkInfoList;
 
-    private final Element onlineResource;
-
     private final LinkCheckerInterface linkChecker;
 
     private LinkMonitorService.Status status = LinkMonitorService.Status.UNKNOWN;
 
-    public LinkInfo(Element onlineResource, LinkCheckerInterface linkChecker) {
+    public LinkInfo(LinkCheckerInterface linkChecker) {
         checkInfoList = new ArrayList<CheckInfo>();
-        this.onlineResource = onlineResource;
         this.linkChecker = linkChecker;
     }
 
     public int getCheckCount() {
         return checkInfoList.size();
+    }
+
+    private boolean hasSuccessCheck() {
+        for (final CheckInfo checkInfo : checkInfoList) {
+            if (checkInfo.status)
+                return true;
+        }
+
+        return false;
     }
 
     private boolean hasOnlyFailedChecks() {
@@ -90,15 +96,6 @@ public class LinkInfo {
         return status;
     }
 
-    private boolean hasSuccessCheck() {
-        for (final CheckInfo checkInfo : checkInfoList) {
-            if (checkInfo.status)
-                return true;
-        }
-
-        return false;
-    }
-
     private void truncateCheckList() {
         // Leave just the last maxChecks checks
         while (getCheckCount() > LinkMonitorService.maxChecks) {
@@ -107,13 +104,13 @@ public class LinkInfo {
     }
 
     public void check() {
-        checkInfoList.add(new CheckInfo(onlineResource, linkChecker));
+        checkInfoList.add(new CheckInfo(linkChecker));
         truncateCheckList();
         status = evaluateStatus();
     }
 
     @Override
     public String toString() {
-        return linkChecker.toString(onlineResource);
+        return linkChecker.toString();
     }
 }

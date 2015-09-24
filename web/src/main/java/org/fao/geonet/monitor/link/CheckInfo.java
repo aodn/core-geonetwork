@@ -6,8 +6,8 @@ public class CheckInfo {
     public boolean status;
     public long timestamp;
 
-    public CheckInfo(Element onlineResource, LinkCheckerInterface linkChecker) {
-        this.status = linkChecker.check(onlineResource);
+    public CheckInfo(LinkCheckerInterface linkChecker) {
+        this.status = linkChecker.check();
         this.timestamp = System.currentTimeMillis() / 1000l;
     }
 }

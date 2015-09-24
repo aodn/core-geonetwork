@@ -3,7 +3,9 @@ package org.fao.geonet.monitor.link;
 import org.jdom.Element;
 
 public interface LinkCheckerInterface {
-    public boolean check(Element onlineResource);
+    public void setOnlineResource(Element onlineResource);
 
-    public String toString(Element onlineResource);
+    public boolean check();
+
+    public String toString();
 }

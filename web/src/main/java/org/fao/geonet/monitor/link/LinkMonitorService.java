@@ -89,7 +89,7 @@ public class LinkMonitorService implements LinkMonitorInterface {
         } catch (Exception e) {
             logger.info(e);
         }
-        return null;
+        return new ArrayList<String>();
     }
 
     private ArrayList<String> getAllRecordsLucene() throws Exception {
