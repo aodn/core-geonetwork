@@ -23,26 +23,26 @@ public class MetadataRecordInfoTest extends TestCase {
 
         statusList.clear();
         statusList.add(LinkMonitorService.Status.WORKING);
-        assertEquals(LinkMonitorService.Status.WORKING, MetadataRecordInfo.getStatus(statusList));
+        assertEquals(LinkMonitorService.Status.WORKING, MetadataRecordInfo.evaluateStatus(statusList));
 
         statusList.clear();
         statusList.add(LinkMonitorService.Status.FAILED);
-        assertEquals(LinkMonitorService.Status.FAILED, MetadataRecordInfo.getStatus(statusList));
+        assertEquals(LinkMonitorService.Status.FAILED, MetadataRecordInfo.evaluateStatus(statusList));
 
         statusList.clear();
         statusList.add(LinkMonitorService.Status.UNKNOWN);
-        assertEquals(LinkMonitorService.Status.UNKNOWN, MetadataRecordInfo.getStatus(statusList));
+        assertEquals(LinkMonitorService.Status.UNKNOWN, MetadataRecordInfo.evaluateStatus(statusList));
 
         statusList.clear();
         statusList.add(LinkMonitorService.Status.UNKNOWN);
         statusList.add(LinkMonitorService.Status.WORKING);
         statusList.add(LinkMonitorService.Status.UNKNOWN);
-        assertEquals(LinkMonitorService.Status.UNKNOWN, MetadataRecordInfo.getStatus(statusList));
+        assertEquals(LinkMonitorService.Status.UNKNOWN, MetadataRecordInfo.evaluateStatus(statusList));
 
         statusList.clear();
         statusList.add(LinkMonitorService.Status.WORKING);
         statusList.add(LinkMonitorService.Status.UNKNOWN);
         statusList.add(LinkMonitorService.Status.FAILED);
-        assertEquals(LinkMonitorService.Status.FAILED, MetadataRecordInfo.getStatus(statusList));
+        assertEquals(LinkMonitorService.Status.FAILED, MetadataRecordInfo.evaluateStatus(statusList));
     }
 }

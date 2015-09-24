@@ -1,6 +1,7 @@
 package org.fao.geonet.monitor.link;
 
 import jeeves.resources.dbms.Dbms;
+import org.apache.log4j.Logger;
 import org.fao.geonet.constants.Geonet;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 public class MetadataRecordInfo {
+    private static Logger logger = Logger.getLogger(MetadataRecordInfo.class);
+
     private String uuid;
 
     private List<LinkInfo> linkInfoList;
@@ -20,6 +23,9 @@ public class MetadataRecordInfo {
     public static String PROTOCOL_XPATH = "gmd:protocol/gco:CharacterString";
 
     private static final Map<String, Class> linkCheckerMap = new HashMap<String, Class>();
+
+    private LinkMonitorService.Status status = LinkMonitorService.Status.UNKNOWN;
+
     static {
         linkCheckerMap.put("OGC:WMS-1.1.1-http-get-map", LinkCheckerWms.class);
         linkCheckerMap.put("OGC:WFS-1.0.0-http-get-capabilities", LinkCheckerWfs.class);
@@ -28,10 +34,10 @@ public class MetadataRecordInfo {
         linkCheckerMap.put("WWW:DOWNLOAD-1.0-http--downloadother", LinkCheckerDefault.class);
     }
 
-    public MetadataRecordInfo(String uuid) {
+    public MetadataRecordInfo(LinkMonitorService linkMonitorService, String uuid) {
         this.uuid = uuid;
         linkInfoList = new ArrayList<LinkInfo>();
-        getOnlineResources(getDocumentForUuid(uuid));
+        getOnlineResources(linkMonitorService.getDocumentForUuid(uuid));
     }
 
     public void getOnlineResources(Element element) {
@@ -49,10 +55,10 @@ public class MetadataRecordInfo {
                     if (protocol != null) {
                         LinkCheckerInterface linkChecker = getCheckerForLinkType(protocol);
                         if (linkChecker == null) {
-                            LinkMonitorService.getLogger().debug(String.format("Cannot find checker for '%s'", protocol));
+                            logger.debug(String.format("Cannot find checker for '%s'", protocol));
                         }
                         else {
-                            LinkMonitorService.getLogger().info(String.format("Configuring checker '%s' for '%s'", linkChecker.toString(), protocol));
+                            logger.info(String.format("Configuring checker '%s' for '%s'", linkChecker.toString(), protocol));
                             linkInfoList.add(new LinkInfo(onlineResource, linkChecker));
                         }
                     }
@@ -60,7 +66,7 @@ public class MetadataRecordInfo {
 
             }
         } catch (JDOMException e) {
-            e.printStackTrace();
+            logger.info(e);
         }
     }
 
@@ -76,28 +82,20 @@ public class MetadataRecordInfo {
         return isHealthy(unknownAsWorking, getStatus());
     }
 
-    private Element getDocumentForUuid(String uuid) {
-        try {
-            Dbms dbms = (Dbms) LinkMonitorService.getResourceManager().open(Geonet.Res.MAIN_DB);
-            String id = LinkMonitorService.getGeonetContext().getDataManager().getMetadataId(dbms, uuid);
-            return LinkMonitorService.getGeonetContext().getDataManager().getMetadataIgnorePermissions(dbms, id);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    private LinkMonitorService.Status getStatus() {
+        return status;
     }
 
-    private LinkMonitorService.Status getStatus() {
+    private LinkMonitorService.Status evaluateStatus() {
         List<LinkMonitorService.Status> statusList = new ArrayList<LinkMonitorService.Status>();
         for (final LinkInfo linkInfo : linkInfoList) {
             statusList.add(linkInfo.getStatus());
         }
 
-        return getStatus(statusList);
+        return evaluateStatus(statusList);
     }
 
-    public static LinkMonitorService.Status getStatus(List<LinkMonitorService.Status> statusList) {
+    public static LinkMonitorService.Status evaluateStatus(List<LinkMonitorService.Status> statusList) {
         if (statusList.contains(LinkMonitorService.Status.FAILED)) {
             return LinkMonitorService.Status.FAILED;
         } else if (statusList.contains(LinkMonitorService.Status.UNKNOWN)) {
@@ -108,25 +106,27 @@ public class MetadataRecordInfo {
     }
 
     public void check() {
-        LinkMonitorService.getLogger().debug(String.format("Checking '%s'", uuid));
+        logger.debug(String.format("Checking '%s'", uuid));
         LinkMonitorService.Status prevStatus = getStatus();
         for (final LinkInfo linkInfo : linkInfoList) {
             linkInfo.check();
         }
         LinkMonitorService.Status newStatus = getStatus();
         ReportStatusChange(prevStatus, newStatus);
+        status = evaluateStatus();
     }
 
     private void ReportStatusChange(LinkMonitorService.Status prevStatus, LinkMonitorService.Status newStatus) {
-        if (prevStatus == newStatus)
+        if (prevStatus == newStatus) {
             return;
+        }
 
-        LinkMonitorService.getLogger().info(String.format("Record '%s' changes status from '%s' to '%s'", uuid, prevStatus, newStatus));
+        logger.info(String.format("Record '%s' changes status from '%s' to '%s'", uuid, prevStatus, newStatus));
 
         if (newStatus == LinkMonitorService.Status.FAILED) {
             for (final LinkInfo linkInfo : linkInfoList) {
                 if (linkInfo.getStatus() != LinkMonitorService.Status.WORKING) {
-                    LinkMonitorService.getLogger().info(String.format("Link '%s' is in state '%s'", linkInfo.toString(), linkInfo.getStatus()));
+                    logger.info(String.format("Link '%s' is in state '%s'", linkInfo.toString(), linkInfo.getStatus()));
                 }
             }
         }
@@ -138,7 +138,7 @@ public class MetadataRecordInfo {
             try {
                 return (LinkCheckerInterface) linkCheckerClass.newInstance();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.info(e);
             }
         }
 

@@ -2,9 +2,6 @@ package org.fao.geonet.monitor.link;
 
 import org.jdom.Element;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 public class CheckInfo {
     public boolean status;
     public long timestamp;

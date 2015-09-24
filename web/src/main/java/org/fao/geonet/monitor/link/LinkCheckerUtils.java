@@ -1,5 +1,6 @@
 package org.fao.geonet.monitor.link;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
@@ -10,6 +11,7 @@ import java.net.URL;
 public class LinkCheckerUtils {
     public static String URL_XPATH = "gmd:linkage";
     public static String NAME_XPATH = "gmd:name";
+    private static Logger logger = Logger.getLogger(LinkCheckerUtils.class);
 
     public static boolean checkHttpUrl(String url) {
         try {
@@ -20,13 +22,13 @@ public class LinkCheckerUtils {
             connection.setRequestMethod("GET");
             connection.connect();
 
-            LinkMonitorService.getLogger().debug(String.format("%s -> %d", url, connection.getResponseCode()));
+            logger.debug(String.format("%s -> %d", url, connection.getResponseCode()));
             if (connection.getResponseCode() != 200)
-                LinkMonitorService.getLogger().debug(String.format("URL '%s' is unavailable", url, connection.getResponseCode()));
+                logger.debug(String.format("URL '%s' is unavailable", url, connection.getResponseCode()));
 
             return 200 == connection.getResponseCode();
         } catch (Exception e) {
-            LinkMonitorService.getLogger().debug(e.getStackTrace().toString());
+            logger.debug(e);
         }
         return false;
     }
@@ -38,9 +40,9 @@ public class LinkCheckerUtils {
             Element firstChildElement = (Element) element.getChildren().get(0);
             return firstChildElement.getText().trim();
         } catch (JDOMException e) {
-            LinkMonitorService.getLogger().error(String.format("Error parsing onlineResource, cannot extract '%s'", path));
-            LinkMonitorService.getLogger().error(onlineResource.getContent().toString());
-            e.printStackTrace();
+            logger.error(String.format("Error parsing onlineResource, cannot extract '%s'", path));
+            logger.error(onlineResource.getContent().toString());
+            logger.error(e);
         }
 
         return null;

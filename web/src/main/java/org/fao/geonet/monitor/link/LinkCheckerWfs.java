@@ -2,9 +2,6 @@ package org.fao.geonet.monitor.link;
 
 import org.jdom.Element;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 public class LinkCheckerWfs implements LinkCheckerInterface {
     private static String WFS_GET_FEATURES = "?service=WFS&version=1.0.0&request=GetFeature&maxFeatures=1&outputFormat=csv&typeName=";
 

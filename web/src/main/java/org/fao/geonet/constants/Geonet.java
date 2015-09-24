@@ -512,7 +512,6 @@ public final class Geonet {
         public static final String LINK_MONITOR_CLASS = "LinkMonitorClass";
         public static final String LINK_MONITOR_INITIALDELAYSECONDS = "LinkMonitorInitialDelaySeconds";
         public static final String LINK_MONITOR_FIXEDDELAYSECONDS = "LinkMonitorFixedDelaySeconds";
-        public static final String LINK_MONITOR_REINDEXINTERVALSECONDS = "LinkMonitorReindexIntervalSeconds";
         public static final String SCHEMA_PLUGINS_CATALOG_UPDATE = "createOrUpdateSchemaCatalog";
     }
 
