@@ -760,11 +760,25 @@ public class LuceneSearcher extends MetaSearcher {
             String filtersStr = Util.getParam(request, Geonet.SearchResult.FILTERS);
             for (String filterName : filtersStr.split(",")) {
                 filterName = filterName.trim().toLowerCase();
+                int logic = ChainedFilter.AND;
+
+                if (filterName.startsWith("!")) {
+                    filterName = filterName.substring(1);
+                    logic = ChainedFilter.ANDNOT;
+                }
+
+                Filter filter = null;
                 if (0 == filterName.compareTo("collectionavailability")) {
                     Log.info(Geonet.SEARCH_ENGINE, String.format("Applying search filter '%s'", filterName));
-                    filters.add(new CollectionAvailabilityFilter(_query, srvContext));
+                    filter = new CollectionAvailabilityFilter(_query, srvContext);
+
                 } else {
                     Log.info(Geonet.SEARCH_ENGINE, String.format("No such filter '%s'", filterName));
+                }
+
+                if (filter != null) {
+                    ChainedFilter wrappedFilter = new ChainedFilter(new Filter[]{filter}, logic);
+                    filters.add(wrappedFilter);
                 }
             }
         } catch (BadInputEx e) {
