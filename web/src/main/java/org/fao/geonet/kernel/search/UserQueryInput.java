@@ -77,6 +77,7 @@ public class UserQueryInput {
             Geonet.SearchResult.SUMMARY_ONLY, 
             Geonet.SearchResult.BUILD_SUMMARY,
             Geonet.SearchResult.REQUESTED_LANGUAGE,
+            Geonet.SearchResult.FILTERS,
             "region_simple", "attrset", "mode", 
             "region", "from", "to", "hitsperpage", "georss"
             );

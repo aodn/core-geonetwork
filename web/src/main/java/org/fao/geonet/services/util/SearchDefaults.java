@@ -60,7 +60,8 @@ public class SearchDefaults {
 			{ Geonet.SearchResult.OUTPUT, Geonet.SearchResult.Output.FULL },
 			{ Geonet.SearchResult.SORT_BY, Geonet.SearchResult.SortBy.RELEVANCE },
 			{ Geonet.SearchResult.SORT_ORDER, "" },
-			{ Geonet.SearchResult.INTERMAP, Geonet.Text.ON } };
+			{ Geonet.SearchResult.INTERMAP, Geonet.Text.ON },
+			{ Geonet.SearchResult.FILTERS, "" } };
 
 	/**
 	 * Returns default values for the search parameters. If request params are

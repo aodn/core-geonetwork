@@ -35,6 +35,7 @@ import org.fao.geonet.kernel.harvest.HarvestManager;
 import org.fao.geonet.kernel.oaipmh.OaiPmhDispatcher;
 import org.fao.geonet.kernel.search.SearchManager;
 import org.fao.geonet.kernel.setting.SettingManager;
+import org.fao.geonet.monitor.link.LinkMonitorInterface;
 import org.fao.geonet.util.ThreadPool;
 import org.fao.geonet.notifier.MetadataNotifierManager;
 import org.springframework.context.ApplicationContext;
@@ -55,6 +56,7 @@ public class GeonetContext {
 	/* package */ ApplicationContext app_context;
   /* package */ MetadataNotifierManager metadataNotifierMan;
 	/* package */ ThreadPool        threadPool;
+    /* package */ LinkMonitorInterface linkMonitor;
 	Class statusActionsClass;
     boolean readOnly;
 
@@ -78,6 +80,7 @@ public class GeonetContext {
 	public ApplicationContext  getApplicationContext() { return app_context; }
   public MetadataNotifierManager getMetadataNotifier() { return metadataNotifierMan; }
     public ThreadPool        getThreadPool()        { return threadPool;   }
+    public LinkMonitorInterface getLinkMonitor()    { return linkMonitor;  }
 
 	//---------------------------------------------------------------------------
 
