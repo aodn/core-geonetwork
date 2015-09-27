@@ -33,10 +33,10 @@ public class LinkMonitorService implements LinkMonitorInterface {
     private long reindexInterval;
 
     public static final String LINK_MONITOR_SERVICE_PERCENTWORKINGTHRESHOLD = "LinkMonitorServicePercentWorkingThreshold";
-    public static int percentWorkingThreshold = 90;
+    public static int percentWorkingThreshold;
 
     public static final String LINK_MONITOR_SERVICE_MAXCHECKS = "LinkMonitorServiceMaxChecks";
-    public static int maxChecks = 10;
+    public static int maxChecks;
 
     public static final String LINK_MONITOR_SERVICE_TIMEOUT = "LinkMonitorServiceTimeout";
     public static int timeout;
@@ -73,7 +73,7 @@ public class LinkMonitorService implements LinkMonitorInterface {
         this.timeout = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_TIMEOUT, "15"));
         this.freshness = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_FRESHNESS, "3600"));
         this.unknownAsWorking = Boolean.parseBoolean(serviceConfig.getValue(LINK_MONITOR_SERVICE_UNKNOWNASWORKING, "true"));
-        this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
+        this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "2000"));
     }
 
     @Override
