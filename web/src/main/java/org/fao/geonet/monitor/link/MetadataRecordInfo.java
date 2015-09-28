@@ -110,9 +110,8 @@ public class MetadataRecordInfo {
         for (final LinkInfo linkInfo : linkInfoList) {
             linkInfo.check();
         }
-        LinkMonitorService.Status newStatus = getStatus();
-        ReportStatusChange(prevStatus, newStatus);
         status = evaluateStatus();
+        ReportStatusChange(prevStatus, getStatus());
     }
 
     private void ReportStatusChange(LinkMonitorService.Status prevStatus, LinkMonitorService.Status newStatus) {
