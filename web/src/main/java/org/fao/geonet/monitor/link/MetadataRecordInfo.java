@@ -30,7 +30,6 @@ public class MetadataRecordInfo {
         linkCheckerMap.put("OGC:WMS-1.1.1-http-get-map", LinkCheckerWms.class);
         linkCheckerMap.put("OGC:WFS-1.0.0-http-get-capabilities", LinkCheckerWfs.class);
         linkCheckerMap.put("IMOS:AGGREGATION--bodaac", LinkCheckerWfs.class);
-        linkCheckerMap.put("WWW:LINK-1.0-http--metadata-URL", LinkCheckerDefault.class);
         linkCheckerMap.put("WWW:DOWNLOAD-1.0-http--downloadother", LinkCheckerDefault.class);
     }
 
