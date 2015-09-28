@@ -478,7 +478,7 @@ public class Geonetwork implements ApplicationHandler {
             createDBHeartBeat(context.getResourceManager(), gnContext, dbHeartBeatInitialDelay, dbHeartBeatFixedDelay);
         }
 
-        createLinkMonitor(context.getResourceManager(), gnContext, handlerConfig);
+        createLinkMonitor(app_context, context.getResourceManager(), gnContext, handlerConfig);
 
 		return gnContext;
 	}
@@ -563,7 +563,7 @@ public class Geonetwork implements ApplicationHandler {
         scheduledExecutorService.scheduleWithFixedDelay(DBHeartBeat, initialDelay, fixedDelay, TimeUnit.SECONDS);
     }
 
-    private void createLinkMonitor(final ResourceManager rm, final GeonetContext gc, ServiceConfig handlerConfig) {
+    private void createLinkMonitor(final ApplicationContext appContext, final ResourceManager rm, final GeonetContext gc, ServiceConfig handlerConfig) {
         boolean linkMonitorEnabled = Boolean.parseBoolean(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_ENABLED, "false"));
         if(!linkMonitorEnabled) {
             return;
@@ -571,18 +571,16 @@ public class Geonetwork implements ApplicationHandler {
 
         logger.info("Creating Link Monitor...");
 
-        String linkMonitorClass = handlerConfig.getValue(Geonet.Config.LINK_MONITOR_CLASS, "org.fao.geonet.monitor.link.LinkMonitorService");
         Integer linkMonitorInitialDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_INITIALDELAYSECONDS, "5"));
         Integer linkMonitorFixedDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_FIXEDDELAYSECONDS, "60"));
 
         try {
-            Class classz = Class.forName(linkMonitorClass);
-            gc.linkMonitor = (LinkMonitorInterface) classz.newInstance();
-            gc.linkMonitor.init(rm, gc, handlerConfig);
-            logger.info(String.format("Link Monitor with class '%s' initialized", linkMonitorClass));
+            gc.linkMonitor = appContext.getBean("LinkMonitor", LinkMonitorInterface.class);
+            gc.linkMonitor.init(appContext, rm, gc, handlerConfig);
+            logger.info(String.format("Link Monitor with class '%s' initialized", gc.linkMonitor.getClass().getName()));
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(String.format("Failed initializing Link Monitor with class '%s'", linkMonitorClass));
+            logger.error("Failed initializing Link Monitor");
             return;
         }
 

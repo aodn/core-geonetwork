@@ -22,16 +22,7 @@ public class MetadataRecordInfo {
     public static String ONLINE_RESOURCES_XPATH = "gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource";
     public static String PROTOCOL_XPATH = "gmd:protocol/gco:CharacterString";
 
-    private static final Map<String, Class> linkCheckerMap = new HashMap<String, Class>();
-
     private LinkMonitorService.Status status = LinkMonitorService.Status.UNKNOWN;
-
-    static {
-        linkCheckerMap.put("OGC:WMS-1.1.1-http-get-map", LinkCheckerWms.class);
-        linkCheckerMap.put("OGC:WFS-1.0.0-http-get-capabilities", LinkCheckerWfs.class);
-        linkCheckerMap.put("IMOS:AGGREGATION--bodaac", LinkCheckerWfs.class);
-        linkCheckerMap.put("WWW:DOWNLOAD-1.0-http--downloadother", LinkCheckerDefault.class);
-    }
 
     public MetadataRecordInfo(LinkMonitorService linkMonitorService, String uuid) {
         this.uuid = uuid;
@@ -130,9 +121,10 @@ public class MetadataRecordInfo {
     }
 
     private static LinkCheckerInterface getCheckerForLinkType(String linkType, final Element onlineResource) {
-        Class linkCheckerClass = linkCheckerMap.get(linkType);
-        if (linkCheckerClass != null) {
+        String linkCheckerClassName = ""; //TODOLinkMonitorService.getCheckerClassesMap().get(linkType);
+        if (linkCheckerClassName != null) {
             try {
+                Class linkCheckerClass = Class.forName(linkCheckerClassName);
                 LinkCheckerInterface linkCheckerInterface = (LinkCheckerInterface) linkCheckerClass.newInstance();
                 linkCheckerInterface.setOnlineResource(onlineResource);
                 return linkCheckerInterface;

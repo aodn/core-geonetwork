@@ -29,6 +29,9 @@
   <bean id="ContextGateway" class="org.fao.geonet.ContextContainer">
   </bean>
 
+  <bean id="LinkMonitor" class="org.fao.geonet.monitor.link.LinkMonitorService">
+  </bean>
+
   <bean id="OIDRegister" class="org.jzkit.a2j.codec.util.OIDRegister">
     <constructor-arg index="0"><value>/a2j.properties</value></constructor-arg>
   </bean>

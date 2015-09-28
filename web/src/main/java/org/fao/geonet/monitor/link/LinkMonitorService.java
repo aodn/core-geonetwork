@@ -10,6 +10,7 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.IndexAndTaxonomy;
 import org.fao.geonet.kernel.search.index.GeonetworkMultiReader;
 import org.jdom.Element;
+import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ public class LinkMonitorService implements LinkMonitorInterface {
 
     static Logger logger = Logger.getLogger(LinkMonitorService.class);
 
+    private static ApplicationContext applicationContext;
     private ResourceManager resourceManager;
     private GeonetContext geonetContext;
 
@@ -29,28 +31,29 @@ public class LinkMonitorService implements LinkMonitorInterface {
         UNKNOWN
     }
 
+
     public static final String LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS = "LinkMonitorServiceReindexIntervalSeconds";
-    private long reindexInterval;
+    private long reindexInterval = 1800;
 
     public static final String LINK_MONITOR_SERVICE_PERCENTWORKINGTHRESHOLD = "LinkMonitorServicePercentWorkingThreshold";
-    public static int percentWorkingThreshold;
+    public static int percentWorkingThreshold = 90;
 
     public static final String LINK_MONITOR_SERVICE_MAXCHECKS = "LinkMonitorServiceMaxChecks";
-    public static int maxChecks;
+    public static int maxChecks = 10;
 
     public static final String LINK_MONITOR_SERVICE_TIMEOUT = "LinkMonitorServiceTimeout";
-    public static int timeout;
+    public static int timeout = 15;
 
     public static final String LINK_MONITOR_SERVICE_FRESHNESS = "LinkMonitorServiceFreshness";
-    public static int freshness;
+    public static int freshness = 3600;
 
     public static final String LINK_MONITOR_SERVICE_UNKNOWNASWORKING = "LinkMonitorServiceUnknownAsWorking";
-    private boolean unknownAsWorking;
+    private boolean unknownAsWorking = true;
 
     // Milliseconds between running checks on every record. This is here to
     // prevent undesired hammering of servers
     public static final String LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS = "LinkMonitorServiceBetweenChecksIntervalMs";
-    private static int betweenChecksIntervalMs;
+    private static int betweenChecksIntervalMs = 2000;
 
     private final Map<String, MetadataRecordInfo> recordMap;
 
@@ -63,17 +66,25 @@ public class LinkMonitorService implements LinkMonitorInterface {
         this.recordMap = new HashMap<String, MetadataRecordInfo>();
     }
 
+    private static Map<String, String> checkerClassesMap;
+
     @Override
-    public void init(ResourceManager resourceManager, GeonetContext geonetContext, ServiceConfig serviceConfig) {
+    public void init(
+        ApplicationContext applicationContext,
+        ResourceManager resourceManager,
+        GeonetContext geonetContext,
+        ServiceConfig serviceConfig) {
+        this.applicationContext = applicationContext;
         this.resourceManager = resourceManager;
         this.geonetContext = geonetContext;
+
         this.reindexInterval = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS, "1800"));
         this.percentWorkingThreshold = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_PERCENTWORKINGTHRESHOLD, "90"));
         this.maxChecks = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_MAXCHECKS, "10"));
         this.timeout = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_TIMEOUT, "15"));
         this.freshness = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_FRESHNESS, "3600"));
         this.unknownAsWorking = Boolean.parseBoolean(serviceConfig.getValue(LINK_MONITOR_SERVICE_UNKNOWNASWORKING, "true"));
-        this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "2000"));
+        this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
     }
 
     @Override
@@ -91,6 +102,10 @@ public class LinkMonitorService implements LinkMonitorInterface {
         } finally {
             lock.unlock();
         }
+    }
+
+    public static ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
     private ArrayList<String> getAllRecords() {
