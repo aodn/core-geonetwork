@@ -1,7 +1,5 @@
 package org.fao.geonet.monitor.link;
 
-import org.jdom.Element;
-
 public class CheckInfo {
     public boolean status;
     public long timestamp;

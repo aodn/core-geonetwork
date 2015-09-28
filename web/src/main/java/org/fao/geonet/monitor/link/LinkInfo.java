@@ -1,10 +1,7 @@
 package org.fao.geonet.monitor.link;
 
 import org.apache.log4j.Logger;
-import org.jdom.Element;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class LinkInfo {

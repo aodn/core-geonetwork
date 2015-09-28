@@ -1,14 +1,11 @@
 package org.fao.geonet.monitor.link;
 
-import jeeves.resources.dbms.Dbms;
 import org.apache.log4j.Logger;
-import org.fao.geonet.constants.Geonet;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -121,15 +118,19 @@ public class MetadataRecordInfo {
     }
 
     private static LinkCheckerInterface getCheckerForLinkType(String linkType, final Element onlineResource) {
-        String linkCheckerClassName = ""; //TODOLinkMonitorService.getCheckerClassesMap().get(linkType);
-        if (linkCheckerClassName != null) {
-            try {
-                Class linkCheckerClass = Class.forName(linkCheckerClassName);
-                LinkCheckerInterface linkCheckerInterface = (LinkCheckerInterface) linkCheckerClass.newInstance();
-                linkCheckerInterface.setOnlineResource(onlineResource);
-                return linkCheckerInterface;
-            } catch (Exception e) {
-                logger.info(e);
+        final Map<String, LinkCheckerInterface> linkCheckerClasses =
+            LinkMonitorService.getApplicationContext().getBeansOfType(LinkCheckerInterface.class);
+
+        for (final String beanId : linkCheckerClasses.keySet()) {
+            if (linkCheckerClasses.get(beanId).canHandle(linkType)) {
+                try {
+                    Class linkCheckerClass = linkCheckerClasses.get(beanId).getClass();
+                    LinkCheckerInterface linkCheckerInterface = (LinkCheckerInterface) linkCheckerClass.newInstance();
+                    linkCheckerInterface.setOnlineResource(onlineResource);
+                    return linkCheckerInterface;
+                } catch (Exception e) {
+                    logger.info(e);
+                }
             }
         }
 

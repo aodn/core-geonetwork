@@ -32,6 +32,31 @@
   <bean id="LinkMonitor" class="org.fao.geonet.monitor.link.LinkMonitorService">
   </bean>
 
+  <bean id="LinkCheckerDefault" class="org.fao.geonet.monitor.link.LinkCheckerDefault">
+    <property name="linkTypes">
+      <set>
+        <value>WWW:DOWNLOAD-1.0-http--downloadother</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="LinkCheckerWms" class="org.fao.geonet.monitor.link.LinkCheckerWms">
+    <property name="linkTypes">
+      <set>
+        <value>OGC:WMS-1.1.1-http-get-map</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="LinkCheckerWfs" class="org.fao.geonet.monitor.link.LinkCheckerWfs">
+    <property name="linkTypes">
+      <set>
+        <value>OGC:WFS-1.0.0-http-get-capabilities</value>
+        <value>IMOS:AGGREGATION--bodaac</value>
+      </set>
+    </property>
+  </bean>
+
   <bean id="OIDRegister" class="org.jzkit.a2j.codec.util.OIDRegister">
     <constructor-arg index="0"><value>/a2j.properties</value></constructor-arg>
   </bean>
