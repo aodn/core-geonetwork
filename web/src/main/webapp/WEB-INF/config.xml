@@ -368,11 +368,17 @@
         <param name="DBHeartBeatFixedDelaySeconds" value="20"/>
 
         <param name="LinkMonitorEnabled" value="false"/>
-        <param name="LinkMonitorClass" value="org.fao.geonet.monitor.link.LinkMonitorService"/>
         <param name="LinkMonitorInitialDelaySeconds" value="5"/>
         <param name="LinkMonitorFixedDelaySeconds" value="60"/>
-        <param name="LinkMonitorReindexIntervalSeconds" value="1800"/>
-		
+
+        <param name="LinkMonitorServiceReindexIntervalSeconds" value="1800"/>
+        <param name="LinkMonitorServicePercentWorkingThreshold" value="90"/>
+        <param name="LinkMonitorServiceMaxChecks" value="10"/>
+        <param name="LinkMonitorServiceTimeout" value="15"/>
+        <param name="LinkMonitorServiceFreshness" value="3600"/>
+        <param name="LinkMonitorServiceUnknownAsWorking" value="true"/>
+        <param name="LinkMonitorServiceBetweenChecksIntervalMs" value="2000"/>
+
 		<!-- Define if the schema catalog should be updated on startup.
 		Default is true. -->
 		<param name="createOrUpdateSchemaCatalog" value="true"/>

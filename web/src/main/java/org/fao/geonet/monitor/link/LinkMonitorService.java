@@ -10,15 +10,18 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.IndexAndTaxonomy;
 import org.fao.geonet.kernel.search.index.GeonetworkMultiReader;
 import org.jdom.Element;
+import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class LinkMonitorService implements LinkMonitorInterface {
 
     static Logger logger = Logger.getLogger(LinkMonitorService.class);
 
+    private static ApplicationContext applicationContext;
     private ResourceManager resourceManager;
     private GeonetContext geonetContext;
 
@@ -28,8 +31,9 @@ public class LinkMonitorService implements LinkMonitorInterface {
         UNKNOWN
     }
 
+
     public static final String LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS = "LinkMonitorServiceReindexIntervalSeconds";
-    private long reindexInterval;
+    private long reindexInterval = 1800;
 
     public static final String LINK_MONITOR_SERVICE_PERCENTWORKINGTHRESHOLD = "LinkMonitorServicePercentWorkingThreshold";
     public static int percentWorkingThreshold = 90;
@@ -38,35 +42,42 @@ public class LinkMonitorService implements LinkMonitorInterface {
     public static int maxChecks = 10;
 
     public static final String LINK_MONITOR_SERVICE_TIMEOUT = "LinkMonitorServiceTimeout";
-    public static int timeout;
+    public static int timeout = 15;
 
     public static final String LINK_MONITOR_SERVICE_FRESHNESS = "LinkMonitorServiceFreshness";
-    public static int freshness;
+    public static int freshness = 3600;
 
     public static final String LINK_MONITOR_SERVICE_UNKNOWNASWORKING = "LinkMonitorServiceUnknownAsWorking";
-    private boolean unknownAsWorking;
+    private boolean unknownAsWorking = true;
 
     // Milliseconds between running checks on every record. This is here to
     // prevent undesired hammering of servers
     public static final String LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS = "LinkMonitorServiceBetweenChecksIntervalMs";
-    private static int betweenChecksIntervalMs;
+    private static int betweenChecksIntervalMs = 2000;
 
     private final Map<String, MetadataRecordInfo> recordMap;
 
     private long reindexTimestamp = -1;
 
     // Prevent ourselves from being triggered while there is an ongoing check
-    private static long UNDEFINED_THREAD_ID;
-    private long runningThreadId = UNDEFINED_THREAD_ID;
+    private final ReentrantLock lock = new ReentrantLock();
 
     public LinkMonitorService() {
         this.recordMap = new HashMap<String, MetadataRecordInfo>();
     }
 
+    private static Map<String, String> checkerClassesMap;
+
     @Override
-    public void init(ResourceManager resourceManager, GeonetContext geonetContext, ServiceConfig serviceConfig) {
+    public void init(
+        ApplicationContext applicationContext,
+        ResourceManager resourceManager,
+        GeonetContext geonetContext,
+        ServiceConfig serviceConfig) {
+        this.applicationContext = applicationContext;
         this.resourceManager = resourceManager;
         this.geonetContext = geonetContext;
+
         this.reindexInterval = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS, "1800"));
         this.percentWorkingThreshold = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_PERCENTWORKINGTHRESHOLD, "90"));
         this.maxChecks = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_MAXCHECKS, "10"));
@@ -76,42 +87,10 @@ public class LinkMonitorService implements LinkMonitorInterface {
         this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
     }
 
-    private void setStopRunning() {
-        setRunning(false);
-    }
-
-    private boolean setStartRunning() {
-        return setRunning(true);
-    }
-
-    private synchronized boolean setRunning(boolean running) {
-        long currentThreadId = Thread.currentThread().getId();
-
-        if (running) {
-            if (runningThreadId == UNDEFINED_THREAD_ID) {
-                runningThreadId = currentThreadId;
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        if (!running) {
-            if (runningThreadId == currentThreadId) {
-                runningThreadId = UNDEFINED_THREAD_ID;
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
     @Override
     public void run() {
         try {
-            if (setStartRunning()) {
+            if (lock.tryLock()) {
                 check();
             } else {
                 logger.info("Check is already in progress, skipping...");
@@ -121,8 +100,12 @@ public class LinkMonitorService implements LinkMonitorInterface {
             logger.error("Link Monitor error: " + e.getMessage() + " This error is ignored.");
             logger.info(e);
         } finally {
-            setStopRunning();
+            lock.unlock();
         }
+    }
+
+    public static ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
     private ArrayList<String> getAllRecords() {

@@ -1,14 +1,11 @@
 package org.fao.geonet.monitor.link;
 
-import jeeves.resources.dbms.Dbms;
 import org.apache.log4j.Logger;
-import org.fao.geonet.constants.Geonet;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,16 +19,7 @@ public class MetadataRecordInfo {
     public static String ONLINE_RESOURCES_XPATH = "gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource";
     public static String PROTOCOL_XPATH = "gmd:protocol/gco:CharacterString";
 
-    private static final Map<String, Class> linkCheckerMap = new HashMap<String, Class>();
-
     private LinkMonitorService.Status status = LinkMonitorService.Status.UNKNOWN;
-
-    static {
-        linkCheckerMap.put("OGC:WMS-1.1.1-http-get-map", LinkCheckerWms.class);
-        linkCheckerMap.put("OGC:WFS-1.0.0-http-get-capabilities", LinkCheckerWfs.class);
-        linkCheckerMap.put("IMOS:AGGREGATION--bodaac", LinkCheckerWfs.class);
-        linkCheckerMap.put("WWW:DOWNLOAD-1.0-http--downloadother", LinkCheckerDefault.class);
-    }
 
     public MetadataRecordInfo(LinkMonitorService linkMonitorService, String uuid) {
         this.uuid = uuid;
@@ -130,14 +118,19 @@ public class MetadataRecordInfo {
     }
 
     private static LinkCheckerInterface getCheckerForLinkType(String linkType, final Element onlineResource) {
-        Class linkCheckerClass = linkCheckerMap.get(linkType);
-        if (linkCheckerClass != null) {
-            try {
-                LinkCheckerInterface linkCheckerInterface = (LinkCheckerInterface) linkCheckerClass.newInstance();
-                linkCheckerInterface.setOnlineResource(onlineResource);
-                return linkCheckerInterface;
-            } catch (Exception e) {
-                logger.info(e);
+        final Map<String, LinkCheckerInterface> linkCheckerClasses =
+            LinkMonitorService.getApplicationContext().getBeansOfType(LinkCheckerInterface.class);
+
+        for (final String beanId : linkCheckerClasses.keySet()) {
+            if (linkCheckerClasses.get(beanId).canHandle(linkType)) {
+                try {
+                    Class linkCheckerClass = linkCheckerClasses.get(beanId).getClass();
+                    LinkCheckerInterface linkCheckerInterface = (LinkCheckerInterface) linkCheckerClass.newInstance();
+                    linkCheckerInterface.setOnlineResource(onlineResource);
+                    return linkCheckerInterface;
+                } catch (Exception e) {
+                    logger.info(e);
+                }
             }
         }
 
