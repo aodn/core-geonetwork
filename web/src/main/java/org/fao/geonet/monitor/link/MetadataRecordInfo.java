@@ -12,7 +12,9 @@ import java.util.Map;
 public class MetadataRecordInfo {
     private static Logger logger = Logger.getLogger(MetadataRecordInfo.class);
 
-    private String uuid;
+    private final String uuid;
+
+    private final long lastUpdated;
 
     private List<LinkInfo> linkInfoList;
 
@@ -21,8 +23,9 @@ public class MetadataRecordInfo {
 
     private LinkMonitorService.Status status = LinkMonitorService.Status.UNKNOWN;
 
-    public MetadataRecordInfo(LinkMonitorService linkMonitorService, String uuid) {
+    public MetadataRecordInfo(LinkMonitorService linkMonitorService, String uuid, long lastUpdated) {
         this.uuid = uuid;
+        this.lastUpdated = lastUpdated;
         linkInfoList = new ArrayList<LinkInfo>();
         getOnlineResources(linkMonitorService.getDocumentForUuid(uuid));
     }
@@ -66,6 +69,10 @@ public class MetadataRecordInfo {
 
     public boolean isHealthy(boolean unknownAsWorking) {
         return isHealthy(unknownAsWorking, getStatus());
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
     }
 
     private LinkMonitorService.Status getStatus() {
