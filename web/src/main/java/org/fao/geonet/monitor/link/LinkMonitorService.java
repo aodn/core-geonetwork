@@ -10,9 +10,9 @@ import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.kernel.search.IndexAndTaxonomy;
 import org.fao.geonet.kernel.search.index.GeonetworkMultiReader;
 import org.jdom.Element;
+import org.joda.time.DateTime;
 import org.springframework.context.ApplicationContext;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -30,7 +30,6 @@ public class LinkMonitorService implements LinkMonitorInterface {
         WORKING,
         UNKNOWN
     }
-
 
     public static final String LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS = "LinkMonitorServiceReindexIntervalSeconds";
     private long reindexInterval = 1800;
@@ -55,16 +54,12 @@ public class LinkMonitorService implements LinkMonitorInterface {
     public static final String LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS = "LinkMonitorServiceBetweenChecksIntervalMs";
     private static int betweenChecksIntervalMs = 2000;
 
-    private final Map<String, MetadataRecordInfo> recordMap;
+    private final Map<String, MetadataRecordInfo> recordMap = new HashMap<String, MetadataRecordInfo>();
 
     private long reindexTimestamp = -1;
 
     // Prevent ourselves from being triggered while there is an ongoing check
     private final ReentrantLock lock = new ReentrantLock();
-
-    public LinkMonitorService() {
-        this.recordMap = new HashMap<String, MetadataRecordInfo>();
-    }
 
     private static Map<String, String> checkerClassesMap;
 
@@ -108,23 +103,27 @@ public class LinkMonitorService implements LinkMonitorInterface {
         return applicationContext;
     }
 
-    private ArrayList<String> getAllRecords() {
+    private Map<String, Long> getAllRecords() {
         try {
             return getAllRecordsLucene();
         } catch (Exception e) {
             logger.info(e);
         }
-        return new ArrayList<String>();
+        return new HashMap<String, Long>();
     }
 
-    private ArrayList<String> getAllRecordsLucene() throws Exception {
-        ArrayList<String> records = new ArrayList<String>();
+    private long stringDateToLong(String date) {
+        DateTime dateTime = new DateTime(date);
+        return dateTime.getMillis();
+    }
+
+    private Map<String, Long> getAllRecordsLucene() throws Exception {
+        Map<String, Long> records = new HashMap<String, Long>();
 
         IndexAndTaxonomy indexAndTaxonomy = geonetContext.getSearchmanager().getNewIndexReader(null);
         try {
             GeonetworkMultiReader reader = indexAndTaxonomy.indexReader;
 
-            int capacity = (int)(reader.maxDoc() / 0.75) + 1;
             for (int i = 0; i < reader.maxDoc(); i++) {
                 DocumentStoredFieldVisitor idChangeDateSelector = new DocumentStoredFieldVisitor("_uuid", "_changeDate");
                 reader.document(i, idChangeDateSelector);
@@ -136,7 +135,8 @@ public class LinkMonitorService implements LinkMonitorInterface {
                     continue;
                 } else {
                     logger.debug(String.format("Link Monitor Service adding uuid '%s'", uuid));
-                    records.add(uuid);
+                    long lastUpdated = stringDateToLong(doc.get("_changeDate"));
+                    records.put(uuid, lastUpdated);
                 }
             }
         } catch (Exception e) {
@@ -164,19 +164,28 @@ public class LinkMonitorService implements LinkMonitorInterface {
         return reindexTimestamp < 0 || now - reindexTimestamp >= reindexInterval;
     }
 
-    private void reindex(ArrayList<String> records) {
+    private void reindex(Map<String, Long> records) {
         logger.info("Link Monitor Service is reindexing...");
 
-        for (final String uuid : records) {
-            if (recordMap.get(uuid) == null) {
+        for (final String uuid : records.keySet()) {
+            long lastUpdated = records.get(uuid);
+
+            if (recordMap.containsKey(uuid)) {
+                if (recordMap.get(uuid).getLastUpdated() < lastUpdated) {
+                    logger.info(String.format("Metadata record '%s' was recently changed, updating it...", uuid));
+                    recordMap.put(uuid, new MetadataRecordInfo(this, uuid, lastUpdated));
+                }
+            } else {
                 // New record
-                recordMap.put(uuid, new MetadataRecordInfo(this, uuid));
+                logger.debug(String.format("New metadata record '%s'", uuid));
+                recordMap.put(uuid, new MetadataRecordInfo(this, uuid, lastUpdated));
             }
         }
 
         for (Map.Entry<String, MetadataRecordInfo> record : recordMap.entrySet()) {
-            if (! records.contains(record.getKey())) {
+            if (! records.containsKey(record.getKey())) {
                 // Record was deleted
+                logger.debug(String.format("Record '%s' was deleted", record.getKey()));
                 recordMap.remove(record.getKey());
             }
         }
