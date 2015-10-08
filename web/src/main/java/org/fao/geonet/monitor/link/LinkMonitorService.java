@@ -80,6 +80,9 @@ public class LinkMonitorService implements LinkMonitorInterface {
         this.freshness = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_FRESHNESS, "3600"));
         this.unknownAsWorking = Boolean.parseBoolean(serviceConfig.getValue(LINK_MONITOR_SERVICE_UNKNOWNASWORKING, "true"));
         this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
+
+        if (percentWorkingThreshold > 100) percentWorkingThreshold = 100;
+        if (percentWorkingThreshold < 0) percentWorkingThreshold = 0;
     }
 
     @Override
