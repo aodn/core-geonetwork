@@ -21,6 +21,11 @@ public class LinkInfoTest extends TestCase {
         public String toString() {
             return "";
         }
+
+        @Override
+        public boolean canHandle(String linkType) {
+            return true;
+        }
     }
 
     public void testGetStatus() throws Exception {
@@ -33,9 +38,9 @@ public class LinkInfoTest extends TestCase {
         // No checks done - status should be UNKNOWN
         assertEquals(LinkMonitorService.Status.UNKNOWN, linkInfo.getStatus());
 
-        // One check out of 3 done - status should still be UNKNOWN
+        // One check out of 3 done - status should be WORKING
         linkInfo.check();
-        assertEquals(LinkMonitorService.Status.UNKNOWN, linkInfo.getStatus());
+        assertEquals(LinkMonitorService.Status.WORKING, linkInfo.getStatus());
 
         // 3 checks done, should be WORKING
         linkInfo.check();
