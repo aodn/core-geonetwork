@@ -55,7 +55,8 @@ public class CollectionAvailabilityFilter extends Filter {
                     document = reader.document(docBase + doc, _fieldsToLoad);
                     String uuid = document.get("_uuid");
 
-                    if (_geonetContext != null && ! _geonetContext.getLinkMonitor().isHealthy(uuid)) {
+                    if (_geonetContext != null && _geonetContext.getLinkMonitor() != null &&
+                        ! _geonetContext.getLinkMonitor().isHealthy(uuid)) {
                         Log.debug(this.getClass().getSimpleName(), String.format("'%s' is unavailable - omitting from search results", uuid));
                     } else {
                         bits.set(docBase + doc);

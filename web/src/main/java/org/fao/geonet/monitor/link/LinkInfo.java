@@ -22,29 +22,6 @@ public class LinkInfo {
         return checkInfoList.size();
     }
 
-    private boolean hasSuccessCheck() {
-        for (final CheckInfo checkInfo : checkInfoList) {
-            if (checkInfo.status)
-                return true;
-        }
-
-        return false;
-    }
-
-    private boolean hasOnlyFailedChecks() {
-        if (getCheckCount() < LinkMonitorService.maxChecks && getCheckCount() > 0 && ! hasSuccessCheck()) {
-            // In the case when we don't have enough checks, but have more
-            // than one check and they all failed - mark link as failed
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean hasEnoughChecks() {
-        return getCheckCount() >= LinkMonitorService.maxChecks;
-    }
-
     private boolean isFresh() {
         long now = System.currentTimeMillis() / 1000l;
         long lastCheck = checkInfoList.get(getCheckCount() - 1).timestamp;
@@ -56,7 +33,7 @@ public class LinkInfo {
         return true;
     }
 
-    boolean hasEnoughSuccessChecks() {
+    private int successChecksCount() {
         int successChecks = 0;
         for (final CheckInfo checkInfo : checkInfoList) {
             if (checkInfo.status) {
@@ -64,25 +41,21 @@ public class LinkInfo {
             }
         }
 
-        int percentSuccess = 100 * successChecks / getCheckCount();
-
-        return percentSuccess >= LinkMonitorService.percentWorkingThreshold;
+        return successChecks;
     }
 
     public LinkMonitorService.Status evaluateStatus() {
-        if (hasOnlyFailedChecks()) {
-            return LinkMonitorService.Status.FAILED;
-        }
-
-        if (!hasEnoughChecks()) {
-            return LinkMonitorService.Status.UNKNOWN;
-        }
-
         if (!isFresh()) {
             return LinkMonitorService.Status.UNKNOWN;
         }
 
-        if(hasEnoughSuccessChecks()) {
+        if (getCheckCount() == 0) {
+            return LinkMonitorService.Status.UNKNOWN;
+        }
+
+        int successChecksPercent = 100 * successChecksCount() / getCheckCount();
+
+        if (successChecksPercent >= LinkMonitorService.percentWorkingThreshold) {
             return LinkMonitorService.Status.WORKING;
         } else {
             return LinkMonitorService.Status.FAILED;
