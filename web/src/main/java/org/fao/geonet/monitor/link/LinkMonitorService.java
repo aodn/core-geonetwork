@@ -61,8 +61,6 @@ public class LinkMonitorService implements LinkMonitorInterface {
     // Prevent ourselves from being triggered while there is an ongoing check
     private final ReentrantLock lock = new ReentrantLock();
 
-    private static Map<String, String> checkerClassesMap;
-
     @Override
     public void init(
         ApplicationContext applicationContext,

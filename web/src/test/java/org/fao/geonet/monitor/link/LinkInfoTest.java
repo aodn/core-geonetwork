@@ -70,7 +70,6 @@ public class LinkInfoTest extends TestCase {
         assertEquals(LinkMonitorService.Status.FAILED, linkInfo.getStatus());
     }
 
-
     public void testCheck() throws Exception {
         // Verify we save only 3 checks back
         LinkMonitorService.maxChecks = 3;
@@ -80,6 +79,5 @@ public class LinkInfoTest extends TestCase {
         }
 
         assertEquals(LinkMonitorService.maxChecks, linkInfo.getCheckCount());
-
     }
 }
