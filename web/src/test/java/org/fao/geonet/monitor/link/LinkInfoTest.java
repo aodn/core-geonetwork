@@ -3,6 +3,8 @@ package org.fao.geonet.monitor.link;
 import org.fao.geonet.test.TestCase;
 import org.jdom.Element;
 
+import static org.fao.geonet.monitor.link.LinkMonitorService.Status.*;
+
 public class LinkInfoTest extends TestCase {
     public static boolean testResult = true;
 
@@ -26,6 +28,57 @@ public class LinkInfoTest extends TestCase {
         public boolean canHandle(String linkType) {
             return true;
         }
+    }
+
+    public LinkInfo linkInfo;
+
+    public void setUp() {
+        linkInfo = new LinkInfo(new LinkCheckerMock());
+    }
+
+    public void testGetStatusExample1() throws Exception {
+        LinkMonitorService.maxChecks = 10;
+        LinkMonitorService.maxFailureRate = 0.2;
+
+        attemptChecks(1, 1);
+
+        assertEquals(WORKING, linkInfo.getStatus());
+    }
+
+    public void testGetStatusExample2() throws Exception {
+        LinkMonitorService.maxChecks = 10;
+        LinkMonitorService.maxFailureRate = 0.2;
+
+        attemptChecks(10000, 1);
+
+        assertEquals(WORKING, linkInfo.getStatus());
+    }
+
+    public void testGetStatusExample3() throws Exception {
+        LinkMonitorService.maxChecks = 10;
+        LinkMonitorService.maxFailureRate = 0.2;
+
+        attemptChecks(10000, 3);
+
+        assertEquals(FAILED, linkInfo.getStatus());
+    }
+
+    public void testGetStatusExample4() throws Exception {
+        LinkMonitorService.maxChecks = 100;
+        LinkMonitorService.maxFailureRate = 0.02;
+
+        attemptChecks(1, 1);
+
+        assertEquals(WORKING, linkInfo.getStatus());
+    }
+
+    public void testGetStatusExample5() throws Exception {
+        LinkMonitorService.maxChecks = 100;
+        LinkMonitorService.maxFailureRate = 0.02;
+
+        attemptChecks(3, 3);
+
+        assertEquals(FAILED, linkInfo.getStatus());
     }
 
     public void testGetStatus() throws Exception {
@@ -79,5 +132,19 @@ public class LinkInfoTest extends TestCase {
         }
 
         assertEquals(LinkMonitorService.maxChecks, linkInfo.getCheckCount());
+    }
+
+    private void attemptChecks(int numberOfChecks, int numberOfFailures) {
+        int numberOfSuccesses = numberOfChecks - numberOfFailures;
+
+        testResult = true;
+        for (int i = 0; i < numberOfSuccesses; i++) {
+            linkInfo.check();
+        }
+
+        testResult = false;
+        for (int i = 0; i < numberOfFailures; i++) {
+            linkInfo.check();
+        }
     }
 }

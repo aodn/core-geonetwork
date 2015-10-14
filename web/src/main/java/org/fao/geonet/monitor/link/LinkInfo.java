@@ -38,21 +38,21 @@ public class LinkInfo {
     }
 
     private boolean failureRateAcceptable() {
-        double checkSuccessRate = successChecksCount() / (double) getCheckCount();
-        double checkFailureRate = 1 - checkSuccessRate;
+        double checkFailureRate = checkFailureCount() / (double) LinkMonitorService.maxChecks;
 
         return checkFailureRate <= LinkMonitorService.maxFailureRate;
     }
 
-    private int successChecksCount() {
-        int successChecks = 0;
+    private int checkFailureCount() {
+        int failedCount = 0;
+
         for (final CheckInfo checkInfo : checkInfoList) {
-            if (checkInfo.status) {
-                successChecks++;
+            if (!checkInfo.status) {
+                failedCount++;
             }
         }
 
-        return successChecks;
+        return failedCount;
     }
 
     public LinkMonitorService.Status evaluateStatus() {
