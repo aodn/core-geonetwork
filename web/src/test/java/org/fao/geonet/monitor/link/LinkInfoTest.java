@@ -91,12 +91,7 @@ public class LinkInfoTest extends TestCase {
     }
 
     public void testGetCheckCount() throws Exception {
-        // Verify we save only 3 checks back
-        LinkMonitorService.maxChecks = 3;
-
-        for (int i = 0; i < 10; i++) {
-            linkInfo.check();
-        }
+        attemptChecks(1000, 0);
 
         assertEquals(LinkMonitorService.maxChecks, linkInfo.getCheckCount());
     }
