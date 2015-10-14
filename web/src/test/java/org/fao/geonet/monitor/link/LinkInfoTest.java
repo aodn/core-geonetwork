@@ -33,31 +33,25 @@ public class LinkInfoTest extends TestCase {
     public LinkInfo linkInfo;
 
     public void setUp() {
+        LinkMonitorService.maxChecks = 10;
+        LinkMonitorService.maxFailureRate = 0.2;
+
         linkInfo = new LinkInfo(new LinkCheckerMock());
     }
 
     public void testGetStatusExample1() throws Exception {
-        LinkMonitorService.maxChecks = 10;
-        LinkMonitorService.maxFailureRate = 0.2;
-
         attemptChecks(1, 1);
 
         assertEquals(WORKING, linkInfo.getStatus());
     }
 
     public void testGetStatusExample2() throws Exception {
-        LinkMonitorService.maxChecks = 10;
-        LinkMonitorService.maxFailureRate = 0.2;
-
         attemptChecks(10000, 1);
 
         assertEquals(WORKING, linkInfo.getStatus());
     }
 
     public void testGetStatusExample3() throws Exception {
-        LinkMonitorService.maxChecks = 10;
-        LinkMonitorService.maxFailureRate = 0.2;
-
         attemptChecks(10000, 3);
 
         assertEquals(FAILED, linkInfo.getStatus());
@@ -82,9 +76,6 @@ public class LinkInfoTest extends TestCase {
     }
 
     public void testGetStatusNoChecks() throws Exception {
-        LinkMonitorService.maxChecks = 3;
-        LinkMonitorService.maxFailureRate = 0.5;
-
         attemptChecks(0, 0);
 
         assertEquals(UNKNOWN, linkInfo.getStatus());
