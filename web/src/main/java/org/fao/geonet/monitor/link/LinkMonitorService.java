@@ -32,27 +32,27 @@ public class LinkMonitorService implements LinkMonitorInterface {
     }
 
     public static final String LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS = "LinkMonitorServiceReindexIntervalSeconds";
-    private long reindexInterval = 1800;
+    private long reindexInterval;
 
     public static final String LINK_MONITOR_SERVICE_MAXFAILURERATE = "LinkMonitorServiceMaxFailureRate";
-    public static double maxFailureRate = 0.1;
+    public static double maxFailureRate;
 
     public static final String LINK_MONITOR_SERVICE_MAXCHECKS = "LinkMonitorServiceMaxChecks";
-    public static int maxChecks = 10;
+    public static int maxChecks;
 
     public static final String LINK_MONITOR_SERVICE_TIMEOUT = "LinkMonitorServiceTimeout";
-    public static int timeout = 15;
+    public static int timeout;
 
     public static final String LINK_MONITOR_SERVICE_FRESHNESS = "LinkMonitorServiceFreshness";
-    public static int freshness = 3600;
+    public static int freshness;
 
     public static final String LINK_MONITOR_SERVICE_UNKNOWNASWORKING = "LinkMonitorServiceUnknownAsWorking";
-    private boolean unknownAsWorking = true;
+    private boolean unknownAsWorking;
 
     // Milliseconds between running checks on every record. This is here to
     // prevent undesired hammering of servers
     public static final String LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS = "LinkMonitorServiceBetweenChecksIntervalMs";
-    private static int betweenChecksIntervalMs = 2000;
+    private static int betweenChecksIntervalMs;
 
     private final Map<String, MetadataRecordInfo> recordMap = new HashMap<String, MetadataRecordInfo>();
 
