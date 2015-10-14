@@ -53,9 +53,10 @@ public class LinkInfo {
             return LinkMonitorService.Status.UNKNOWN;
         }
 
-        int successChecksPercent = 100 * successChecksCount() / getCheckCount();
+        double successChecksRate = successChecksCount() / (double) getCheckCount();
+        double failureChecksRate = 1 - successChecksRate;
 
-        if (successChecksPercent >= LinkMonitorService.percentWorkingThreshold) {
+        if (failureChecksRate <= LinkMonitorService.maxFailureRate) {
             return LinkMonitorService.Status.WORKING;
         } else {
             return LinkMonitorService.Status.FAILED;

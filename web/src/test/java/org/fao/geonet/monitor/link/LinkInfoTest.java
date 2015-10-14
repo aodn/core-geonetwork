@@ -30,7 +30,7 @@ public class LinkInfoTest extends TestCase {
 
     public void testGetStatus() throws Exception {
         LinkMonitorService.maxChecks = 3;
-        LinkMonitorService.percentWorkingThreshold = 50;
+        LinkMonitorService.maxFailureRate = 0.5;
 
         LinkInfo linkInfo = new LinkInfo(new LinkCheckerMock());
         testResult = true;
@@ -59,7 +59,7 @@ public class LinkInfoTest extends TestCase {
 
     public void testGetStatusAllFailed() throws Exception {
         LinkMonitorService.maxChecks = 10;
-        LinkMonitorService.percentWorkingThreshold = 10;
+        LinkMonitorService.maxFailureRate = 0.9;
 
         LinkInfo linkInfo = new LinkInfo(new LinkCheckerMock());
         testResult = false;
