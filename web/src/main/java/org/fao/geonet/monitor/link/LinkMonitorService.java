@@ -32,27 +32,27 @@ public class LinkMonitorService implements LinkMonitorInterface {
     }
 
     public static final String LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS = "LinkMonitorServiceReindexIntervalSeconds";
-    private long reindexInterval = 1800;
+    private long reindexInterval;
 
-    public static final String LINK_MONITOR_SERVICE_PERCENTWORKINGTHRESHOLD = "LinkMonitorServicePercentWorkingThreshold";
-    public static int percentWorkingThreshold = 90;
+    public static final String LINK_MONITOR_SERVICE_MAXFAILURERATE = "LinkMonitorServiceMaxFailureRate";
+    public static double maxFailureRate;
 
     public static final String LINK_MONITOR_SERVICE_MAXCHECKS = "LinkMonitorServiceMaxChecks";
-    public static int maxChecks = 10;
+    public static int maxChecks;
 
     public static final String LINK_MONITOR_SERVICE_TIMEOUT = "LinkMonitorServiceTimeout";
-    public static int timeout = 15;
+    public static int timeout;
 
     public static final String LINK_MONITOR_SERVICE_FRESHNESS = "LinkMonitorServiceFreshness";
-    public static int freshness = 3600;
+    public static int freshness;
 
     public static final String LINK_MONITOR_SERVICE_UNKNOWNASWORKING = "LinkMonitorServiceUnknownAsWorking";
-    private boolean unknownAsWorking = true;
+    private boolean unknownAsWorking;
 
     // Milliseconds between running checks on every record. This is here to
     // prevent undesired hammering of servers
     public static final String LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS = "LinkMonitorServiceBetweenChecksIntervalMs";
-    private static int betweenChecksIntervalMs = 2000;
+    private static int betweenChecksIntervalMs;
 
     private final Map<String, MetadataRecordInfo> recordMap = new HashMap<String, MetadataRecordInfo>();
 
@@ -60,8 +60,6 @@ public class LinkMonitorService implements LinkMonitorInterface {
 
     // Prevent ourselves from being triggered while there is an ongoing check
     private final ReentrantLock lock = new ReentrantLock();
-
-    private static Map<String, String> checkerClassesMap;
 
     @Override
     public void init(
@@ -74,15 +72,15 @@ public class LinkMonitorService implements LinkMonitorInterface {
         this.geonetContext = geonetContext;
 
         this.reindexInterval = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS, "1800"));
-        this.percentWorkingThreshold = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_PERCENTWORKINGTHRESHOLD, "90"));
+        this.maxFailureRate = Double.parseDouble(serviceConfig.getValue(LINK_MONITOR_SERVICE_MAXFAILURERATE, "0.1"));
         this.maxChecks = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_MAXCHECKS, "10"));
         this.timeout = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_TIMEOUT, "15"));
         this.freshness = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_FRESHNESS, "3600"));
         this.unknownAsWorking = Boolean.parseBoolean(serviceConfig.getValue(LINK_MONITOR_SERVICE_UNKNOWNASWORKING, "true"));
         this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
 
-        if (percentWorkingThreshold > 100) percentWorkingThreshold = 100;
-        if (percentWorkingThreshold < 0) percentWorkingThreshold = 0;
+        if (maxFailureRate > 1) maxFailureRate = 1;
+        if (maxFailureRate < 0) maxFailureRate = 0;
     }
 
     @Override

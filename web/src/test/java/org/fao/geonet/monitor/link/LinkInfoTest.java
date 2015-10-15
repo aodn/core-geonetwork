@@ -3,6 +3,8 @@ package org.fao.geonet.monitor.link;
 import org.fao.geonet.test.TestCase;
 import org.jdom.Element;
 
+import static org.fao.geonet.monitor.link.LinkMonitorService.Status.*;
+
 public class LinkInfoTest extends TestCase {
     public static boolean testResult = true;
 
@@ -28,58 +30,74 @@ public class LinkInfoTest extends TestCase {
         }
     }
 
-    public void testGetStatus() throws Exception {
-        LinkMonitorService.maxChecks = 3;
-        LinkMonitorService.percentWorkingThreshold = 50;
+    public LinkInfo linkInfo;
 
-        LinkInfo linkInfo = new LinkInfo(new LinkCheckerMock());
-        testResult = true;
-
-        // No checks done - status should be UNKNOWN
-        assertEquals(LinkMonitorService.Status.UNKNOWN, linkInfo.getStatus());
-
-        // One check out of 3 done - status should be WORKING
-        linkInfo.check();
-        assertEquals(LinkMonitorService.Status.WORKING, linkInfo.getStatus());
-
-        // 3 checks done, should be WORKING
-        linkInfo.check();
-        linkInfo.check();
-        assertEquals(LinkMonitorService.Status.WORKING, linkInfo.getStatus());
-
-        // 1 check is now failing (out of 3), but we need only 50%, so still working
-        testResult = false;
-        linkInfo.check();
-        assertEquals(LinkMonitorService.Status.WORKING, linkInfo.getStatus());
-
-        // 2 checks out of 3 are failing, so it should be failing
-        linkInfo.check();
-        assertEquals(LinkMonitorService.Status.FAILED, linkInfo.getStatus());
-    }
-
-    public void testGetStatusAllFailed() throws Exception {
+    public void setUp() {
         LinkMonitorService.maxChecks = 10;
-        LinkMonitorService.percentWorkingThreshold = 10;
+        LinkMonitorService.maxFailureRate = 0.2;
 
-        LinkInfo linkInfo = new LinkInfo(new LinkCheckerMock());
-        testResult = false;
-
-        // Not enough checks done, but all have failed
-        linkInfo.check();
-        linkInfo.check();
-        assertEquals(LinkMonitorService.Status.FAILED, linkInfo.getStatus());
+        linkInfo = new LinkInfo(new LinkCheckerMock());
     }
 
+    public void testGetStatusExample1() throws Exception {
+        attemptChecks(1, 1);
 
-    public void testCheck() throws Exception {
-        // Verify we save only 3 checks back
-        LinkMonitorService.maxChecks = 3;
-        LinkInfo linkInfo = new LinkInfo(new LinkCheckerMock());
-        for (int i = 0; i < 10; i++) {
+        assertEquals(WORKING, linkInfo.getStatus());
+    }
+
+    public void testGetStatusExample2() throws Exception {
+        attemptChecks(10000, 1);
+
+        assertEquals(WORKING, linkInfo.getStatus());
+    }
+
+    public void testGetStatusExample3() throws Exception {
+        attemptChecks(10000, 3);
+
+        assertEquals(FAILED, linkInfo.getStatus());
+    }
+
+    public void testGetStatusExample4() throws Exception {
+        LinkMonitorService.maxChecks = 100;
+        LinkMonitorService.maxFailureRate = 0.02;
+
+        attemptChecks(1, 1);
+
+        assertEquals(WORKING, linkInfo.getStatus());
+    }
+
+    public void testGetStatusExample5() throws Exception {
+        LinkMonitorService.maxChecks = 100;
+        LinkMonitorService.maxFailureRate = 0.02;
+
+        attemptChecks(3, 3);
+
+        assertEquals(FAILED, linkInfo.getStatus());
+    }
+
+    public void testGetStatusNoChecks() throws Exception {
+        attemptChecks(0, 0);
+
+        assertEquals(UNKNOWN, linkInfo.getStatus());
+    }
+
+    public void testGetCheckCount() throws Exception {
+        attemptChecks(1000, 0);
+
+        assertEquals(LinkMonitorService.maxChecks, linkInfo.getCheckCount());
+    }
+
+    private void attemptChecks(int numberOfChecks, int numberOfFailures) {
+        int numberOfSuccesses = numberOfChecks - numberOfFailures;
+
+        testResult = true;
+        for (int i = 0; i < numberOfSuccesses; i++) {
             linkInfo.check();
         }
 
-        assertEquals(LinkMonitorService.maxChecks, linkInfo.getCheckCount());
-
+        testResult = false;
+        for (int i = 0; i < numberOfFailures; i++) {
+            linkInfo.check();
+        }
     }
 }

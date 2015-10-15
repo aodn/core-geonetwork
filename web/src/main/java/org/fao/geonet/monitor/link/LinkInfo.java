@@ -33,15 +33,26 @@ public class LinkInfo {
         return true;
     }
 
-    private int successChecksCount() {
-        int successChecks = 0;
+    private boolean noChecksPerformed() {
+        return getCheckCount() == 0;
+    }
+
+    private boolean failureRateAcceptable() {
+        double checkFailureRate = checkFailureCount() / (double) LinkMonitorService.maxChecks;
+
+        return checkFailureRate <= LinkMonitorService.maxFailureRate;
+    }
+
+    private int checkFailureCount() {
+        int failedCount = 0;
+
         for (final CheckInfo checkInfo : checkInfoList) {
-            if (checkInfo.status) {
-                successChecks++;
+            if (!checkInfo.status) {
+                failedCount++;
             }
         }
 
-        return successChecks;
+        return failedCount;
     }
 
     public LinkMonitorService.Status evaluateStatus() {
@@ -49,13 +60,11 @@ public class LinkInfo {
             return LinkMonitorService.Status.UNKNOWN;
         }
 
-        if (getCheckCount() == 0) {
+        if (noChecksPerformed()) {
             return LinkMonitorService.Status.UNKNOWN;
         }
 
-        int successChecksPercent = 100 * successChecksCount() / getCheckCount();
-
-        if (successChecksPercent >= LinkMonitorService.percentWorkingThreshold) {
+        if (failureRateAcceptable()) {
             return LinkMonitorService.Status.WORKING;
         } else {
             return LinkMonitorService.Status.FAILED;
