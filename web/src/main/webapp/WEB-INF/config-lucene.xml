@@ -136,6 +136,13 @@
       <field name="tempExtentEnd" tagName="tempExtentEnd"/>
       <field name="geoPolygon" tagName="geoPolygon"/>
 
+      <!-- citation feature: -->
+      <field name="jurisdictionLink" tagName="jurisdictionLink" />
+      <field name="licenseLink" tagName="licenseLink" />
+      <field name="licenseName" tagName="licenseName" />
+      <field name="attrConstr" tagName="attrConstr" />
+      <field name="otherCitation" tagName="otherCitation" />
+      <field name="useLimitation" tagName="useLimitation" />
     </dumpFields>
   </search>
 
