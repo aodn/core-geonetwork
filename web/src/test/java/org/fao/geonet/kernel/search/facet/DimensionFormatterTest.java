@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 
 import org.fao.geonet.kernel.search.Dimension;
+import org.fao.geonet.kernel.search.Translator;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.junit.Before;
@@ -23,6 +24,7 @@ public class DimensionFormatterTest {
 
 		ItemConfig mockConfig = mock(ItemConfig.class);
 		when(mockConfig.getDimension()).thenReturn(mockDimension);
+		when(mockConfig.getTranslator(null, "eng")).thenReturn(Translator.NULL_TRANSLATOR);
 
 		formatter = new DimensionFormatter(null, mockConfig);
 	}

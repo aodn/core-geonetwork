@@ -44,7 +44,7 @@ public abstract class Translator implements Serializable {
     public static Translator NULL_TRANSLATOR = new Translator() {
         private static final long serialVersionUID = 1L;
         public String translate(String key) {
-            return null;
+            return key;
         }
     };
 
