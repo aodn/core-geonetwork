@@ -24,11 +24,17 @@ package org.fao.geonet.kernel.search.facet;
 
 import jeeves.server.context.ServiceContext;
 
+import org.fao.geonet.kernel.search.Translator;
 import org.jdom.Element;
 
 public class DimensionFormatter implements Formatter {
+	private ItemConfig config;
+
+	private ServiceContext context;
 
 	public DimensionFormatter(ServiceContext context, ItemConfig config) {
+		this.context = context;
+		this.config = config;
 	}
 
 	@Override
@@ -42,7 +48,8 @@ public class DimensionFormatter implements Formatter {
 	@Override
 	public Element buildCategoryTag(String value, String count, String langCode) {
 		Element categoryTag = new Element("category");
-		categoryTag.setAttribute("value", value);
+		Translator translator = config.getTranslator(context, langCode);
+		categoryTag.setAttribute("value", translator.translate(value));
 		categoryTag.setAttribute("count", count);
 		return categoryTag;
 	}

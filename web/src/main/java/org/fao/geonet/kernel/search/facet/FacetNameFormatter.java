@@ -44,19 +44,11 @@ public class FacetNameFormatter implements Formatter {
 
 	@Override
 	public Element buildCategoryTag(String value, String count, String langCode) {
-		Translator translator = config.getTranslator(context, langCode);
-
-		String translatedValue = translator.translate(value);
-
 		Element categoryTag = new Element(config.getDimension().getName());
-		
 		categoryTag.setAttribute("count", count);
 		categoryTag.setAttribute("name", value);
-
-		if (translatedValue != null) {
-			categoryTag.setAttribute("label", translatedValue);
-		}
-
+		Translator translator = config.getTranslator(context, langCode);
+		categoryTag.setAttribute("label", translator.translate(value));
 		return categoryTag;
 	}
 
