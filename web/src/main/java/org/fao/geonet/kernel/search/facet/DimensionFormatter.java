@@ -47,10 +47,22 @@ public class DimensionFormatter implements Formatter {
 
 	@Override
 	public Element buildCategoryTag(String value, String count, String langCode) {
+		String displayValue = getDisplayValue(value, langCode);
+
 		Element categoryTag = new Element("category");
-		Translator translator = config.getTranslator(context, langCode);
-		categoryTag.setAttribute("value", translator.translate(value));
+		categoryTag.setAttribute("value", value);
+
+		if (!displayValue.equals(value)) {
+			categoryTag.setAttribute("label", displayValue);
+		}
+
 		categoryTag.setAttribute("count", count);
 		return categoryTag;
+	}
+
+	private String getDisplayValue(String value, String langCode) {
+		Translator translator = config.getTranslator(context, langCode);
+		String displayValue = translator.translate(value);
+		return displayValue == null ? value : displayValue;
 	}
 }

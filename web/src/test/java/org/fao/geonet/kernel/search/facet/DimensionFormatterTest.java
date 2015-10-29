@@ -24,7 +24,12 @@ public class DimensionFormatterTest {
 
 		ItemConfig mockConfig = mock(ItemConfig.class);
 		when(mockConfig.getDimension()).thenReturn(mockDimension);
-		when(mockConfig.getTranslator(null, "eng")).thenReturn(Translator.NULL_TRANSLATOR);
+
+		when(mockConfig.getTranslator(null, "eng")).thenReturn(new Translator() {
+			public String translate(String key) {
+				return key.equals("six-day") ? "Six day" : key; 
+			}
+		});
 
 		formatter = new DimensionFormatter(null, mockConfig);
 	}
@@ -48,6 +53,18 @@ public class DimensionFormatterTest {
 		assertEquals(0, categoryTag.getContent().size());
 		assertEquals(2, categoryTag.getAttributes().size());
 		assertEquals("oceans", categoryTag.getAttributeValue("value"));
+		assertEquals("3", categoryTag.getAttributeValue("count"));
+	}
+
+	@Test
+	public void testBuildTranslatedCategoryTag() {
+		Element categoryTag = formatter.buildCategoryTag("six-day", "3", "eng");
+
+		assertEquals("category", categoryTag.getName());
+		assertEquals(0, categoryTag.getContent().size());
+		assertEquals(3, categoryTag.getAttributes().size());
+		assertEquals("six-day", categoryTag.getAttributeValue("value"));
+		assertEquals("Six day", categoryTag.getAttributeValue("label"));
 		assertEquals("3", categoryTag.getAttributeValue("count"));
 	}
 
