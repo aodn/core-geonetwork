@@ -386,6 +386,7 @@
 		<!-- Define the class to use when metadata status change
 		-->
         <param name="statusActionsClass" value="org.fao.geonet.services.metadata.DefaultStatusActions"/>
+		<param name="useHtml5ui" value="true"/>
 	</appHandler>
 
 	<!-- ====================================================================== -->
@@ -410,7 +411,9 @@
 					<param name="type" value="status" />
 				</call>
 				<call name="regions" class=".guiservices.regions.Get" />
-				<call name="sources" class=".guiservices.util.Sources" />
+				<call name="sources" class=".guiservices.util.Sources">
+					<param name="onlyLinkedSources" value="true" />
+				</call>
 				<call name="repositories" class=".services.main.Info">
 					<param name="type" value="z3950repositories" />
 				</call>
@@ -1546,8 +1549,8 @@
 	<include>config-sru.xml</include>
 	<include>config-csw-servers.xml</include>
 	<include>config-monitoring.xml</include>
-    <include>config-dcat-rdf.xml</include>
-
+  <include>config-dcat-rdf.xml</include>
+  <include>config-xml-metadata-services.xml</include>	
 	<!-- ====================================================================== -->
 
 </geonet>

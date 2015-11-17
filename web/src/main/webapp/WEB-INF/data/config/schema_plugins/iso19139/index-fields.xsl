@@ -384,6 +384,11 @@
 			<xsl:for-each select="srv:operatesOn/@uuidref">
                 <Field  name="operatesOn" string="{string(.)}" store="true" index="true"/>
             </xsl:for-each>
+
+      <xsl:for-each select="srv:operatesOn/@xlink:href">
+        <Field  name="operatesOn" string="{string(.)}" store="true" index="true"/>
+      </xsl:for-each>
+
 			
 			<xsl:for-each select="srv:coupledResource">
 				<xsl:for-each select="srv:SV_CoupledResource/srv:identifier/gco:CharacterString">
@@ -464,11 +469,11 @@
 				</xsl:if>
 			  
 				<xsl:if test="contains($protocol, 'WWW:DOWNLOAD')">
-			    	<Field name="download" string="true" store="false" index="true"/>
+			    	<Field name="download" string="on" store="false" index="true"/>
 			  	</xsl:if>
 
                 <xsl:if test="contains($protocol, 'OGC:WMS') or $wmsLinkNoProtocol">
-			   	 	<Field name="dynamic" string="true" store="false" index="true"/>
+			   	 	<Field name="dynamic" string="on" store="false" index="true"/>
 			  	</xsl:if>
 
                 <!-- ignore WMS links without protocol (are indexed below with mimetype application/vnd.ogc.wms_xml) -->
