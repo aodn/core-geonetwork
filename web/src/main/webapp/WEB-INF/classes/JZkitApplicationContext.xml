@@ -48,6 +48,14 @@
     </property>
   </bean>
 
+  <bean id="LinkCheckerNcwmsAbom" class="org.fao.geonet.monitor.link.LinkCheckerNcwmsAbom">
+    <property name="linkTypes">
+      <set>
+        <value>IMOS:NCWMS--abom</value>
+      </set>
+    </property>
+  </bean>
+
   <bean id="LinkCheckerWfs" class="org.fao.geonet.monitor.link.LinkCheckerWfs">
     <property name="linkTypes">
       <set>
