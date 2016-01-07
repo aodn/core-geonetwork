@@ -51,7 +51,7 @@
   <bean id="LinkCheckerNcwmsAbom" class="org.fao.geonet.monitor.link.LinkCheckerNcwmsAbom">
     <property name="linkTypes">
       <set>
-        <value>IMOS:NCWMS--abom</value>
+        <value>IMOS:NCWMS--proto</value>
       </set>
     </property>
   </bean>
