@@ -141,6 +141,7 @@
       <field name="jurisdictionLink" tagName="jurisdictionLink" />
       <field name="licenseLink" tagName="licenseLink" />
       <field name="licenseName" tagName="licenseName" />
+      <field name="imageLink" tagName="imageLink" />
       <field name="attrConstr" tagName="attrConstr" />
       <field name="otherCitation" tagName="otherCitation" />
       <field name="useLimitation" tagName="useLimitation" />
