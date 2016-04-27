@@ -97,15 +97,8 @@
                         </xsl:otherwise>
                     </xsl:choose>
                     |
-                    <!-- Help section to be displayed according to GUI language -->
-                    <xsl:choose>
-                        <xsl:when test="java:file-exists(concat(resolve-uri('../', replace(static-base-uri(), 'file:', '')), 'docs/', /root/gui/language, '/users/index.html'))">
-                            <a class="banner" href="{/root/gui/url}/docs/{/root/gui/language}/users" target="_blank"><xsl:value-of select="/root/gui/strings/help"/></a>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <a class="banner" href="{/root/gui/url}/docs/eng/users" target="_blank"><xsl:value-of select="/root/gui/strings/help"/></a>
-                        </xsl:otherwise>
-                    </xsl:choose>
+                    <!-- Hard code link to help section as its missing from build -->
+                    <a class="banner" href="http://geonetwork-opensource.org/manuals/2.10.4/eng/users/index.html" target="_blank"><xsl:value-of select="/root/gui/strings/help"/></a>
                     |
                 </td>
                 <td align="right" class="banner-menu" width="590px">
