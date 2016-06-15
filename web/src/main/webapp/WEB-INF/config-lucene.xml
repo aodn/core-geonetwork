@@ -144,7 +144,6 @@
       <field name="imageLink" tagName="imageLink" />
       <field name="attrConstr" tagName="attrConstr" />
       <field name="otherConstr" tagName="otherConstr" />
-      <field name="otherCitation" tagName="otherCitation" />
       <field name="useLimitation" tagName="useLimitation" />
     </dumpFields>
   </search>
