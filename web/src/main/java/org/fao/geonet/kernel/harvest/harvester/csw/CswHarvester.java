@@ -152,6 +152,7 @@ public class CswHarvester extends AbstractHarvester
 		settingMan.add(dbms, "id:"+siteId, "capabUrl", params.capabUrl);
 		settingMan.add(dbms, "id:"+siteId, "icon",     params.icon);
                 settingMan.add(dbms, "id:"+siteId, "rejectDuplicateResource", params.rejectDuplicateResource);
+                settingMan.add(dbms, "id:"+siteId, "xslfilter", params.xslfilter);
 		
 		//--- store dynamic search nodes
 		

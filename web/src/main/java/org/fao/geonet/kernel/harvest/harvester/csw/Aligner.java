@@ -28,6 +28,7 @@ import jeeves.interfaces.Logger;
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.context.ServiceContext;
 import jeeves.utils.Xml;
+
 import org.fao.geonet.GeonetContext;
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.CswOperation;
@@ -41,11 +42,14 @@ import org.fao.geonet.kernel.harvest.harvester.CategoryMapper;
 import org.fao.geonet.kernel.harvest.harvester.GroupMapper;
 import org.fao.geonet.kernel.harvest.harvester.RecordInfo;
 import org.fao.geonet.kernel.harvest.harvester.UUIDMapper;
+import org.fao.geonet.kernel.schema.MetadataSchema;
 import org.fao.geonet.kernel.search.LuceneSearcher;
 import org.jdom.Element;
 import org.jdom.xpath.XPath;
 
+import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -131,7 +135,9 @@ public class Aligner extends BaseAligner {
 		localUuids = new UUIDMapper(dbms, params.uuid);
 		dbms.commit();
 
-		//-----------------------------------------------------------------------
+        parseXSLFilter();
+
+        //-----------------------------------------------------------------------
 		//--- remove old metadata
 
 		for (String uuid : localUuids.getUUIDs())
@@ -170,7 +176,30 @@ public class Aligner extends BaseAligner {
 	//---
 	//--------------------------------------------------------------------------
 
-	private void addMetadata(RecordInfo ri) throws Exception
+    private void parseXSLFilter() {
+        processName = params.xslfilter;
+        
+        // Parse complex xslfilter process_name?process_param1=value&process_param2=value...
+        if (params.xslfilter.contains("?")) {
+            String[] filterInfo = params.xslfilter.split("\\?");
+            processName = filterInfo[0];
+            if(log.isDebugEnabled()) log.debug("      - XSL Filter name:" + processName);
+            if (filterInfo[1] != null) {
+                String[] filterKVP = filterInfo[1].split("&");
+                for (String kvp : filterKVP) {
+                    String[] param = kvp.split("=");
+                    if (param.length == 2) {
+                        if(log.isDebugEnabled()) log.debug("        with param:" + param[0] + " = " + param[1]);
+                        processParams.put(param[0], param[1]);
+                    } else {
+                        if(log.isDebugEnabled()) log.debug("        no value for param: " + param[0]);
+                    }
+                }
+            }
+        }
+    }
+
+    private void addMetadata(RecordInfo ri) throws Exception
 	{
 		Element md = retrieveMetadata(ri.uuid);
 
@@ -190,6 +219,8 @@ public class Aligner extends BaseAligner {
 
         if(log.isDebugEnabled())
             log.debug("  - Adding metadata with remote uuid:"+ ri.uuid + " schema:" + schema);
+
+        md = processMetadata(ri, md);
 
         //
         // insert metadata
@@ -265,6 +296,8 @@ public class Aligner extends BaseAligner {
 					return;
 				}
 				
+	            md = processMetadata(ri, md);
+
                 //
                 // update metadata
                 //
@@ -292,6 +325,36 @@ public class Aligner extends BaseAligner {
 	//--- Private methods
 	//---
 	//--------------------------------------------------------------------------
+
+    /**
+     * Filter the metadata if process parameter is set and
+     * corresponding XSL transformation exists.
+     * @param ri
+     * @param md
+     * @return
+     */
+    private Element processMetadata(RecordInfo ri, Element md) {
+        // process metadata
+        if (!params.xslfilter.equals("")) {
+            MetadataSchema metadataSchema = dataMan.getSchema(ri.schema);
+            
+            String filePath = metadataSchema.getSchemaDir() + "/process/" + processName + ".xsl";
+            File xslProcessing = new File(filePath);
+            if (!xslProcessing.exists()) {
+                log.info("     processing instruction not found for " + ri.schema + " schema. metadata not filtered.");
+            } else {
+                Element processedMetadata = null;
+                try {
+                    processedMetadata = Xml.transform(md, filePath, processParams);
+                    if(log.isDebugEnabled()) log.debug("     metadata filtered.");
+                    md = processedMetadata;
+                } catch (Exception e) {
+                    log.warning("     processing error (" + params.xslfilter + "): " + e.getMessage());
+                }
+            }
+        }
+        return md;
+    }
 
     /**
      *  Returns true if the uuid is present in the remote node.
@@ -451,6 +514,9 @@ public class Aligner extends BaseAligner {
 	private UUIDMapper     localUuids;
 	private CswResult      result;
 	private GetRecordByIdRequest request;
+
+    private String processName;
+    private HashMap<String, String> processParams = new HashMap<String, String>();
 }
 
 //=============================================================================

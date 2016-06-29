@@ -561,7 +561,7 @@ class Harvester
 			if (modified.length() == 0) modified = null;
             if(log.isDebugEnabled())
                 log.debug("getRecordInfo: adding "+identif+" with modification date "+modified);
-      return new RecordInfo(identif, modified);
+      return new RecordInfo(identif, modified, schema, null);
 		} catch (Exception e) {
       log.warning("Skipped record not in supported format : "+ name);
 			e.printStackTrace();

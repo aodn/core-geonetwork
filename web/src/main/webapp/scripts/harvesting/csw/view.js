@@ -84,6 +84,8 @@ function setEmpty()
 			break;
 		}
 
+	$('csw.xslfilter')   .value = '';
+
 	shower.update();
 	updateIcon();
 }
@@ -99,6 +101,7 @@ function setData(node)
 
 	hvutil.setOption(site, 'capabilitiesUrl', 'csw.capabUrl');
 	hvutil.setOption(site, 'icon',            'csw.icon');
+	hvutil.setOption(site, 'xslfilter', 'csw.xslfilter');
     hvutil.setOption(site, 'rejectDuplicateResource', 'csw.rejectDuplicateResource');
     
 	//--- add search entries
@@ -133,6 +136,7 @@ function getData()
 	
 	data.CAPAB_URL = $F('csw.capabUrl');
 	data.ICON      = $F('csw.icon');
+	data.XSLFILTER = $F('csw.xslfilter');	
 	data.REJECTDUPLICATERESOURCE = $('csw.rejectDuplicateResource').checked;
 	//--- retrieve search information
 	
