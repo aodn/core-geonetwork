@@ -392,7 +392,7 @@ public class Geonetwork implements ApplicationHandler {
 
 		logger.info("  - Catalogue services for the web...");
 
-		CatalogConfiguration.loadCatalogConfig(path, Csw.CONFIG_FILE);
+		CatalogConfiguration.loadCatalogConfig(path, Csw.CONFIG_FILE, servletContext);
 		CatalogDispatcher catalogDis = new CatalogDispatcher(new File(path,summaryConfigXmlFile), lc);
 
 		//------------------------------------------------------------------------

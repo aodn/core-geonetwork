@@ -24,8 +24,11 @@
 package org.fao.geonet.kernel.csw;
 
 import jeeves.constants.ConfigFile;
+import jeeves.server.context.ServiceContext;
+import jeeves.server.overrides.ConfigurationOverrides;
 import jeeves.utils.Log;
 import jeeves.utils.Xml;
+
 import org.fao.geonet.constants.Geonet;
 import org.fao.geonet.csw.common.Csw;
 import org.jdom.Element;
@@ -37,6 +40,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.servlet.ServletContext;
 
 public class CatalogConfiguration {
 
@@ -66,7 +71,7 @@ public class CatalogConfiguration {
 	// GetRecordById variables
 	private static boolean _increasePopularity = false;
 
-	public static void loadCatalogConfig(String path, String configFile)
+	public static void loadCatalogConfig(String path, String configFile, ServletContext servletContext)
 			throws Exception {
 		configFile = path + File.separator + "WEB-INF" + File.separator + configFile;
 
@@ -74,7 +79,9 @@ public class CatalogConfiguration {
 
 		Element configRoot = Xml.loadFile(configFile);
 
-		List<Element> operationsList = configRoot.getChildren(Csw.ConfigFile.Child.OPERATIONS);
+        ConfigurationOverrides.DEFAULT.updateWithOverrides(configFile, servletContext, path, configRoot);
+
+        List<Element> operationsList = configRoot.getChildren(Csw.ConfigFile.Child.OPERATIONS);
 
         for (Element element : operationsList) {
             initOperations(element);
@@ -86,7 +93,7 @@ public class CatalogConfiguration {
 
         for (Object include1 : includes) {
             Element include = (Element) include1;
-            loadCatalogConfig(path, include.getText());
+            loadCatalogConfig(path, include.getText(), servletContext);
         }
 
 	}
