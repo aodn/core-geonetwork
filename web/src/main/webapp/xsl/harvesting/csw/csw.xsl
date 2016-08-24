@@ -62,6 +62,11 @@
 				</td>
 			</tr>
 			
+      <tr>
+          <td class="padded"><xsl:value-of select="/root/gui/harvesting/xslfilter"/></td>
+          <td class="padded"><input id="csw.xslfilter" class="content" type="text" value="" size="30"/></td>
+      </tr>
+
 			<xsl:call-template name="useAccount">
 				<xsl:with-param name="type" select="'csw'"/>
 			</xsl:call-template>

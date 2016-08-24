@@ -25,6 +25,7 @@ package org.fao.geonet.kernel.harvest.harvester.csw;
 
 import jeeves.exceptions.BadInputEx;
 import jeeves.utils.Util;
+
 import org.fao.geonet.kernel.DataManager;
 import org.fao.geonet.kernel.harvest.harvester.AbstractParams;
 import org.jdom.Element;
@@ -76,6 +77,7 @@ public class CswParams extends AbstractParams
             // TODO should not swallow
         }
 		icon     = Util.getParam(site, "icon",            "default.gif");
+        xslfilter = Util.getParam(site, "xslfilter", "");
 
 		addSearches(searches);
 		
@@ -117,6 +119,7 @@ public class CswParams extends AbstractParams
         }
 
 		icon     = Util.getParam(site, "icon",            icon);
+        xslfilter = Util.getParam(site, "xslfilter", "");
 
 		//--- if some search queries are given, we drop the previous ones and
 		//--- set these new ones
@@ -155,6 +158,7 @@ public class CswParams extends AbstractParams
 
 		copy.capabUrl = capabUrl;
 		copy.icon     = icon;
+        copy.xslfilter = xslfilter;
 		copy.rejectDuplicateResource = rejectDuplicateResource;
 
 		for (Search s : alSearches)
@@ -198,6 +202,15 @@ public class CswParams extends AbstractParams
 	private List<Search> alSearches = new ArrayList<Search>();	
 	public List<Element> eltSearches = new ArrayList<Element>();
 	
+    /**
+     * The filter is a process (see schema/process folder) which depends on the schema.
+     * It could be composed of parameter which will be sent to XSL transformation using
+     * the following syntax :
+     * <pre>
+     * anonymizer?protocol=MYLOCALNETWORK:FILEPATH&email=gis@organisation.org&thesaurus=MYORGONLYTHEASURUS
+     * </pre>
+     */
+    public String  xslfilter;
 }
 
 //=============================================================================
