@@ -1,3 +1,42 @@
+IntelliJ Setup
+--------------
+
+### Clone project files
+
+    git clone --recursive git@github.com:aodn/core-geonetwork.git
+
+### Import project files
+
+* Import project 
+* Select core-geonetwork directory created above
+* Select Import project from existing model
+* Select Maven
+* Check Search for Projects Recursively
+* Check Import Maven projects automatically
+* Check create module groups for multi-module maven projects
+* Hit next and continue hitting next until project is created
+* Don't add iml files to git if asked
+
+### Setup intellij to deploy and run GeoNetwork in debug mode on tomcat
+
+* Edit run configurations
+* Create a new local tomcat server configuration
+* Name configuration e.g.GeoNetwork
+* Configure application server (e.g. local tomcat 1.7 install)
+* Go to Deployment tab
+* Add geonetwork-main:war exploded artifact
+* Set geonetwork-main context to /geonetwork
+* Add geoserver:war exploded artifact
+* Set geoserver context to /geoserver
+* Remove 'Make' and 'Build 2 artifacts' from Before Launch (intellij can't filter webapp resources which is used by GeoNetwork)
+* Add 'Select maven goal' in Before Launch
+  * select core-geonetwork directory for working directory
+  * use install -DskipTests - for relative quick builds of the whole geonetwork project
+* Hit OK
+
+You should now be able to run or debug GeoNetwork running on the local tomcat install using this configuration 
+
+
 Eclipse Setup
 -------------
 
