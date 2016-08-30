@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <resourceExtensions />
+    <wildcardResourcePatterns>
+      <entry name="!?*.java" />
+      <entry name="!?*.form" />
+      <entry name="!?*.class" />
+      <entry name="!?*.groovy" />
+      <entry name="!?*.scala" />
+      <entry name="!?*.flex" />
+      <entry name="!?*.kt" />
+      <entry name="!?*.clj" />
+      <entry name="!?*.aj" />
+    </wildcardResourcePatterns>
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="false">
+        <processorPath useClasspath="true" />
+      </profile>
+      <profile default="false" name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="cachingxslt" />
+        <module name="dummy-api" />
+        <module name="gast" />
+        <module name="geonetwork-client (1)" />
+        <module name="geonetwork-docs" />
+        <module name="geonetwork-main" />
+        <module name="geonetwork-main (1)" />
+        <module name="geoserver" />
+        <module name="geoserver (1)" />
+        <module name="jeeves" />
+        <module name="oaipmh" />
+        <module name="release" />
+        <module name="web-app" />
+        <module name="web-app (1)" />
+        <module name="webspecs" />
+      </profile>
+      <profile default="false" name="Annotation profile for GeoNetwork opensource" enabled="true">
+        <sourceOutputDir name="../web/target/war/work/org.geonetwork-opensource/geonetwork-client/META-INF/maven/org.geonetwork-opensource/geonetwork-client/target/generated-sources/annotations" />
+        <sourceTestOutputDir name="../web/target/war/work/org.geonetwork-opensource/geonetwork-client/META-INF/maven/org.geonetwork-opensource/geonetwork-client/target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="geonetwork-client" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="cachingxslt" target="1.6" />
+      <module name="config-migration" target="1.5" />
+      <module name="dummy-api" target="1.6" />
+      <module name="gast" target="1.6" />
+      <module name="geonetwork" target="1.6" />
+      <module name="geonetwork-client" target="1.6" />
+      <module name="geonetwork-client (1)" target="1.6" />
+      <module name="geonetwork-client (2)" target="1.5" />
+      <module name="geonetwork-docs" target="1.6" />
+      <module name="geonetwork-itest" target="1.6" />
+      <module name="geonetwork-main" target="1.6" />
+      <module name="geonetwork-main (1)" target="1.6" />
+      <module name="geonetwork-main (2)" target="1.6" />
+      <module name="geoserver" target="1.6" />
+      <module name="geoserver (1)" target="1.6" />
+      <module name="geoserver (2)" target="1.6" />
+      <module name="jeeves" target="1.6" />
+      <module name="oaipmh" target="1.6" />
+      <module name="performance" target="1.6" />
+      <module name="release" target="1.5" />
+      <module name="web-app" target="1.5" />
+      <module name="web-app (1)" target="1.5" />
+      <module name="web-app (2)" target="1.5" />
+      <module name="webspecs" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

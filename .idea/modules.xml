@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/cachingxslt/cachingxslt.iml" filepath="$PROJECT_DIR$/cachingxslt/cachingxslt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sde/dummy-api.iml" filepath="$PROJECT_DIR$/sde/dummy-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gast/gast.iml" filepath="$PROJECT_DIR$/gast/gast.iml" />
+      <module fileurl="file://$PROJECT_DIR$/geonetwork.iml" filepath="$PROJECT_DIR$/geonetwork.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web-client/geonetwork-client.iml" filepath="$PROJECT_DIR$/web-client/geonetwork-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web/target/war/work/org.geonetwork-opensource/geonetwork-client/META-INF/maven/org.geonetwork-opensource/geonetwork-client/geonetwork-client (1).iml" filepath="$PROJECT_DIR$/web/target/war/work/org.geonetwork-opensource/geonetwork-client/META-INF/maven/org.geonetwork-opensource/geonetwork-client/geonetwork-client (1).iml" />
+      <module fileurl="file://$PROJECT_DIR$/docs/geonetwork-docs.iml" filepath="$PROJECT_DIR$/docs/geonetwork-docs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web-itest/geonetwork-itest.iml" filepath="$PROJECT_DIR$/web-itest/geonetwork-itest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web/geonetwork-main.iml" filepath="$PROJECT_DIR$/web/geonetwork-main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/geoserver/geoserver.iml" filepath="$PROJECT_DIR$/geoserver/geoserver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jeeves/jeeves.iml" filepath="$PROJECT_DIR$/jeeves/jeeves.iml" />
+      <module fileurl="file://$PROJECT_DIR$/oaipmh/oaipmh.iml" filepath="$PROJECT_DIR$/oaipmh/oaipmh.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jmeter/performance.iml" filepath="$PROJECT_DIR$/jmeter/performance.iml" />
+      <module fileurl="file://$PROJECT_DIR$/release/release.iml" filepath="$PROJECT_DIR$/release/release.iml" />
+      <module fileurl="file://$PROJECT_DIR$/geoserver/target/geoserver/META-INF/maven/org.geoserver.web/web-app/web-app.iml" filepath="$PROJECT_DIR$/geoserver/target/geoserver/META-INF/maven/org.geoserver.web/web-app/web-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/geoserver/target/war/work/org.geoserver/geoserver/META-INF/maven/org.geoserver.web/web-app/web-app (1).iml" filepath="$PROJECT_DIR$/geoserver/target/war/work/org.geoserver/geoserver/META-INF/maven/org.geoserver.web/web-app/web-app (1).iml" />
+      <module fileurl="file://$PROJECT_DIR$/web-itest/webspecs/webspecs.iml" filepath="$PROJECT_DIR$/web-itest/webspecs/webspecs.iml" />
+    </modules>
+  </component>
+</project>

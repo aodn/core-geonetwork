@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="geonetwork-main:war">
+    <output-path>$PROJECT_DIR$/web/target</output-path>
+    <root id="archive" name="geonetwork.war">
+      <element id="artifact" artifact-name="geonetwork-main:war exploded" />
+    </root>
+  </artifact>
+</component>

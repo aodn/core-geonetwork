@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/gast" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/geoserver" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/maven_repo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/schemaPlugins" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/web-itest/webspecs" vcs="Git" />
+  </component>
+</project>
