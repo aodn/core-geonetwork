@@ -44,6 +44,7 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -102,6 +103,10 @@ public class XmlRequest
 		authPrefs.add(AuthPolicy.BASIC); 
 		// This will exclude the NTLM authentication scheme 
 		client.getParams().setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, authPrefs);
+		// Set default timeouts
+		HttpConnectionManagerParams defaultParams = client.getHttpConnectionManager().getParams();
+		defaultParams.setConnectionTimeout(5 * MILLISECONDS_IN_A_MINUTE);
+		defaultParams.setSoTimeout(5 * MILLISECONDS_IN_A_MINUTE);
 	}
 
 	//---------------------------------------------------------------------------
@@ -544,6 +549,14 @@ public class XmlRequest
 	private boolean useAuthent() {
 		return proxyAuthent||serverAuthent;
 	}
+
+	//---------------------------------------------------------------------------
+	//---
+	//--- Constants
+	//---
+	//---------------------------------------------------------------------------
+
+	public static final int MILLISECONDS_IN_A_MINUTE = 60 * 1000;
 
 	//---------------------------------------------------------------------------
 	//---
