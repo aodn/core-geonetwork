@@ -22,9 +22,9 @@ public class LinkCheckerUtils {
             connection.setRequestMethod("GET");
             connection.connect();
 
-            logger.debug(String.format("%s -> %d", url, connection.getResponseCode()));
+            logger.info(String.format("%s -> %d", url, connection.getResponseCode()));
             if (connection.getResponseCode() != 200)
-                logger.debug(String.format("URL '%s' is unavailable", url, connection.getResponseCode()));
+                logger.info(String.format("URL '%s' is unavailable, response was -> %d", url, connection.getResponseCode()));
 
             return 200 == connection.getResponseCode();
         } catch (Exception e) {
