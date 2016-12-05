@@ -114,6 +114,7 @@ public class MetadataRecordInfo {
 
     private void ReportStatusChange(LinkMonitorService.Status prevStatus, LinkMonitorService.Status newStatus) {
         if (prevStatus == newStatus) {
+            logger.info(String.format("Record title=%s uuid=%s status is '%s'", title, uuid, newStatus));
             return;
         }
 
@@ -140,7 +141,7 @@ public class MetadataRecordInfo {
                     linkCheckerInterface.setOnlineResource(onlineResource);
                     return linkCheckerInterface;
                 } catch (Exception e) {
-                    logger.info(e);
+                    logger.error("Error could not find the onlineResource: ", e);
                 }
             }
         }

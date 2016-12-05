@@ -22,7 +22,7 @@ public class LinkCheckerUtils {
             connection.setRequestMethod("GET");
             connection.connect();
 
-            logger.info(String.format("%s -> %d", url, connection.getResponseCode()));
+            logger.debug(String.format("%s -> %d", url, connection.getResponseCode()));
             if (connection.getResponseCode() != 200)
                 logger.info(String.format("URL '%s' is unavailable, response was -> %d", url, connection.getResponseCode()));
 

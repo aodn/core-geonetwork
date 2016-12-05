@@ -71,7 +71,7 @@ public class LinkMonitorService implements LinkMonitorInterface {
         this.resourceManager = resourceManager;
         this.geonetContext = geonetContext;
 
-        this.reindexInterval = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS, "1800"));
+        this.reindexInterval = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS, "600"));
         this.maxFailureRate = Double.parseDouble(serviceConfig.getValue(LINK_MONITOR_SERVICE_MAXFAILURERATE, "0.1"));
         this.maxChecks = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_MAXCHECKS, "10"));
         this.timeout = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_TIMEOUT, "15"));
@@ -177,13 +177,13 @@ public class LinkMonitorService implements LinkMonitorInterface {
 
             if (recordMap.containsKey(uuid)) {
                 if (recordMap.get(uuid).getLastUpdated() < updated) {
-                    logger.info(String.format("Metadata record title=%s uuid=%s was recently changed, updating it...", title, uuid));
+                    logger.debug(String.format("Updating metadata record title=%s uuid=%s ", title, uuid));
                     metadataRecordInfo.setLastUpdated(updated);
                     recordMap.put(uuid, metadataRecordInfo);
                 }
             } else {
                 // New recordMap
-                logger.info(String.format("New metadata record title=%s uuid=%s ", title, uuid));
+                logger.debug(String.format("New metadata record title=%s uuid=%s ", title, uuid));
                 recordMap.put(uuid, new MetadataRecordInfo(this, uuid, title, updated));
             }
         }
@@ -192,17 +192,17 @@ public class LinkMonitorService implements LinkMonitorInterface {
             String title = records.get(record.getKey()).getTitle();
             if (! records.containsKey(record.getKey())) {
                 // Record was deleted
-                logger.info(String.format("Metadata record title=%s uuid=%s was deleted", title, record.getKey()));
+                logger.info(String.format("Deleting metadata record title=%s uuid=%s ", title, record.getKey()));
                 recordMap.remove(record.getKey());
             }
         }
-
         reindexTimestamp = System.currentTimeMillis() / 1000l;
     }
 
     public void check() {
-        if (needReindex())
+        if (needReindex()) {
             reindex(getAllRecords());
+        }
 
         for (Map.Entry<String, MetadataRecordInfo> record : recordMap.entrySet()) {
 
