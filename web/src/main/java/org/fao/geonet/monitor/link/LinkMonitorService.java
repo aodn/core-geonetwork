@@ -71,7 +71,7 @@ public class LinkMonitorService implements LinkMonitorInterface {
         this.resourceManager = resourceManager;
         this.geonetContext = geonetContext;
 
-        this.reindexInterval = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS, "1800"));
+        this.reindexInterval = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS, "600"));
         this.maxFailureRate = Double.parseDouble(serviceConfig.getValue(LINK_MONITOR_SERVICE_MAXFAILURERATE, "0.1"));
         this.maxChecks = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_MAXCHECKS, "10"));
         this.timeout = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_TIMEOUT, "15"));
@@ -104,13 +104,13 @@ public class LinkMonitorService implements LinkMonitorInterface {
         return applicationContext;
     }
 
-    private Map<String, Long> getAllRecords() {
+    private Map<String, MetadataRecordInfo> getAllRecords() {
         try {
             return getAllRecordsLucene();
         } catch (Exception e) {
             logger.info(e);
         }
-        return new HashMap<String, Long>();
+        return new HashMap<String, MetadataRecordInfo>();
     }
 
     private long stringDateToLong(String date) {
@@ -118,26 +118,27 @@ public class LinkMonitorService implements LinkMonitorInterface {
         return dateTime.getMillis();
     }
 
-    private Map<String, Long> getAllRecordsLucene() throws Exception {
-        Map<String, Long> records = new HashMap<String, Long>();
+    private Map<String, MetadataRecordInfo> getAllRecordsLucene() throws Exception {
+        Map<String, MetadataRecordInfo> records = new HashMap<String, MetadataRecordInfo>();
 
         IndexAndTaxonomy indexAndTaxonomy = geonetContext.getSearchmanager().getNewIndexReader(null);
         try {
             GeonetworkMultiReader reader = indexAndTaxonomy.indexReader;
 
             for (int i = 0; i < reader.maxDoc(); i++) {
-                DocumentStoredFieldVisitor idChangeDateSelector = new DocumentStoredFieldVisitor("_uuid", "_changeDate");
+                DocumentStoredFieldVisitor idChangeDateSelector = new DocumentStoredFieldVisitor("_uuid", "_changeDate", "title", "altTitle");
                 reader.document(i, idChangeDateSelector);
                 org.apache.lucene.document.Document doc = idChangeDateSelector.getDocument();
                 String uuid = doc.get("_uuid");
+                String title = doc.get("title");
 
                 if (uuid == null) {
                     logger.error("Document with no _uuid field skipped! Document is " + doc);
                     continue;
                 } else {
-                    logger.debug(String.format("Link Monitor Service adding uuid '%s'", uuid));
+                    logger.info(String.format("Link Monitor Service adding title=%s uuid=%s", title, uuid));
                     long lastUpdated = stringDateToLong(doc.get("_changeDate"));
-                    records.put(uuid, lastUpdated);
+                    records.put(uuid, new MetadataRecordInfo(this, uuid, title, lastUpdated));
                 }
             }
         } catch (Exception e) {
@@ -165,42 +166,50 @@ public class LinkMonitorService implements LinkMonitorInterface {
         return reindexTimestamp < 0 || now - reindexTimestamp >= reindexInterval;
     }
 
-    private void reindex(Map<String, Long> records) {
+    private void reindex(Map<String, MetadataRecordInfo> records) {
         logger.info("Link Monitor Service is reindexing...");
 
         for (final String uuid : records.keySet()) {
-            long lastUpdated = records.get(uuid);
+
+            MetadataRecordInfo metadataRecordInfo = records.get(uuid);
+            Long updated = metadataRecordInfo.getLastUpdated();
+            String title = metadataRecordInfo.getTitle();
 
             if (recordMap.containsKey(uuid)) {
-                if (recordMap.get(uuid).getLastUpdated() < lastUpdated) {
-                    logger.info(String.format("Metadata record '%s' was recently changed, updating it...", uuid));
-                    recordMap.put(uuid, new MetadataRecordInfo(this, uuid, lastUpdated));
+                if (recordMap.get(uuid).getLastUpdated() < updated) {
+                    logger.debug(String.format("Updating metadata record title=%s uuid=%s ", title, uuid));
+                    metadataRecordInfo.setLastUpdated(updated);
+                    recordMap.put(uuid, metadataRecordInfo);
                 }
             } else {
-                // New record
-                logger.debug(String.format("New metadata record '%s'", uuid));
-                recordMap.put(uuid, new MetadataRecordInfo(this, uuid, lastUpdated));
+                // New recordMap
+                logger.debug(String.format("New metadata record title=%s uuid=%s ", title, uuid));
+                recordMap.put(uuid, new MetadataRecordInfo(this, uuid, title, updated));
             }
         }
 
         for (Map.Entry<String, MetadataRecordInfo> record : recordMap.entrySet()) {
+            String title = records.get(record.getKey()).getTitle();
             if (! records.containsKey(record.getKey())) {
                 // Record was deleted
-                logger.debug(String.format("Record '%s' was deleted", record.getKey()));
+                logger.info(String.format("Deleting metadata record title=%s uuid=%s ", title, record.getKey()));
                 recordMap.remove(record.getKey());
             }
         }
-
         reindexTimestamp = System.currentTimeMillis() / 1000l;
     }
 
     public void check() {
-        if (needReindex())
+        if (needReindex()) {
             reindex(getAllRecords());
+        }
 
         for (Map.Entry<String, MetadataRecordInfo> record : recordMap.entrySet()) {
-            logger.debug(String.format("Checking record '%s'", record.getKey()));
+
+            MetadataRecordInfo rec = recordMap.get(record.getKey());
+            logger.info(String.format("Checking record title=%s uuid=%s ", rec.getTitle(), record.getKey()));
             record.getValue().check();
+
             try {
                 Thread.sleep(betweenChecksIntervalMs);
             } catch (InterruptedException e) {

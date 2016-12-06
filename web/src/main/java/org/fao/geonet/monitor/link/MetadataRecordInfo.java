@@ -13,8 +13,8 @@ public class MetadataRecordInfo {
     private static Logger logger = Logger.getLogger(MetadataRecordInfo.class);
 
     private final String uuid;
-
-    private final long lastUpdated;
+    private String title;
+    private long lastUpdated;
 
     private List<LinkInfo> linkInfoList;
 
@@ -23,8 +23,9 @@ public class MetadataRecordInfo {
 
     private LinkMonitorService.Status status = LinkMonitorService.Status.UNKNOWN;
 
-    public MetadataRecordInfo(LinkMonitorService linkMonitorService, String uuid, long lastUpdated) {
+    public MetadataRecordInfo(LinkMonitorService linkMonitorService, String uuid, String title, long lastUpdated) {
         this.uuid = uuid;
+        this.title = title;
         this.lastUpdated = lastUpdated;
         linkInfoList = new ArrayList<LinkInfo>();
         getOnlineResources(linkMonitorService.getDocumentForUuid(uuid));
@@ -48,7 +49,7 @@ public class MetadataRecordInfo {
                             logger.debug(String.format("Cannot find checker for '%s'", protocol));
                         }
                         else {
-                            logger.info(String.format("Configuring checker '%s' for '%s'", linkChecker.toString(), protocol));
+                            logger.debug(String.format("Configuring checker '%s' for '%s'", linkChecker.toString(), protocol));
                             linkInfoList.add(new LinkInfo(linkChecker));
                         }
                     }
@@ -75,6 +76,10 @@ public class MetadataRecordInfo {
         return lastUpdated;
     }
 
+    public void setLastUpdated(long lastUpdated) { this.lastUpdated = lastUpdated; }
+
+    public String getTitle() { return title;}
+
     private LinkMonitorService.Status getStatus() {
         return status;
     }
@@ -99,7 +104,6 @@ public class MetadataRecordInfo {
     }
 
     public void check() {
-        logger.debug(String.format("Checking '%s'", uuid));
         LinkMonitorService.Status prevStatus = getStatus();
         for (final LinkInfo linkInfo : linkInfoList) {
             linkInfo.check();
@@ -110,15 +114,16 @@ public class MetadataRecordInfo {
 
     private void ReportStatusChange(LinkMonitorService.Status prevStatus, LinkMonitorService.Status newStatus) {
         if (prevStatus == newStatus) {
+            logger.info(String.format("Record title=%s uuid=%s status is '%s'", title, uuid, newStatus));
             return;
         }
 
-        logger.info(String.format("Record '%s' changes status from '%s' to '%s'", uuid, prevStatus, newStatus));
+        logger.info(String.format("Record title=%s uuid=%s changes status from '%s' to '%s'", title, uuid, prevStatus, newStatus));
 
         if (newStatus == LinkMonitorService.Status.FAILED) {
             for (final LinkInfo linkInfo : linkInfoList) {
                 if (linkInfo.getStatus() != LinkMonitorService.Status.WORKING) {
-                    logger.info(String.format("Link '%s' is in state '%s'", linkInfo.toString(), linkInfo.getStatus()));
+                    logger.info(String.format("Link for title=%s uuid=%s - '%s' is in state '%s'", title, uuid, linkInfo.toString(), linkInfo.getStatus()));
                 }
             }
         }
@@ -136,7 +141,7 @@ public class MetadataRecordInfo {
                     linkCheckerInterface.setOnlineResource(onlineResource);
                     return linkCheckerInterface;
                 } catch (Exception e) {
-                    logger.info(e);
+                    logger.error("Error could not find the onlineResource: ", e);
                 }
             }
         }
