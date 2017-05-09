@@ -44,6 +44,9 @@ public class MetadataRecordInfo {
                     String protocol = protocolElement.getText();
 
                     if (protocol != null) {
+
+                        addCheckers(protocol, onlineResource, linkInfoList);
+/*
                         LinkCheckerInterface linkChecker = getCheckerForLinkType(protocol, onlineResource);
                         if (linkChecker == null) {
                             logger.debug(String.format("Cannot find checker for '%s'", protocol));
@@ -52,6 +55,7 @@ public class MetadataRecordInfo {
                             logger.debug(String.format("Configuring checker '%s' for '%s'", linkChecker.toString(), protocol));
                             linkInfoList.add(new LinkInfo(linkChecker));
                         }
+*/
                     }
                 }
             }
@@ -148,4 +152,45 @@ public class MetadataRecordInfo {
 
         return null;
     }
+
+    /*
+    if (linkChecker == null) {
+        logger.debug(String.format("Cannot find checker for '%s'", protocol));
+    }
+    else {
+        logger.debug(String.format("Configuring checker '%s' for '%s'", linkChecker.toString(), protocol));
+        linkInfoList.add(new LinkInfo(linkChecker))
+                */
+
+
+
+    private static void addCheckers(String linkType, final Element onlineResource, List<LinkInfo> linkInfoList) {
+
+        final Map<String, LinkCheckerInterface> linkCheckerClasses =
+                LinkMonitorService.getApplicationContext().getBeansOfType(LinkCheckerInterface.class);
+
+        int count = 0;
+
+        for (final String beanId : linkCheckerClasses.keySet()) {
+            if (linkCheckerClasses.get(beanId).canHandle(linkType)) {
+                try {
+                    Class linkCheckerClass = linkCheckerClasses.get(beanId).getClass();
+                    LinkCheckerInterface linkCheckerInterface = (LinkCheckerInterface) linkCheckerClass.newInstance();
+                    linkCheckerInterface.setOnlineResource(onlineResource);
+
+                    linkInfoList.add(new LinkInfo(linkCheckerInterface));
+                    logger.debug(String.format("Configuring checker '%s' for '%s'", linkCheckerInterface.toString(), linkType));
+                    ++count;
+                    //return linkCheckerInterface;
+                } catch (Exception e) {
+                    logger.error("Error could not find the onlineResource: ", e);
+                }
+            }
+        }
+
+        if(count == 0) {
+            logger.debug(String.format("Cannot find checker for '%s'", linkType));
+        }
+    }
+
 }
