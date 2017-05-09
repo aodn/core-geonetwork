@@ -40,6 +40,14 @@
     </property>
   </bean>
 
+  <bean id="LinkCheckerWmsGetCapabilities" class="org.fao.geonet.monitor.link.LinkCheckerWmsGetCapabilities">
+    <property name="linkTypes">
+      <set>
+        <value>OGC:WMS-1.1.1-http-get-map</value>
+      </set>
+    </property>
+  </bean>
+
   <bean id="LinkCheckerWms" class="org.fao.geonet.monitor.link.LinkCheckerWms">
     <property name="linkTypes">
       <set>

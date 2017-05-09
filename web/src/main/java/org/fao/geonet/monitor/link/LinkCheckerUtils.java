@@ -5,15 +5,24 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
+import org.w3c.dom.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.PrintWriter;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 
 public class LinkCheckerUtils {
     public static String URL_XPATH = "gmd:linkage";
     public static String NAME_XPATH = "gmd:name";
     private static Logger logger = Logger.getLogger(LinkCheckerUtils.class);
 
-    public static boolean checkHttpUrl(String url) {
+    public static boolean checkHttpUrl(String uuid, String url) {
         try {
             HttpURLConnection connection;
             connection = (HttpURLConnection) (new URL(url)).openConnection();
@@ -23,12 +32,13 @@ public class LinkCheckerUtils {
             connection.connect();
 
             logger.debug(String.format("%s -> %d", url, connection.getResponseCode()));
-            if (connection.getResponseCode() != 200)
-                logger.info(String.format("URL '%s' is unavailable, response was -> %d", url, connection.getResponseCode()));
-
-            return 200 == connection.getResponseCode();
+            if (connection.getResponseCode() != 200) {
+                logger.info(String.format("link broken uuid='%s', url='%s', error='bad response code %d'", uuid, url, connection.getResponseCode()));
+            } else {
+                return true;
+            }
         } catch (Exception e) {
-            logger.info(String.format("Error checking link '%s' reason '%s'", url, e));
+            logger.info(String.format("link broken uuid='%s', url='%s', error='%s', stack='%s'", uuid, url, e.getMessage(), exceptionToString(e)));
         }
         return false;
     }
@@ -46,5 +56,34 @@ public class LinkCheckerUtils {
         }
 
         return null;
+    }
+
+    public static String exceptionToString(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        pw.println();
+        e.printStackTrace(pw);
+        return sw.toString();
+    }
+
+    public static Document parseXML(InputStream stream)
+            throws Exception
+    {
+        DocumentBuilderFactory objDocumentBuilderFactory = null;
+        DocumentBuilder objDocumentBuilder = null;
+        Document doc = null;
+        try
+        {
+            objDocumentBuilderFactory = DocumentBuilderFactory.newInstance();
+            objDocumentBuilder = objDocumentBuilderFactory.newDocumentBuilder();
+
+            doc = objDocumentBuilder.parse(stream);
+        }
+        catch(Exception e)
+        {
+            throw e;
+        }
+
+        return doc;
     }
 }

@@ -12,7 +12,7 @@ public class LinkInfoTest extends TestCase {
         public LinkCheckerMock() {}
 
         @Override
-        public void setOnlineResource(final Element onlineResource) {}
+        public void setOnlineResource(String uuid, final Element onlineResource) {}
 
         @Override
         public boolean check() {

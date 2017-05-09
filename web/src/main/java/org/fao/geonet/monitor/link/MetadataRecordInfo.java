@@ -44,14 +44,7 @@ public class MetadataRecordInfo {
                     String protocol = protocolElement.getText();
 
                     if (protocol != null) {
-                        LinkCheckerInterface linkChecker = getCheckerForLinkType(protocol, onlineResource);
-                        if (linkChecker == null) {
-                            logger.debug(String.format("Cannot find checker for '%s'", protocol));
-                        }
-                        else {
-                            logger.debug(String.format("Configuring checker '%s' for '%s'", linkChecker.toString(), protocol));
-                            linkInfoList.add(new LinkInfo(linkChecker));
-                        }
+                        addCheckers(protocol, onlineResource, this.uuid, this.linkInfoList);
                     }
                 }
             }
@@ -114,38 +107,47 @@ public class MetadataRecordInfo {
 
     private void ReportStatusChange(LinkMonitorService.Status prevStatus, LinkMonitorService.Status newStatus) {
         if (prevStatus == newStatus) {
-            logger.info(String.format("Record title=%s uuid=%s status is '%s'", title, uuid, newStatus));
+            logger.info(String.format("Record uuid='%s', title='%s' status is unchanged '%s'", uuid, title, newStatus));
             return;
         }
 
-        logger.info(String.format("Record title=%s uuid=%s changes status from '%s' to '%s'", title, uuid, prevStatus, newStatus));
+        logger.info(String.format("Record uuid='%s' title='%s' changes status from '%s' to '%s'", uuid, title, prevStatus, newStatus));
 
         if (newStatus == LinkMonitorService.Status.FAILED) {
             for (final LinkInfo linkInfo : linkInfoList) {
                 if (linkInfo.getStatus() != LinkMonitorService.Status.WORKING) {
-                    logger.info(String.format("Link for title=%s uuid=%s - '%s' is in state '%s'", title, uuid, linkInfo.toString(), linkInfo.getStatus()));
+
+                    logger.info(String.format("Link for uuid='%s', title='%s', '%s' is in state '%s'", uuid, title, linkInfo.toString(), linkInfo.getStatus()));
                 }
             }
         }
     }
 
-    private static LinkCheckerInterface getCheckerForLinkType(String linkType, final Element onlineResource) {
+    private static void addCheckers(String linkType, final Element onlineResource, String uuid, List<LinkInfo> linkInfoList) {
+
         final Map<String, LinkCheckerInterface> linkCheckerClasses =
-            LinkMonitorService.getApplicationContext().getBeansOfType(LinkCheckerInterface.class);
+                LinkMonitorService.getApplicationContext().getBeansOfType(LinkCheckerInterface.class);
+
+        int count = 0;
 
         for (final String beanId : linkCheckerClasses.keySet()) {
             if (linkCheckerClasses.get(beanId).canHandle(linkType)) {
                 try {
                     Class linkCheckerClass = linkCheckerClasses.get(beanId).getClass();
                     LinkCheckerInterface linkCheckerInterface = (LinkCheckerInterface) linkCheckerClass.newInstance();
-                    linkCheckerInterface.setOnlineResource(onlineResource);
-                    return linkCheckerInterface;
+                    linkCheckerInterface.setOnlineResource(uuid, onlineResource);
+
+                    linkInfoList.add(new LinkInfo(linkCheckerInterface));
+                    logger.debug(String.format("Configuring checker '%s' for '%s'", linkCheckerInterface.toString(), linkType));
+                    ++count;
                 } catch (Exception e) {
                     logger.error("Error could not find the onlineResource: ", e);
                 }
             }
         }
 
-        return null;
+        if(count == 0) {
+            logger.debug(String.format("Cannot find checker for '%s'", linkType));
+        }
     }
 }
