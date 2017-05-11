@@ -28,7 +28,7 @@ public class LinkCheckerUtils {
 
             return 200 == connection.getResponseCode();
         } catch (Exception e) {
-            logger.info(String.format("Error checking link '%s'", url));
+            logger.info(String.format("Error checking link '%s' reason '%s'", url, e));
             logger.debug(e);
         }
         return false;
