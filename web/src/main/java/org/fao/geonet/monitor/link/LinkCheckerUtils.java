@@ -13,7 +13,7 @@ public class LinkCheckerUtils {
     public static String NAME_XPATH = "gmd:name";
     private static Logger logger = Logger.getLogger(LinkCheckerUtils.class);
 
-    public static boolean checkHttpUrl(String url) {
+    public static boolean checkHttpUrl(String url) throws Exception {
         try {
             HttpURLConnection connection;
             connection = (HttpURLConnection) (new URL(url)).openConnection();
@@ -28,10 +28,11 @@ public class LinkCheckerUtils {
 
             return 200 == connection.getResponseCode();
         } catch (Exception e) {
-            logger.info(String.format("Error checking link '%s' reason '%s'", url, e));
+            String errorMsg = String.format("Error checking link '%s' reason '%s'", url, e);
+            logger.info(errorMsg);
             logger.debug(e);
+            throw new Exception(errorMsg);
         }
-        return false;
     }
 
     public static String parseOnlineResource(Element onlineResource, String path) {

@@ -75,6 +75,11 @@ public class LinkInfo {
         return status;
     }
 
+    public String getLastErrorMsg() {
+
+        return linkChecker.getLastErrorMsg();
+    }
+
     private void truncateCheckList() {
         // Leave just the last maxChecks checks
         while (getCheckCount() > LinkMonitorService.maxChecks) {

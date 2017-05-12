@@ -12,6 +12,8 @@ public class LinkCheckerDefault implements LinkCheckerInterface {
 
     protected Set<String> linkTypes;
 
+    protected String lastErrorMsg = null;
+
     @Override
     public void setOnlineResource(final Element onlineResource) {
         this.onlineResource = onlineResource;
@@ -25,7 +27,17 @@ public class LinkCheckerDefault implements LinkCheckerInterface {
 
     @Override
     public boolean check() {
-        return LinkCheckerUtils.checkHttpUrl(url);
+        try {
+            return LinkCheckerUtils.checkHttpUrl(url);
+        } catch (Exception e) {
+            lastErrorMsg = e.getMessage();
+            return false;
+        }
+    }
+
+    @Override
+    public String getLastErrorMsg() {
+        return lastErrorMsg;
     }
 
     @Override
