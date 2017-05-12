@@ -20,6 +20,9 @@ public class LinkInfoTest extends TestCase {
         }
 
         @Override
+        public String getLastErrorMsg() { return ""; }
+
+        @Override
         public String toString() {
             return "";
         }
