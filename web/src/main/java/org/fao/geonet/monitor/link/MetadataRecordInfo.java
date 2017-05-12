@@ -127,7 +127,8 @@ public class MetadataRecordInfo {
         if (newStatus == LinkMonitorService.Status.FAILED) {
             for (final LinkInfo linkInfo : linkInfoList) {
                 if (linkInfo.getStatus() != LinkMonitorService.Status.WORKING) {
-                    logger.info(String.format("Link for title=%s uuid=%s - '%s' is in state '%s'", title, uuid, linkInfo.toString(), linkInfo.getStatus()));
+                    logger.info(String.format("Link for title=%s uuid=%s - '%s' is in state '%s' error:'%s'", title, uuid, linkInfo.toString(), linkInfo.getStatus(), linkInfo.getStatus(), linkInfo.getLastErrorMsg()));
+                    // logger.info(String.format("Link for title=%s uuid=%s - '%s' is in state '%s'", title, uuid, linkInfo.toString(), linkInfo.getStatus()));
                 }
             }
         }

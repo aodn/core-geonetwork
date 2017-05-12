@@ -9,5 +9,7 @@ public interface LinkCheckerInterface {
 
     public boolean check();
 
+    public String getLastErrorMsg();
+
     public String toString();
 }

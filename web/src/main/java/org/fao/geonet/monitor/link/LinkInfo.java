@@ -40,7 +40,8 @@ public class LinkInfo {
     private boolean failureRateAcceptable() {
         double checkFailureRate = checkFailureCount() / (double) LinkMonitorService.maxChecks;
 
-        return checkFailureRate <= LinkMonitorService.maxFailureRate;
+        // return checkFailureRate <= LinkMonitorService.maxFailureRate;
+        return checkFailureRate < 0.1;
     }
 
     private int checkFailureCount() {
@@ -73,6 +74,11 @@ public class LinkInfo {
 
     public LinkMonitorService.Status getStatus() {
         return status;
+    }
+
+    public String getLastErrorMsg() {
+
+        return linkChecker.getLastErrorMsg();
     }
 
     private void truncateCheckList() {

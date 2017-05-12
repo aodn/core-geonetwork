@@ -44,7 +44,7 @@ public class LinkCheckerUtils {
         return doc;
     }
 
-    public static boolean checkHttpUrl(String url) {
+    public static void checkHttpUrl(String url) throws Exception {
         try {
             HttpURLConnection connection;
             connection = (HttpURLConnection) (new URL(url)).openConnection();
@@ -55,47 +55,29 @@ public class LinkCheckerUtils {
 
 /*
             // TODO IMPORTANT - who is closing these connetions...
-
-            // "application/vnd.ogc.wms_xml"
-            //connection.setInstanceFollowRedirects(true);
-            logger.debug(String.format("%s -> %d", url, connection.getResponseCode()));
-*/
-
-/*
-            if (connection.getResponseCode() != 200)
-            // logger.info("WHOOT " + connection.getHeaderField("Content-Type") );
-            String contentType = connection.getContentType();
-            //http://geoserver-123.aodn.org.au/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities
-            logger.info("WHOOT " + contentType );
-            // if(connection.getResponseCode() = 200)  check if this compiles,
 */
             if(connection.getResponseCode() != 200) {
-                logger.info(String.format("URL '%s' is unavailable, response was -> %d", url, connection.getResponseCode()));
-                return false;
+                String  s = String.format("URL '%s' bad response code, %d", url, connection.getResponseCode());
+                // logger.info(String.format("URL '%s' is unavailable, response was -> %d", url, connection.getResponseCode()));
+                throw new RuntimeException(s);
             }
 
             logger.info("WHOOT content type is " + connection.getContentType() + " " + url);
 
-       
             if(connection.getContentType().equals("application/vnd.ogc.wms_xml")) {
 
                 logger.info("WHOOT got xml type - will try parsing the document");
-                try { 
-                    parseXML(connection.getInputStream());
-                    logger.info(String.format("Succeeded parse xml"));
-                    return true;
-                } catch (Exception e) {
-                    logger.info(String.format("Failed to parse xml %s", e));
-                    return false;
-                }
+                parseXML(connection.getInputStream());
+                logger.info(String.format("WHOOT Succeeded parse xml"));
+                return;
             }
 
-            // return 200 == connection.getResponseCode();
         } catch (Exception e) {
-            logger.info(String.format("Error checking link '%s'", url));
-            logger.debug(e);
+            logger.info(String.format("Error checking link '%s' reason '%s'", url, e));
+//            logger.info(String.format("Error checking link '%s'", url));
+//            logger.debug(e);
+            throw e;
         }
-        return false;
     }
 
     public static String parseOnlineResource(Element onlineResource, String path) {
