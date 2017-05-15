@@ -6,6 +6,8 @@ import java.util.Set;
 
 public class LinkCheckerDefault implements LinkCheckerInterface {
 
+    protected String uuid = null;
+
     protected Element onlineResource = null;
 
     protected String url = "";
@@ -13,7 +15,8 @@ public class LinkCheckerDefault implements LinkCheckerInterface {
     protected Set<String> linkTypes;
 
     @Override
-    public void setOnlineResource(final Element onlineResource) {
+    public void setOnlineResource(String uuid, final Element onlineResource) {
+        this.uuid = uuid;
         this.onlineResource = onlineResource;
         url = LinkCheckerUtils.parseOnlineResource(onlineResource, LinkCheckerUtils.URL_XPATH);
     }
@@ -25,7 +28,7 @@ public class LinkCheckerDefault implements LinkCheckerInterface {
 
     @Override
     public boolean check() {
-        return LinkCheckerUtils.checkHttpUrl(url);
+        return LinkCheckerUtils.checkHttpUrl(this.uuid, this.url);
     }
 
     @Override
