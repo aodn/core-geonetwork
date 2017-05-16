@@ -1,21 +1,21 @@
-package org.fao.geonet.monitor.link;
+package org.fao.geonet.monitor.onlineresource;
 
 import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LinkInfo {
-    private static Logger logger = Logger.getLogger(LinkInfo.class);
+public class OnlineResourceInfo {
+    private static Logger logger = Logger.getLogger(OnlineResourceInfo.class);
 
     private List<CheckInfo> checkInfoList;
 
-    private final LinkCheckerInterface linkChecker;
+    private final OnlineResourceCheckerInterface onlineResourceChecker;
 
-    private LinkMonitorService.Status status = LinkMonitorService.Status.UNKNOWN;
+    private OnlineResourceMonitorService.Status status = OnlineResourceMonitorService.Status.UNKNOWN;
 
-    public LinkInfo(LinkCheckerInterface linkChecker) {
+    public OnlineResourceInfo(OnlineResourceCheckerInterface onlineResourceChecker) {
         checkInfoList = new ArrayList<CheckInfo>();
-        this.linkChecker = linkChecker;
+        this.onlineResourceChecker = onlineResourceChecker;
     }
 
     public int getCheckCount() {
@@ -25,7 +25,7 @@ public class LinkInfo {
     private boolean isFresh() {
         long now = System.currentTimeMillis() / 1000l;
         long lastCheck = checkInfoList.get(getCheckCount() - 1).timestamp;
-        if (now - lastCheck > LinkMonitorService.freshness) {
+        if (now - lastCheck > OnlineResourceMonitorService.freshness) {
             logger.debug(String.format("Last test is too old, ('%s' seconds ago)", now - lastCheck));
             return false;
         }
@@ -38,9 +38,9 @@ public class LinkInfo {
     }
 
     private boolean failureRateAcceptable() {
-        double checkFailureRate = checkFailureCount() / (double) LinkMonitorService.maxChecks;
+        double checkFailureRate = checkFailureCount() / (double) OnlineResourceMonitorService.maxChecks;
 
-        return checkFailureRate <= LinkMonitorService.maxFailureRate;
+        return checkFailureRate <= OnlineResourceMonitorService.maxFailureRate;
     }
 
     private int checkFailureCount() {
@@ -55,41 +55,41 @@ public class LinkInfo {
         return failedCount;
     }
 
-    public LinkMonitorService.Status evaluateStatus() {
+    public OnlineResourceMonitorService.Status evaluateStatus() {
         if (!isFresh()) {
-            return LinkMonitorService.Status.UNKNOWN;
+            return OnlineResourceMonitorService.Status.UNKNOWN;
         }
 
         if (noChecksPerformed()) {
-            return LinkMonitorService.Status.UNKNOWN;
+            return OnlineResourceMonitorService.Status.UNKNOWN;
         }
 
         if (failureRateAcceptable()) {
-            return LinkMonitorService.Status.WORKING;
+            return OnlineResourceMonitorService.Status.WORKING;
         } else {
-            return LinkMonitorService.Status.FAILED;
+            return OnlineResourceMonitorService.Status.FAILED;
         }
     }
 
-    public LinkMonitorService.Status getStatus() {
+    public OnlineResourceMonitorService.Status getStatus() {
         return status;
     }
 
     private void truncateCheckList() {
         // Leave just the last maxChecks checks
-        while (getCheckCount() > LinkMonitorService.maxChecks) {
+        while (getCheckCount() > OnlineResourceMonitorService.maxChecks) {
             checkInfoList.remove(0);
         }
     }
 
     public void check() {
-        checkInfoList.add(new CheckInfo(linkChecker));
+        checkInfoList.add(new CheckInfo(onlineResourceChecker));
         truncateCheckList();
         status = evaluateStatus();
     }
 
     @Override
     public String toString() {
-        return linkChecker.toString();
+        return onlineResourceChecker.toString();
     }
 }

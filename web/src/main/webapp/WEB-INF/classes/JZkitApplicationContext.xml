@@ -29,18 +29,26 @@
   <bean id="ContextGateway" class="org.fao.geonet.ContextContainer">
   </bean>
 
-  <bean id="LinkMonitor" class="org.fao.geonet.monitor.link.LinkMonitorService">
+  <bean id="OnlineResourceMonitor" class="org.fao.geonet.monitor.onlineresource.OnlineResourceMonitorService">
   </bean>
 
-  <bean id="LinkCheckerDefault" class="org.fao.geonet.monitor.link.LinkCheckerDefault">
-    <property name="linkTypes">
+  <bean id="OnlineResourceCheckerDefault" class="org.fao.geonet.monitor.onlineresource.OnlineResourceCheckerDefault">
+    <property name="onlineResourceTypes">
       <set>
         <value>WWW:DOWNLOAD-1.0-http--downloadother</value>
       </set>
     </property>
   </bean>
 
-  <bean id="LinkCheckerWmsGetCapabilities" class="org.fao.geonet.monitor.link.LinkCheckerWmsGetCapabilities">
+  <bean id="OnlineResourceCheckerWmsGetCapabilities" class="org.fao.geonet.monitor.onlineresource.OnlineResourceCheckerWmsGetCapabilities">
+    <property name="onlineResourceTypes">
+      <set>
+        <value>OGC:WMS-1.1.1-http-get-map</value>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="OnlineResourceCheckerWms" class="org.fao.geonet.monitor.onlineresource.OnlineResourceCheckerWms">
     <property name="linkTypes">
       <set>
         <value>OGC:WMS-1.1.1-http-get-map</value>
@@ -48,24 +56,16 @@
     </property>
   </bean>
 
-  <bean id="LinkCheckerWms" class="org.fao.geonet.monitor.link.LinkCheckerWms">
-    <property name="linkTypes">
-      <set>
-        <value>OGC:WMS-1.1.1-http-get-map</value>
-      </set>
-    </property>
-  </bean>
-
-  <bean id="LinkCheckerNcwmsAbom" class="org.fao.geonet.monitor.link.LinkCheckerNcwmsAbom">
-    <property name="linkTypes">
+  <bean id="OnlineResourceCheckerNcwmsAbom" class="org.fao.geonet.monitor.onlineresource.OnlineResourceCheckerNcwmsAbom">
+    <property name="onlineResourceTypes">
       <set>
         <value>IMOS:NCWMS--proto</value>
       </set>
     </property>
   </bean>
 
-  <bean id="LinkCheckerWfs" class="org.fao.geonet.monitor.link.LinkCheckerWfs">
-    <property name="linkTypes">
+  <bean id="OnlineResourceCheckerWfs" class="org.fao.geonet.monitor.onlineresource.OnlineResourceCheckerWfs">
+    <property name="onlineResourceTypes">
       <set>
         <value>OGC:WFS-1.0.0-http-get-capabilities</value>
         <value>IMOS:AGGREGATION--bodaac</value>

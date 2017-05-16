@@ -1,11 +1,11 @@
-package org.fao.geonet.monitor.link;
+package org.fao.geonet.monitor.onlineresource;
 
 import org.jdom.Element;
 
-public interface LinkCheckerInterface {
+public interface OnlineResourceCheckerInterface {
     public void setOnlineResource(String uuid, Element onlineResource);
 
-    public boolean canHandle(String linkType);
+    public boolean canHandle(String onlineResourceType);
 
     public boolean check();
 
