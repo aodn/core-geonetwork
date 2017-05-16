@@ -84,7 +84,7 @@ import org.fao.geonet.languages.LanguageDetector;
 import org.fao.geonet.lib.DatabaseType;
 import org.fao.geonet.lib.Lib;
 import org.fao.geonet.lib.ServerLib;
-import org.fao.geonet.monitor.link.LinkMonitorInterface;
+import org.fao.geonet.monitor.onlineresource.OnlineResourceMonitorInterface;
 import org.fao.geonet.notifier.MetadataNotifierControl;
 import org.fao.geonet.notifier.MetadataNotifierManager;
 import org.fao.geonet.resources.Resources;
@@ -106,7 +106,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
-import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -481,7 +480,7 @@ public class Geonetwork implements ApplicationHandler {
             createDBHeartBeat(context.getResourceManager(), gnContext, dbHeartBeatInitialDelay, dbHeartBeatFixedDelay);
         }
 
-        createLinkMonitor(app_context, context.getResourceManager(), gnContext, handlerConfig);
+        createOnlineResourceMonitor(app_context, context.getResourceManager(), gnContext, handlerConfig);
 
 		return gnContext;
 	}
@@ -603,29 +602,29 @@ public class Geonetwork implements ApplicationHandler {
         scheduledExecutorService.scheduleWithFixedDelay(DBHeartBeat, initialDelay, fixedDelay, TimeUnit.SECONDS);
     }
 
-    private void createLinkMonitor(final ApplicationContext appContext, final ResourceManager rm, final GeonetContext gc, ServiceConfig handlerConfig) {
-        boolean linkMonitorEnabled = Boolean.parseBoolean(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_ENABLED, "false"));
-        if(!linkMonitorEnabled) {
+    private void createOnlineResourceMonitor(final ApplicationContext appContext, final ResourceManager rm, final GeonetContext gc, ServiceConfig handlerConfig) {
+        boolean onlineResourceMonitorEnabled = Boolean.parseBoolean(handlerConfig.getValue(Geonet.Config.ONLINE_RESOURCE_MONITOR_ENABLED, "false"));
+        if(!onlineResourceMonitorEnabled) {
             return;
         }
 
-        logger.info("Creating Link Monitor...");
+        logger.info("Creating OnlineResource Monitor...");
 
-        Integer linkMonitorInitialDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_INITIALDELAYSECONDS, "5"));
-        Integer linkMonitorFixedDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.LINK_MONITOR_FIXEDDELAYSECONDS, "60"));
+        Integer onlineResourceMonitorInitialDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.ONLINE_RESOURCE_MONITOR_INITIALDELAYSECONDS, "5"));
+        Integer onlineResourceMonitorFixedDelay = Integer.parseInt(handlerConfig.getValue(Geonet.Config.ONLINE_RESOURCE_MONITOR_FIXEDDELAYSECONDS, "60"));
 
         try {
-            gc.linkMonitor = appContext.getBean("LinkMonitor", LinkMonitorInterface.class);
-            gc.linkMonitor.init(appContext, rm, gc, handlerConfig);
-            logger.info(String.format("Link Monitor with class '%s' initialized", gc.linkMonitor.getClass().getName()));
+            gc.onlineResourceMonitor = appContext.getBean("OnlineResourceMonitor", OnlineResourceMonitorInterface.class);
+            gc.onlineResourceMonitor.init(appContext, rm, gc, handlerConfig);
+            logger.info(String.format("Online Resource Monitor with class '%s' initialized", gc.onlineResourceMonitor.getClass().getName()));
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("Failed initializing Link Monitor");
+            logger.error("Failed initializing Online Resource Monitor");
             return;
         }
 
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        scheduledExecutorService.scheduleWithFixedDelay(gc.getLinkMonitor(), linkMonitorInitialDelay, linkMonitorFixedDelay, TimeUnit.SECONDS);
+        scheduledExecutorService.scheduleWithFixedDelay(gc.getOnlineResourceMonitor(), onlineResourceMonitorInitialDelay, onlineResourceMonitorFixedDelay, TimeUnit.SECONDS);
     }
 
     /**

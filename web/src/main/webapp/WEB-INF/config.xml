@@ -367,17 +367,17 @@
         <param name="DBHeartBeatInitialDelaySeconds" value="20"/>
         <param name="DBHeartBeatFixedDelaySeconds" value="20"/>
 
-        <param name="LinkMonitorEnabled" value="false"/>
-        <param name="LinkMonitorInitialDelaySeconds" value="5"/>
-        <param name="LinkMonitorFixedDelaySeconds" value="60"/>
+        <param name="OnlineResourceMonitorEnabled" value="false"/>
+        <param name="OnlineResourceMonitorInitialDelaySeconds" value="5"/>
+        <param name="OnlineResourceMonitorFixedDelaySeconds" value="60"/>
 
-        <param name="LinkMonitorServiceReindexIntervalSeconds" value="1800"/>
-        <param name="LinkMonitorServicePercentWorkingThreshold" value="90"/>
-        <param name="LinkMonitorServiceMaxChecks" value="10"/>
-        <param name="LinkMonitorServiceTimeout" value="15"/>
-        <param name="LinkMonitorServiceFreshness" value="3600"/>
-        <param name="LinkMonitorServiceUnknownAsWorking" value="true"/>
-        <param name="LinkMonitorServiceBetweenChecksIntervalMs" value="2000"/>
+        <param name="OnlineResourceMonitorServiceReindexIntervalSeconds" value="1800"/>
+        <param name="OnlineResourceMonitorServicePercentWorkingThreshold" value="90"/>
+        <param name="OnlineResourceMonitorServiceMaxChecks" value="10"/>
+        <param name="OnlineResourceMonitorServiceTimeout" value="15"/>
+        <param name="OnlineResourceMonitorServiceFreshness" value="3600"/>
+        <param name="OnlineResourceMonitorServiceUnknownAsWorking" value="true"/>
+        <param name="OnlineResourceMonitorServiceBetweenChecksIntervalMs" value="2000"/>
 
 		<!-- Define if the schema catalog should be updated on startup.
 		Default is true. -->
