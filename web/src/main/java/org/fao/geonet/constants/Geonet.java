@@ -509,10 +509,10 @@ public final class Geonet {
         public static final String DB_HEARTBEAT_ENABLED = "DBHeartBeatEnabled";
         public static final String DB_HEARTBEAT_INITIALDELAYSECONDS = "DBHeartBeatInitialDelaySeconds";
         public static final String DB_HEARTBEAT_FIXEDDELAYSECONDS = "DBHeartBeatFixedDelaySeconds";
-        public static final String LINK_MONITOR_ENABLED = "LinkMonitorEnabled";
-        public static final String LINK_MONITOR_CLASS = "LinkMonitorClass";
-        public static final String LINK_MONITOR_INITIALDELAYSECONDS = "LinkMonitorInitialDelaySeconds";
-        public static final String LINK_MONITOR_FIXEDDELAYSECONDS = "LinkMonitorFixedDelaySeconds";
+        public static final String ONLINE_RESOURCE_MONITOR_ENABLED = "OnlineResourceMonitorEnabled";
+        public static final String ONLINE_RESOURCE_MONITOR_CLASS = "OnlineResourceMonitorClass";
+        public static final String ONLINE_RESOURCE_MONITOR_INITIALDELAYSECONDS = "OnlineResourceMonitorInitialDelaySeconds";
+        public static final String ONLINE_RESOURCE_MONITOR_FIXEDDELAYSECONDS = "OnlineResourceMonitorFixedDelaySeconds";
         public static final String SCHEMA_PLUGINS_CATALOG_UPDATE = "createOrUpdateSchemaCatalog";
     }
 

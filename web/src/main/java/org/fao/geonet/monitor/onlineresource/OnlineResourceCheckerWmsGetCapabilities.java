@@ -1,4 +1,4 @@
-package org.fao.geonet.monitor.link;
+package org.fao.geonet.monitor.onlineresource;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -7,9 +7,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.InputStream;
 
-public class LinkCheckerWmsGetCapabilities extends LinkCheckerDefault {
+public class OnlineResourceCheckerWmsGetCapabilities extends OnlineResourceCheckerDefault {
 
-    private static Logger logger = Logger.getLogger(LinkCheckerWmsGetCapabilities.class);
+    private static Logger logger = Logger.getLogger(OnlineResourceCheckerWmsGetCapabilities.class);
 
     @Override
     public void setOnlineResource(String uuid, final Element onlineResource) {
@@ -23,8 +23,8 @@ public class LinkCheckerWmsGetCapabilities extends LinkCheckerDefault {
         try {
             HttpURLConnection connection;
             connection = (HttpURLConnection) (new URL(url)).openConnection();
-            connection.setConnectTimeout(LinkMonitorService.timeout * 1000);
-            connection.setReadTimeout(LinkMonitorService.timeout * 1000);
+            connection.setConnectTimeout(OnlineResourceMonitorService.timeout * 1000);
+            connection.setReadTimeout(OnlineResourceMonitorService.timeout * 1000);
             connection.setRequestMethod("GET");
             connection.connect();
 
@@ -40,7 +40,7 @@ public class LinkCheckerWmsGetCapabilities extends LinkCheckerDefault {
                 InputStream is = null;
                 try {
                     is = connection.getInputStream();
-                    LinkCheckerUtils.parseXML(is);
+                    OnlineResourceCheckerUtils.parseXML(is);
                 } finally {
                     if(is != null) {
                         is.close();
@@ -55,7 +55,7 @@ public class LinkCheckerWmsGetCapabilities extends LinkCheckerDefault {
         } catch (Exception e) {
 
             logger.info(String.format("link broken uuid='%s', url='%s', error='%s' stack='%s'",
-                    uuid, url, e.getMessage(), LinkCheckerUtils.exceptionToString(e)));
+                    uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e)));
         }
 
         return false;

@@ -1,15 +1,15 @@
-package org.fao.geonet.monitor.link;
+package org.fao.geonet.monitor.onlineresource;
 
 import org.fao.geonet.test.TestCase;
 import org.jdom.Element;
 
-import static org.fao.geonet.monitor.link.LinkMonitorService.Status.*;
+import static org.fao.geonet.monitor.onlineresource.OnlineResourceMonitorService.Status.*;
 
-public class LinkInfoTest extends TestCase {
+public class OnlineResourceInfoTest extends TestCase {
     public static boolean testResult = true;
 
-    public class LinkCheckerMock implements LinkCheckerInterface {
-        public LinkCheckerMock() {}
+    public class OnlineResourceCheckerMock implements OnlineResourceCheckerInterface {
+        public OnlineResourceCheckerMock() {}
 
         @Override
         public void setOnlineResource(String uuid, final Element onlineResource) {}
@@ -25,66 +25,66 @@ public class LinkInfoTest extends TestCase {
         }
 
         @Override
-        public boolean canHandle(String linkType) {
+        public boolean canHandle(String onlineResourceType) {
             return true;
         }
     }
 
-    public LinkInfo linkInfo;
+    public OnlineResourceInfo onlineResourceInfo;
 
     public void setUp() {
-        LinkMonitorService.maxChecks = 10;
-        LinkMonitorService.maxFailureRate = 0.2;
+        OnlineResourceMonitorService.maxChecks = 10;
+        OnlineResourceMonitorService.maxFailureRate = 0.2;
 
-        linkInfo = new LinkInfo(new LinkCheckerMock());
+        onlineResourceInfo = new OnlineResourceInfo(new OnlineResourceCheckerMock());
     }
 
     public void testGetStatusExample1() throws Exception {
         attemptChecks(1, 1);
 
-        assertEquals(WORKING, linkInfo.getStatus());
+        assertEquals(WORKING, onlineResourceInfo.getStatus());
     }
 
     public void testGetStatusExample2() throws Exception {
         attemptChecks(10000, 1);
 
-        assertEquals(WORKING, linkInfo.getStatus());
+        assertEquals(WORKING, onlineResourceInfo.getStatus());
     }
 
     public void testGetStatusExample3() throws Exception {
         attemptChecks(10000, 3);
 
-        assertEquals(FAILED, linkInfo.getStatus());
+        assertEquals(FAILED, onlineResourceInfo.getStatus());
     }
 
     public void testGetStatusExample4() throws Exception {
-        LinkMonitorService.maxChecks = 100;
-        LinkMonitorService.maxFailureRate = 0.02;
+        OnlineResourceMonitorService.maxChecks = 100;
+        OnlineResourceMonitorService.maxFailureRate = 0.02;
 
         attemptChecks(1, 1);
 
-        assertEquals(WORKING, linkInfo.getStatus());
+        assertEquals(WORKING, onlineResourceInfo.getStatus());
     }
 
     public void testGetStatusExample5() throws Exception {
-        LinkMonitorService.maxChecks = 100;
-        LinkMonitorService.maxFailureRate = 0.02;
+        OnlineResourceMonitorService.maxChecks = 100;
+        OnlineResourceMonitorService.maxFailureRate = 0.02;
 
         attemptChecks(3, 3);
 
-        assertEquals(FAILED, linkInfo.getStatus());
+        assertEquals(FAILED, onlineResourceInfo.getStatus());
     }
 
     public void testGetStatusNoChecks() throws Exception {
         attemptChecks(0, 0);
 
-        assertEquals(UNKNOWN, linkInfo.getStatus());
+        assertEquals(UNKNOWN, onlineResourceInfo.getStatus());
     }
 
     public void testGetCheckCount() throws Exception {
         attemptChecks(1000, 0);
 
-        assertEquals(LinkMonitorService.maxChecks, linkInfo.getCheckCount());
+        assertEquals(OnlineResourceMonitorService.maxChecks, onlineResourceInfo.getCheckCount());
     }
 
     private void attemptChecks(int numberOfChecks, int numberOfFailures) {
@@ -92,12 +92,12 @@ public class LinkInfoTest extends TestCase {
 
         testResult = true;
         for (int i = 0; i < numberOfSuccesses; i++) {
-            linkInfo.check();
+            onlineResourceInfo.check();
         }
 
         testResult = false;
         for (int i = 0; i < numberOfFailures; i++) {
-            linkInfo.check();
+            onlineResourceInfo.check();
         }
     }
 }

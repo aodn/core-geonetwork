@@ -1,4 +1,4 @@
-package org.fao.geonet.monitor.link;
+package org.fao.geonet.monitor.onlineresource;
 
 import jeeves.resources.dbms.Dbms;
 import jeeves.server.ServiceConfig;
@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class LinkMonitorService implements LinkMonitorInterface {
+public class OnlineResourceMonitorService implements OnlineResourceMonitorInterface {
 
-    static Logger logger = Logger.getLogger(LinkMonitorService.class);
+    static Logger logger = Logger.getLogger(OnlineResourceMonitorService.class);
 
     private static ApplicationContext applicationContext;
     private ResourceManager resourceManager;
@@ -31,27 +31,27 @@ public class LinkMonitorService implements LinkMonitorInterface {
         UNKNOWN
     }
 
-    public static final String LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS = "LinkMonitorServiceReindexIntervalSeconds";
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_REINDEXINTERVALSECONDS = "OnlineResourceMonitorServiceReindexIntervalSeconds";
     private long reindexInterval;
 
-    public static final String LINK_MONITOR_SERVICE_MAXFAILURERATE = "LinkMonitorServiceMaxFailureRate";
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_MAXFAILURERATE = "OnlineResourceMonitorServiceMaxFailureRate";
     public static double maxFailureRate;
 
-    public static final String LINK_MONITOR_SERVICE_MAXCHECKS = "LinkMonitorServiceMaxChecks";
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_MAXCHECKS = "OnlineResourceMonitorServiceMaxChecks";
     public static int maxChecks;
 
-    public static final String LINK_MONITOR_SERVICE_TIMEOUT = "LinkMonitorServiceTimeout";
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT = "OnlineResourceMonitorServiceTimeout";
     public static int timeout;
 
-    public static final String LINK_MONITOR_SERVICE_FRESHNESS = "LinkMonitorServiceFreshness";
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_FRESHNESS = "OnlineResourceMonitorServiceFreshness";
     public static int freshness;
 
-    public static final String LINK_MONITOR_SERVICE_UNKNOWNASWORKING = "LinkMonitorServiceUnknownAsWorking";
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_UNKNOWNASWORKING = "OnlineResourceMonitorServiceUnknownAsWorking";
     private boolean unknownAsWorking;
 
     // Milliseconds between running checks on every record. This is here to
     // prevent undesired hammering of servers
-    public static final String LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS = "LinkMonitorServiceBetweenChecksIntervalMs";
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS = "OnlineResourceMonitorServiceBetweenChecksIntervalMs";
     private static int betweenChecksIntervalMs;
 
     private final Map<String, MetadataRecordInfo> recordMap = new HashMap<String, MetadataRecordInfo>();
@@ -71,13 +71,13 @@ public class LinkMonitorService implements LinkMonitorInterface {
         this.resourceManager = resourceManager;
         this.geonetContext = geonetContext;
 
-        this.reindexInterval = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_REINDEXINTERVALSECONDS, "600"));
-        this.maxFailureRate = Double.parseDouble(serviceConfig.getValue(LINK_MONITOR_SERVICE_MAXFAILURERATE, "0.1"));
-        this.maxChecks = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_MAXCHECKS, "10"));
-        this.timeout = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_TIMEOUT, "15"));
-        this.freshness = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_FRESHNESS, "3600"));
-        this.unknownAsWorking = Boolean.parseBoolean(serviceConfig.getValue(LINK_MONITOR_SERVICE_UNKNOWNASWORKING, "true"));
-        this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(LINK_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
+        this.reindexInterval = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_REINDEXINTERVALSECONDS, "600"));
+        this.maxFailureRate = Double.parseDouble(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_MAXFAILURERATE, "0.1"));
+        this.maxChecks = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_MAXCHECKS, "10"));
+        this.timeout = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT, "15"));
+        this.freshness = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_FRESHNESS, "3600"));
+        this.unknownAsWorking = Boolean.parseBoolean(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_UNKNOWNASWORKING, "true"));
+        this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
 
         if (maxFailureRate > 1) maxFailureRate = 1;
         if (maxFailureRate < 0) maxFailureRate = 0;
@@ -90,7 +90,7 @@ public class LinkMonitorService implements LinkMonitorInterface {
                 check();
             } else {
                 logger.info("Check is already in progress, skipping...");
-                logger.info(String.format("You might want to tune '%s'", Geonet.Config.LINK_MONITOR_FIXEDDELAYSECONDS));
+                logger.info(String.format("You might want to tune '%s'", Geonet.Config.ONLINE_RESOURCE_MONITOR_FIXEDDELAYSECONDS));
             }
         } catch(Throwable e) {
             logger.error("Link Monitor error: " + e.getMessage() + " This error is ignored.");
