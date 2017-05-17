@@ -1,5 +1,6 @@
 package org.fao.geonet.monitor.link;
 
+import org.fao.geonet.monitor.exception.LinkCheckerException;
 import org.fao.geonet.test.TestCase;
 import org.jdom.Element;
 
@@ -17,6 +18,11 @@ public class LinkInfoTest extends TestCase {
         @Override
         public boolean check() {
             return testResult;
+        }
+
+        @Override
+        public LinkCheckerException getLastException() {
+            return null;
         }
 
         @Override

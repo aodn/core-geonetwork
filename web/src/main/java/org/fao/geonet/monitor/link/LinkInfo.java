@@ -1,6 +1,8 @@
 package org.fao.geonet.monitor.link;
 
 import org.apache.log4j.Logger;
+import org.fao.geonet.monitor.exception.LinkCheckerException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,6 +88,10 @@ public class LinkInfo {
         checkInfoList.add(new CheckInfo(linkChecker));
         truncateCheckList();
         status = evaluateStatus();
+    }
+
+    public LinkCheckerException getLastException() {
+        return linkChecker.getLastException();
     }
 
     @Override
