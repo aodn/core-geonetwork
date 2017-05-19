@@ -1,6 +1,7 @@
 package org.fao.geonet.monitor.link;
 
 import org.apache.log4j.Logger;
+import org.fao.geonet.monitor.exception.LinkCheckerException;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
@@ -22,7 +23,7 @@ public class LinkCheckerUtils {
     public static String NAME_XPATH = "gmd:name";
     private static Logger logger = Logger.getLogger(LinkCheckerUtils.class);
 
-    public static boolean checkHttpUrl(String uuid, String url) {
+    public static void checkHttpUrl(String uuid, String url) throws LinkCheckerException {
         try {
             HttpURLConnection connection;
             connection = (HttpURLConnection) (new URL(url)).openConnection();
@@ -34,13 +35,14 @@ public class LinkCheckerUtils {
             logger.debug(String.format("%s -> %d", url, connection.getResponseCode()));
             if (connection.getResponseCode() != 200) {
                 logger.info(String.format("link broken uuid='%s', url='%s', error='bad response code %d'", uuid, url, connection.getResponseCode()));
+                throw new LinkCheckerException(String.format("bad response code %d", connection.getResponseCode()));
             } else {
-                return true;
+                return;
             }
         } catch (Exception e) {
             logger.info(String.format("link broken uuid='%s', url='%s', error='%s', stack='%s'", uuid, url, e.getMessage(), exceptionToString(e)));
+            throw new LinkCheckerException(e.getMessage(), e);
         }
-        return false;
     }
 
     public static String parseOnlineResource(Element onlineResource, String path) {

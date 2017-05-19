@@ -1,5 +1,6 @@
 package org.fao.geonet.monitor.link;
 
+import org.fao.geonet.monitor.exception.LinkCheckerException;
 import org.jdom.Element;
 
 import java.util.Set;
@@ -11,6 +12,8 @@ public class LinkCheckerDefault implements LinkCheckerInterface {
     protected Element onlineResource = null;
 
     protected String url = "";
+
+    protected LinkCheckerException lastException = null;
 
     protected Set<String> linkTypes;
 
@@ -28,7 +31,18 @@ public class LinkCheckerDefault implements LinkCheckerInterface {
 
     @Override
     public boolean check() {
-        return LinkCheckerUtils.checkHttpUrl(this.uuid, this.url);
+        try {
+            LinkCheckerUtils.checkHttpUrl(this.uuid, this.url);
+            return true;
+        } catch (LinkCheckerException e) {
+            lastException = e;
+            return false;
+        }
+    }
+
+    @Override
+    public LinkCheckerException getLastException() {
+        return lastException;
     }
 
     @Override

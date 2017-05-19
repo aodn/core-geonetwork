@@ -1,13 +1,16 @@
 package org.fao.geonet.monitor.link;
 
+import org.fao.geonet.monitor.exception.LinkCheckerException;
 import org.jdom.Element;
 
 public interface LinkCheckerInterface {
-    public void setOnlineResource(String uuid, Element onlineResource);
+    void setOnlineResource(String uuid, Element onlineResource);
 
-    public boolean canHandle(String linkType);
+    boolean canHandle(String linkType);
 
-    public boolean check();
+    boolean check();
 
-    public String toString();
+    LinkCheckerException getLastException();
+
+    String toString();
 }
