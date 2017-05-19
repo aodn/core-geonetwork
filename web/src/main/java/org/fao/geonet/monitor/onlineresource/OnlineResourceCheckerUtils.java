@@ -1,4 +1,4 @@
-package org.fao.geonet.monitor.link;
+package org.fao.geonet.monitor.onlineresource;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -16,18 +16,17 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-
-public class LinkCheckerUtils {
+public class OnlineResourceCheckerUtils {
     public static String URL_XPATH = "gmd:linkage";
     public static String NAME_XPATH = "gmd:name";
-    private static Logger logger = Logger.getLogger(LinkCheckerUtils.class);
+    private static Logger logger = Logger.getLogger(OnlineResourceCheckerUtils.class);
 
     public static boolean checkHttpUrl(String uuid, String url) {
         try {
             HttpURLConnection connection;
             connection = (HttpURLConnection) (new URL(url)).openConnection();
-            connection.setConnectTimeout(LinkMonitorService.timeout * 1000);
-            connection.setReadTimeout(LinkMonitorService.timeout * 1000);
+            connection.setConnectTimeout(OnlineResourceMonitorService.timeout * 1000);
+            connection.setReadTimeout(OnlineResourceMonitorService.timeout * 1000);
             connection.setRequestMethod("GET");
             connection.connect();
 

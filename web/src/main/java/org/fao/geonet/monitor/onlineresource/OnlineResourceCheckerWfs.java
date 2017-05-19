@@ -1,4 +1,4 @@
-package org.fao.geonet.monitor.link;
+package org.fao.geonet.monitor.onlineresource;
 
 import org.apache.log4j.Logger;
 
@@ -10,14 +10,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 
-public class LinkCheckerWfs extends LinkCheckerDefault {
+public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
 
-    private static Logger logger = Logger.getLogger(LinkCheckerWfs.class);
+    private static Logger logger = Logger.getLogger(OnlineResourceCheckerWfs.class);
 
     @Override
     public void setOnlineResource(String uuid, final org.jdom.Element onlineResource) {
+
         super.setOnlineResource(uuid, onlineResource);
-        String name = LinkCheckerUtils.parseOnlineResource(onlineResource, LinkCheckerUtils.NAME_XPATH);
+        String name = OnlineResourceCheckerUtils.parseOnlineResource(onlineResource, OnlineResourceCheckerUtils.NAME_XPATH);
         url += "?service=WFS&version=1.0.0&request=GetFeature&maxFeatures=1&outputFormat=gml2&typeName=" + name;
     }
 
@@ -27,8 +28,8 @@ public class LinkCheckerWfs extends LinkCheckerDefault {
         try {
             HttpURLConnection connection;
             connection = (HttpURLConnection) (new URL(url)).openConnection();
-            connection.setConnectTimeout(LinkMonitorService.timeout * 1000);
-            connection.setReadTimeout(LinkMonitorService.timeout * 1000);
+            connection.setConnectTimeout(OnlineResourceMonitorService.timeout * 1000);
+            connection.setReadTimeout(OnlineResourceMonitorService.timeout * 1000);
             connection.setRequestMethod("GET");
             connection.connect();
 
@@ -45,7 +46,7 @@ public class LinkCheckerWfs extends LinkCheckerDefault {
                 InputStream is = null;
                 try {
                     is = connection.getInputStream();
-                    Document doc = LinkCheckerUtils.parseXML(is);
+                    Document doc = OnlineResourceCheckerUtils.parseXML(is);
                     Element e = doc.getDocumentElement();
 
                     if(e.getTagName().equals("wfs:FeatureCollection")
@@ -71,7 +72,7 @@ public class LinkCheckerWfs extends LinkCheckerDefault {
         } catch (Exception e) {
 
             logger.info(String.format("link broken uuid='%s', url='%s', error='%s' stack='%s'",
-                    uuid, url, e.getMessage(), LinkCheckerUtils.exceptionToString(e)));
+                    uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e)));
         }
 
         return false;
