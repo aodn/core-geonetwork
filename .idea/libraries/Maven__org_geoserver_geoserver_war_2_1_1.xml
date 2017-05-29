@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.geoserver:geoserver:war:2.1.1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geoserver/geoserver/2.1.1/geoserver-2.1.1.war!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geoserver/geoserver/2.1.1/geoserver-2.1.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geoserver/geoserver/2.1.1/geoserver-2.1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

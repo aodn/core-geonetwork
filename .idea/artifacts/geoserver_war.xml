@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="geoserver:war">
+    <output-path>$PROJECT_DIR$/geoserver/target</output-path>
+    <root id="archive" name="geoserver.war">
+      <element id="artifact" artifact-name="geoserver:war exploded" />
+    </root>
+  </artifact>
+</component>
