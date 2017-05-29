@@ -48,6 +48,14 @@
     </property>
   </bean>
 
+  <bean id="LinkCheckerWps" class="org.fao.geonet.monitor.link.LinkCheckerWps">
+    <property name="linkTypes">
+      <set>
+        <value>OGC:WPS--gogoduck</value>
+      </set>
+    </property>
+  </bean>
+
   <bean id="LinkCheckerWms" class="org.fao.geonet.monitor.link.LinkCheckerWms">
     <property name="linkTypes">
       <set>
