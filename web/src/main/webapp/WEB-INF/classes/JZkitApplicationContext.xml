@@ -48,6 +48,14 @@
     </property>
   </bean>
 
+  <bean id="OnlineResourceCheckerWps" class="org.fao.geonet.monitor.onlineresource.OnlineResourceCheckerWps">
+    <property name="onlineResourceTypes">
+      <set>
+        <value>OGC:WPS--gogoduck</value>
+      </set>
+    </property>
+  </bean>
+
   <bean id="OnlineResourceCheckerWms" class="org.fao.geonet.monitor.onlineresource.OnlineResourceCheckerWms">
     <property name="onlineResourceTypes">
       <set>
