@@ -31,6 +31,8 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
 
         try {
             String time = getTime();
+
+            // If the wfs request fails or returns csv without time value
             if (time == null)
                 return false;
 
@@ -74,6 +76,7 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
                     reader = new CSVReader(new InputStreamReader(connection.getInputStream()));
                     if (reader.readNext() == null) {
                         logger.info(String.format("link broken uuid='%s', url='%s', error='empty row data in csv file'", this.uuid, this.url));
+                        return false;
                     }
                 } finally {
                     if (is != null) {
