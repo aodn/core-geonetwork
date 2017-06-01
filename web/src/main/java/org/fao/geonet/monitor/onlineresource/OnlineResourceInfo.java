@@ -22,6 +22,18 @@ public class OnlineResourceInfo {
         return checkInfoList.size();
     }
 
+    public int getFailureCount() {
+        int failedCount = 0;
+
+        for (final CheckInfo checkInfo : checkInfoList) {
+            if (!checkInfo.status) {
+                failedCount++;
+            }
+        }
+
+        return failedCount;
+    }
+
     private boolean isFresh() {
         long now = System.currentTimeMillis() / 1000l;
         long lastCheck = checkInfoList.get(getCheckCount() - 1).timestamp;
@@ -38,21 +50,9 @@ public class OnlineResourceInfo {
     }
 
     private boolean failureRateAcceptable() {
-        double checkFailureRate = checkFailureCount() / (double) OnlineResourceMonitorService.maxChecks;
+        double checkFailureRate = getFailureCount() / (double) OnlineResourceMonitorService.maxChecks;
 
         return checkFailureRate <= OnlineResourceMonitorService.maxFailureRate;
-    }
-
-    private int checkFailureCount() {
-        int failedCount = 0;
-
-        for (final CheckInfo checkInfo : checkInfoList) {
-            if (!checkInfo.status) {
-                failedCount++;
-            }
-        }
-
-        return failedCount;
     }
 
     public OnlineResourceMonitorService.Status evaluateStatus() {

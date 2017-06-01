@@ -93,8 +93,7 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
                 logger.info(String.format("You might want to tune '%s'", Geonet.Config.ONLINE_RESOURCE_MONITOR_FIXEDDELAYSECONDS));
             }
         } catch(Throwable e) {
-            logger.error("Link Monitor error: " + e.getMessage() + " This error is ignored.");
-            logger.info(e);
+            logger.error("Online Resource Monitor error: " + e + " This error is ignored.", e);
         } finally {
             lock.unlock();
         }
@@ -108,8 +107,9 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
         try {
             return getAllRecordsLucene();
         } catch (Exception e) {
-            logger.info(e);
+            logger.error(e,e);
         }
+
         return new HashMap<String, MetadataRecordInfo>();
     }
 
@@ -142,7 +142,7 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
                 }
             }
         } catch (Exception e) {
-            logger.info(e);
+            logger.error(e,e);
         } finally {
             geonetContext.getSearchmanager().releaseIndexReader(indexAndTaxonomy);
         }
@@ -156,7 +156,7 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
             String id = geonetContext.getDataManager().getMetadataId(dbms, uuid);
             return geonetContext.getDataManager().getMetadataIgnorePermissions(dbms, id);
         } catch (Exception e) {
-            logger.info(e);
+            logger.error(e,e);
         }
         return null;
     }
@@ -213,7 +213,7 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
             try {
                 Thread.sleep(betweenChecksIntervalMs);
             } catch (InterruptedException e) {
-                logger.info(e);
+                logger.error(e,e);
             }
         }
     }
