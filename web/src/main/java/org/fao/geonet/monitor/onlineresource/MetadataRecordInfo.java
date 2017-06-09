@@ -113,12 +113,12 @@ public class MetadataRecordInfo {
 
         logger.info(String.format("Record uuid='%s' title='%s' changes status from '%s' to '%s'", uuid, title, prevStatus, newStatus));
 
-        if (newStatus == OnlineResourceMonitorService.Status.FAILED) {
-            for (final OnlineResourceInfo onlineResourceInfo : onlineResourceInfoList) {
-                if (onlineResourceInfo.getStatus() != OnlineResourceMonitorService.Status.WORKING) {
-                    logger.info(String.format("Link for uuid='%s', title='%s', '%s' is in state '%s'", uuid, title, onlineResourceInfo.toString(), onlineResourceInfo.getStatus()));
-                }
-            }
+        for (final OnlineResourceInfo onlineResourceInfo : onlineResourceInfoList) {
+            logger.debug(String.format(
+                "Link for uuid='%s', title='%s', '%s' is in state '%s': %d of last %d checks failed",
+                uuid, title, onlineResourceInfo.toString(), onlineResourceInfo.getStatus(),
+                onlineResourceInfo.getFailureCount(), onlineResourceInfo.getCheckCount()
+            ));
         }
     }
 
