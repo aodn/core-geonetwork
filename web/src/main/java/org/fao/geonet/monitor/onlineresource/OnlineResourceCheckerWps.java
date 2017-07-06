@@ -28,7 +28,7 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
 
     @Override
     public boolean check() {
-
+        long start = System.currentTimeMillis();
         try {
             String time = getTime();
 
@@ -40,8 +40,8 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
 
             HttpURLConnection connection;
             connection = (HttpURLConnection) (new URL(url)).openConnection();
-            connection.setConnectTimeout(OnlineResourceMonitorService.timeout * 1000);
-            connection.setReadTimeout(OnlineResourceMonitorService.timeout * 1000);
+            connection.setConnectTimeout(OnlineResourceMonitorService.timeout_wps * 1000);
+            connection.setReadTimeout(OnlineResourceMonitorService.timeout_wps * 1000);
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "text/xml");
             connection.setDoOutput(true);
@@ -91,6 +91,9 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
         } catch (Exception e) {
             logger.info(String.format("link broken uuid='%s', url='%s', error='%s' stack='%s'",
                     uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e)));
+        } finally {
+            logger.info(String.format("link uuid='%s', url='%s', took '%s' seconds",
+                    uuid, url, (System.currentTimeMillis() - start) / 1000));
         }
 
         return false;

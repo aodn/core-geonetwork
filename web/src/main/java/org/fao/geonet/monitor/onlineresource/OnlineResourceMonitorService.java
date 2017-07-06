@@ -43,6 +43,9 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT = "OnlineResourceMonitorServiceTimeout";
     public static int timeout;
 
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS = "OnlineResourceMonitorServiceTimeoutWPS";
+    public static int timeout_wps;
+
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_FRESHNESS = "OnlineResourceMonitorServiceFreshness";
     public static int freshness;
 
@@ -75,6 +78,7 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
         this.maxFailureRate = Double.parseDouble(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_MAXFAILURERATE, "0.1"));
         this.maxChecks = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_MAXCHECKS, "10"));
         this.timeout = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT, "15"));
+        this.timeout_wps = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS, "180"));
         this.freshness = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_FRESHNESS, "3600"));
         this.unknownAsWorking = Boolean.parseBoolean(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_UNKNOWNASWORKING, "true"));
         this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
