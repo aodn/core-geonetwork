@@ -99,6 +99,14 @@ public class MetadataRecordInfo {
     public void check() {
         OnlineResourceMonitorService.Status prevStatus = getStatus();
         for (final OnlineResourceInfo onlineResourceInfo : onlineResourceInfoList) {
+            if (onlineResourceInfo.toString().contains("wps")) {
+                try {
+                    Thread.sleep(OnlineResourceMonitorService.betweenWpsChecksIntervalMs);
+                } catch (InterruptedException e) {
+                    logger.error(e,e);
+                }
+            }
+
             onlineResourceInfo.check();
         }
         status = evaluateStatus();
