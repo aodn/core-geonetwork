@@ -375,9 +375,11 @@
         <param name="OnlineResourceMonitorServicePercentWorkingThreshold" value="90"/>
         <param name="OnlineResourceMonitorServiceMaxChecks" value="10"/>
         <param name="OnlineResourceMonitorServiceTimeout" value="15"/>
+	<param name="OnlineResourceMonitorServiceTimeoutWPS" value="120"/>
         <param name="OnlineResourceMonitorServiceFreshness" value="3600"/>
         <param name="OnlineResourceMonitorServiceUnknownAsWorking" value="true"/>
         <param name="OnlineResourceMonitorServiceBetweenChecksIntervalMs" value="2000"/>
+	<param name="OnlineResourceMonitorServiceBetweenWpsChecksIntervalMs" value="120000"/>
 
 		<!-- Define if the schema catalog should be updated on startup.
 		Default is true. -->
