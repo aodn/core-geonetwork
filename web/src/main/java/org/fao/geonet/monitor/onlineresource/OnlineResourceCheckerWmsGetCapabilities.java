@@ -24,6 +24,7 @@ public class OnlineResourceCheckerWmsGetCapabilities extends OnlineResourceCheck
         InputStream is = null;
         HttpURLConnection connection;
         boolean check = true;
+        long start = System.currentTimeMillis();
 
         try {
             connection = (HttpURLConnection) (new URL(url)).openConnection();
@@ -56,6 +57,8 @@ public class OnlineResourceCheckerWmsGetCapabilities extends OnlineResourceCheck
                     check = false;
                 }
             }
+            logger.info(String.format("link uuid='%s', url='%s', took '%s' seconds",
+                    uuid, url, (System.currentTimeMillis() - start) / 1000));
         }
 
         return check;
