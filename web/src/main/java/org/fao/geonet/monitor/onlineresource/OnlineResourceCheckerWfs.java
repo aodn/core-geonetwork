@@ -1,13 +1,12 @@
 package org.fao.geonet.monitor.onlineresource;
 
 import org.apache.log4j.Logger;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.io.InputStream;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
 public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
@@ -72,7 +71,7 @@ public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
         } catch (Exception e) {
 
             logger.info(String.format("link broken uuid='%s', url='%s', error='%s' stack='%s'",
-                    uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e)));
+                    this.uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e)));
         }
 
         return false;
