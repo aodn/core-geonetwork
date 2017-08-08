@@ -51,7 +51,7 @@
   <bean id="OnlineResourceCheckerWmsFilters" class="org.fao.geonet.monitor.onlineresource.OnlineResourceCheckerWmsFilters">
     <property name="onlineResourceTypes">
       <set>
-        <value>OGC:WMS-1.1.1-http-get-map</value>
+        <value>AODN:FILTERS--enabled</value>
       </set>
     </property>
   </bean>

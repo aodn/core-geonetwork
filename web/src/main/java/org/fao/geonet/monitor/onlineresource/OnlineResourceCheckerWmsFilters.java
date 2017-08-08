@@ -90,6 +90,10 @@ public class OnlineResourceCheckerWmsFilters extends OnlineResourceCheckerDefaul
             Document doc = parseXML(is);
             NodeList descNodes = doc.getElementsByTagName("name");
 
+            if (descNodes.getLength() == 0) {
+                throw new Exception(String.format("Filter count is zero uuid='%s' URL= %s",this.uuid, this.url));
+            }
+
             for (int i = 0; i < descNodes.getLength(); i++) {
                 String property = descNodes.item(i).getTextContent();
                 if (!checkFilterValues(getFilterValuesUrl(property))) {
