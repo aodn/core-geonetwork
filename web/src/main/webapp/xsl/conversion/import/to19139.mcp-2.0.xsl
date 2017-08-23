@@ -14,7 +14,7 @@
 						exclude-result-prefixes="#all">
 
 	<!-- ================================================================= -->
-	<!-- XSLT to convert MCP 1.3, 1.4 and 1.5-experimental records to 
+	<!-- XSLT to convert 19115/19139, MCP 1.3, 1.4 and 1.5-experimental records to 
 	     MCP 2.0                                                           -->
 	<!-- TODO: Convert 1.5-experimental mcp:taxonomicExtent to 2.0
 	                                                                       -->
@@ -28,7 +28,7 @@
 
 	<!-- ================================================================= -->
 	
-	<xsl:template match="mcpold:MD_Metadata" priority="100">
+	<xsl:template match="mcpold:MD_Metadata|gmd:MD_Metadata" priority="100">
 		<xsl:element name="mcp:MD_Metadata">
 			<xsl:copy-of select="@*"/>
 		 	<!-- only need to specify gmd, gmx, xlink, gml and dwc because mcp, gco 
