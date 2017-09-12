@@ -64,6 +64,11 @@
 			<param name="regex" type="java.lang.String" value=" *\| *"/>
 		</dimension>
 		<dimension name="organisationCategories" label="Organisation" indexKey="orgName"/>
+		<dimension name="organisationUriCategories" indexKey="organisationUri" label="Organisation" classifier="org.fao.geonet.kernel.search.classifier.ClassificationScheme">
+			<param name="thesaurusFinder" type="org.fao.geonet.kernel.ThesaurusFinder"/>
+			<param name="vocabularyScheme" type="java.lang.String" value="http://vocab.aodn.org.au/OrganisationClassificationScheme/SchemeNumber1"/>
+			<param name="classificationScheme" type="java.lang.String" value="http://vocab.aodn.org.au/OrganisationClassificationScheme/SchemeNumber1"/>
+		</dimension>
 		<dimension name="platformCategories" indexKey="platformUri" label="Platform" classifier="org.fao.geonet.kernel.search.classifier.ClassificationScheme">
 			<param name="thesaurusFinder" type="org.fao.geonet.kernel.ThesaurusFinder"/> 
 			<param name="vocabularyScheme" type="java.lang.String" value="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
@@ -114,7 +119,7 @@
 			<item dimension="platformName" max="100"/>
 		</portal_summary>
 		<portal_hierarchical_summary>
-			<item dimension="organisationCategories" format="DIMENSION" max="100" depth="10"/>
+			<item dimension="organisationUriCategories" format="DIMENSION" max="100" depth="10"/>
 			<item dimension="parameterCategories" format="DIMENSION" max="100" depth="10"/>
 			<item dimension="platformCategories" format="DIMENSION" max="100" depth="10"/>
 			<item dimension="temporalResolutionCategories" format="DIMENSION" max="100" depth="10" translator="codelist:mcp:MD_TemporalAggregationUnitCode"/>
