@@ -23,7 +23,6 @@ public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
 
     @Override
     public boolean check() {
-
         try {
             HttpURLConnection connection;
             connection = (HttpURLConnection) (new URL(url)).openConnection();
@@ -34,8 +33,8 @@ public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
 
             logger.debug(String.format("%s -> %d", url, connection.getResponseCode()));
 
-            if(connection.getResponseCode() != 200) {
-                logger.info(String.format("link broken uuid='%s', url='%s', error='bad response code %d'",
+            if (connection.getResponseCode() != 200) {
+                logger.info(String.format("WFS GetFeature link broken for uuid='%s', url='%s', error='bad response code %d'",
                         this.uuid, this.url, connection.getResponseCode()));
                 return false;
             }
@@ -48,32 +47,33 @@ public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
                     Document doc = OnlineResourceCheckerUtils.parseXML(is);
                     Element e = doc.getDocumentElement();
 
-                    if(e.getTagName().equals("wfs:FeatureCollection")
+                    if (e.getTagName().equals("wfs:FeatureCollection")
                         && ((Element)e.getFirstChild().getNextSibling()).getTagName().equals("gml:featureMember")) {
                         // ok
                         return true;
                     } else {
-                        logger.info(String.format("link broken uuid='%s', url='%s', error='wfs response not recognized",
-                                this.uuid, this.url ));
+                        logger.info(String.format(
+                                "WFS GetFeature request does not return a FeatureCollection for uuid='%s', url='%s', error='wfs response not recognized'",
+                                this.uuid, this.url));
                         return false;
                     }
                 } finally {
-                    if(is != null) {
+                    if (is != null) {
                         is.close();
                     }
                 }
             } else {
-                logger.info(String.format("link broken uuid='%s', url='%s', error='unexpected content-type %s'",
+                logger.info(String.format(
+                        "WFS GetFeature request returns non-xml content for uuid='%s', url='%s', error='unexpected content-type %s'",
                         this.uuid, this.url, connection.getContentType()));
                 return false;
             }
 
         } catch (Exception e) {
-
-            logger.info(String.format("link broken uuid='%s', url='%s', error='%s' stack='%s'",
+            logger.info(String.format(
+                    "WFS GetFeature request results in exception for uuid='%s', url='%s', error='%s' stack='%s'",
                     this.uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e)));
+            return false;
         }
-
-        return false;
     }
 }

@@ -38,6 +38,7 @@ public class OnlineResourceCheckerUtils {
             }
         } catch (Exception e) {
             logger.info(String.format("link broken uuid='%s', url='%s', error='%s', stack='%s'", uuid, url, e.getMessage(), exceptionToString(e)));
+            return false;
         }
         return false;
     }
