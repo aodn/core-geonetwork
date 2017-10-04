@@ -129,7 +129,8 @@ public class MetadataRecordInfo {
         int count = 0;
 
         for (final String beanId : onlineResourceCheckerClasses.keySet()) {
-            if (onlineResourceCheckerClasses.get(beanId).canHandle(onlineResourceType)) {                try {
+            if (onlineResourceCheckerClasses.get(beanId).canHandle(onlineResourceType)) {
+                try {
                     Class onlineResourceCheckerClass = onlineResourceCheckerClasses.get(beanId).getClass();
                     OnlineResourceCheckerInterface onlineResourceCheckerInterface = (OnlineResourceCheckerInterface) onlineResourceCheckerClass.newInstance();
                     onlineResourceCheckerInterface.setOnlineResource(uuid, onlineResource);
@@ -137,13 +138,14 @@ public class MetadataRecordInfo {
                     onlineResourceInfoList.add(new OnlineResourceInfo(onlineResourceCheckerInterface));
                     logger.debug(String.format("Configuring checker '%s' for '%s'", onlineResourceCheckerInterface.toString(), onlineResourceType));
                     ++count;
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     logger.error("Error could not find the onlineResource: ", e);
                 }
             }
         }
 
-        if(count == 0) {
+        if (count == 0) {
             logger.debug(String.format("Cannot find checker for '%s'", onlineResourceType));
         }
     }
