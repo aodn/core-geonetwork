@@ -289,6 +289,8 @@ public class Importer {
                     if(Log.isDebugEnabled(Geonet.MEF))
                         Log.debug(Geonet.MEF, "Collecting info file:\n" + Xml.getString(info));
 
+					groupId = Util.getParam(params, Params.GROUP, null);
+
 					categs = info.getChild("categories");
 					privileges = info.getChild("privileges");
 
