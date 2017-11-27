@@ -193,7 +193,7 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
         }
 
         for (Map.Entry<String, MetadataRecordInfo> record : recordMap.entrySet()) {
-            String title = records.get(record.getKey()).getTitle();
+            String title = record.getValue().getTitle();
             if (! records.containsKey(record.getKey())) {
                 // Record was deleted
                 logger.info(String.format("Deleting metadata record title=%s uuid=%s ", title, record.getKey()));
