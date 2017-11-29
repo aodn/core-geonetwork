@@ -114,6 +114,13 @@ public class MetadataRecordInfo {
         //  Get a list of the error messages to report (if any)
         StringBuilder errorSummary = new StringBuilder();
         for (final OnlineResourceInfo onlineResourceInfo : onlineResourceInfoList) {
+
+            logger.debug(String.format(
+                    "Link for uuid='%s', title='%s', '%s' is in state '%s': %d of last %d checks failed",
+                    uuid, title, onlineResourceInfo.toString(), onlineResourceInfo.getStatus(),
+                    onlineResourceInfo.getFailureCount(), onlineResourceInfo.getCheckCount()
+            ));
+
             if(onlineResourceInfo.getCheckInfoList() != null) {
                 List<CheckInfo> infoList = onlineResourceInfo.getCheckInfoList();
                 for(CheckInfo currentCheckInfo : infoList) {
@@ -132,14 +139,6 @@ public class MetadataRecordInfo {
             logger.info(String.format("Record uuid='%s' title='%s' changes status from '%s' to '%s'. Reason/s: %s", uuid, title, prevStatus, newStatus, errorString));
         } else {
             logger.info(String.format("Record uuid='%s' title='%s' changes status from '%s' to '%s'", uuid, title, prevStatus, newStatus));
-        }
-
-        for (final OnlineResourceInfo onlineResourceInfo : onlineResourceInfoList) {
-            logger.debug(String.format(
-                "Link for uuid='%s', title='%s', '%s' is in state '%s': %d of last %d checks failed",
-                uuid, title, onlineResourceInfo.toString(), onlineResourceInfo.getStatus(),
-                onlineResourceInfo.getFailureCount(), onlineResourceInfo.getCheckCount()
-            ));
         }
     }
 
