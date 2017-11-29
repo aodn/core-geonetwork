@@ -7,6 +7,10 @@ import java.util.List;
 public class OnlineResourceInfo {
     private static Logger logger = Logger.getLogger(OnlineResourceInfo.class);
 
+    public List<CheckInfo> getCheckInfoList() {
+        return checkInfoList;
+    }
+
     private List<CheckInfo> checkInfoList;
 
     private final OnlineResourceCheckerInterface onlineResourceChecker;
@@ -26,7 +30,7 @@ public class OnlineResourceInfo {
         int failedCount = 0;
 
         for (final CheckInfo checkInfo : checkInfoList) {
-            if (!checkInfo.status) {
+            if (!checkInfo.getCheckResult().isSuccessful()) {
                 failedCount++;
             }
         }

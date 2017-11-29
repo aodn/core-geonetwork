@@ -111,7 +111,28 @@ public class MetadataRecordInfo {
             return;
         }
 
-        logger.info(String.format("Record uuid='%s' title='%s' changes status from '%s' to '%s'", uuid, title, prevStatus, newStatus));
+        //  Get a list of the error messages to report (if any)
+        StringBuilder errorSummary = new StringBuilder();
+        for (final OnlineResourceInfo onlineResourceInfo : onlineResourceInfoList) {
+            if(onlineResourceInfo.getCheckInfoList() != null) {
+                List<CheckInfo> infoList = onlineResourceInfo.getCheckInfoList();
+                for(CheckInfo currentCheckInfo : infoList) {
+                    CheckResult checkResult = currentCheckInfo.getCheckResult();
+                    if(!checkResult.isSuccessful()) {
+                        if(checkResult.getResultReason() != null) {
+                            errorSummary.append("[" + checkResult.getResultReason() + "] ");
+                        }
+                    }
+                }
+            }
+        }
+
+        String errorString = errorSummary.toString();
+        if(errorString.trim().length() > 0) {
+            logger.info(String.format("Record uuid='%s' title='%s' changes status from '%s' to '%s'. Reason/s: %s", uuid, title, prevStatus, newStatus, errorString));
+        } else {
+            logger.info(String.format("Record uuid='%s' title='%s' changes status from '%s' to '%s'", uuid, title, prevStatus, newStatus));
+        }
 
         for (final OnlineResourceInfo onlineResourceInfo : onlineResourceInfoList) {
             logger.debug(String.format(
