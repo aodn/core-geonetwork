@@ -21,7 +21,7 @@ public class OnlineResourceCheckerUtils {
     public static String NAME_XPATH = "gmd:name";
     private static Logger logger = Logger.getLogger(OnlineResourceCheckerUtils.class);
 
-    public static boolean checkHttpUrl(String uuid, String url) {
+    public static CheckResult checkHttpUrl(String uuid, String url) {
         try {
             HttpURLConnection connection;
             connection = (HttpURLConnection) (new URL(url)).openConnection();
@@ -32,15 +32,17 @@ public class OnlineResourceCheckerUtils {
 
             logger.debug(String.format("%s -> %d", url, connection.getResponseCode()));
             if (connection.getResponseCode() != 200) {
-                logger.info(String.format("link broken uuid='%s', url='%s', error='bad response code %d'", uuid, url, connection.getResponseCode()));
+                String errorMessage = String.format("link broken uuid='%s', url='%s', error='bad response code %d'", uuid, url, connection.getResponseCode());
+                logger.info(errorMessage);
+                return new CheckResult(false, errorMessage);
             } else {
-                return true;
+                return new CheckResult(true, null);
             }
         } catch (Exception e) {
-            logger.info(String.format("link broken uuid='%s', url='%s', error='%s', stack='%s'", uuid, url, e.getMessage(), exceptionToString(e)));
-            return false;
+            String errorMessage = String.format("link broken uuid='%s', url='%s', error='%s', stack='%s'", uuid, url, e.getMessage(), exceptionToString(e));
+            logger.info(errorMessage);
+            return new CheckResult(false, errorMessage);
         }
-        return false;
     }
 
     public static String parseOnlineResource(Element onlineResource, String path) {

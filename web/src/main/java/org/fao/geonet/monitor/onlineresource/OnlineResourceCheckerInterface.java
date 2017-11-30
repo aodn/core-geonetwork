@@ -7,7 +7,7 @@ public interface OnlineResourceCheckerInterface {
 
     public boolean canHandle(String onlineResourceType);
 
-    public boolean check();
+    public CheckResult check();
 
     public String toString();
 }

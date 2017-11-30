@@ -71,7 +71,7 @@ public class OnlineResourceCheckerWmsFilters extends OnlineResourceCheckerDefaul
     }
 
     @Override
-    public boolean check() {
+    public CheckResult check() {
 
         InputStream is = null;
         boolean check = true;
@@ -81,9 +81,10 @@ public class OnlineResourceCheckerWmsFilters extends OnlineResourceCheckerDefaul
             HttpURLConnection connection = getConnection(this.url);
 
             if (connection.getResponseCode() != 200) {
-                logger.info(String.format("link broken uuid='%s', url='%s', error='bad response code %d'",
-                        this.uuid, this.url, connection.getResponseCode()));
-                return false;
+                String errorMessage = String.format("link broken uuid='%s', url='%s', error='bad response code %d'",
+                        this.uuid, this.url, connection.getResponseCode());
+                logger.info(errorMessage);
+                return new CheckResult(false, errorMessage);
             }
 
             is = connection.getInputStream();
@@ -100,11 +101,13 @@ public class OnlineResourceCheckerWmsFilters extends OnlineResourceCheckerDefaul
                     throw new Exception(String.format("Filter '%s' not working. URL= %s",property, getFilterValuesUrl(property)));
                 }
             }
+            return new CheckResult(true, null);
         }
         catch (Exception e) {
-            logger.info(String.format("link broken uuid='%s', url='%s', error='%s'",
-                    this.uuid, this.url, e.getMessage()));
-            check = false;
+            String errorMessage = String.format("link broken uuid='%s', url='%s', error='%s'",
+                    this.uuid, this.url, e.getMessage());
+            logger.info(errorMessage);
+            return new CheckResult(false, errorMessage);
         }
         finally {
             if (is != null) {
@@ -112,15 +115,15 @@ public class OnlineResourceCheckerWmsFilters extends OnlineResourceCheckerDefaul
                     is.close();
                 }
                 catch (IOException e) {
-                    logger.info(String.format("link broken uuid='%s', url='%s', error='%s'",
-                            this.uuid, this.url, e.getMessage()));
-                    check = false;
+                    String errorMessage = String.format("link broken uuid='%s', url='%s', error='%s'",
+                            this.uuid, this.url, e.getMessage());
+                    logger.info(errorMessage);
+                    return new CheckResult(false, errorMessage);
                 }
             }
             logger.info(String.format("link uuid='%s', url='%s', took '%s' seconds",
                     this.uuid, this.url, (System.currentTimeMillis() - start) / 1000));
 
         }
-        return check;
     }
 }

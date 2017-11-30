@@ -27,14 +27,14 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
     }
 
     @Override
-    public boolean check() {
+    public CheckResult check() {
         long start = System.currentTimeMillis();
         try {
             String time = getTime();
 
             // If the wfs request fails or returns csv without time value
             if (time == null)
-                return false;
+                return new CheckResult(false, "No time value found for layer.");
 
             String requestXml = getRequestXml(time);
 
@@ -62,9 +62,10 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
             logger.debug(String.format("%s -> %d", url, connection.getResponseCode()));
 
             if (connection.getResponseCode() != 200) {
-                logger.info(String.format("link broken uuid='%s', url='%s', error='bad response code %d'",
-                        this.uuid, this.url, connection.getResponseCode()));
-                return false;
+                String errorMessage = String.format("link broken uuid='%s', url='%s', error='bad response code %d'",
+                        this.uuid, this.url, connection.getResponseCode());
+                logger.info(errorMessage);
+                return new CheckResult(false, errorMessage);
             }
 
             // Checking if file is readable
@@ -75,28 +76,31 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
                     is = connection.getInputStream();
                     reader = new CSVReader(new InputStreamReader(connection.getInputStream()));
                     if (reader.readNext() == null) {
-                        logger.info(String.format("link broken uuid='%s', url='%s', error='empty row data in csv file'", this.uuid, this.url));
-                        return false;
+                        String errorMessage = String.format("link broken uuid='%s', url='%s', error='empty row data in csv file'", this.uuid, this.url);
+                        logger.info(errorMessage);
+                        return new CheckResult(false, errorMessage);
                     }
                 } finally {
                     if (is != null) {
                         is.close();
                     }
                 }
-                return true;
+                return new CheckResult(true, null);
             } else {
-                logger.info(String.format("link broken uuid='%s', url='%s', error='unexpected content-type'", this.uuid, this.url));
+                String errorMessage = String.format("link broken uuid='%s', url='%s', error='unexpected content-type'", this.uuid, this.url);
+                logger.info(errorMessage);
+                return new CheckResult(false, errorMessage);
             }
 
         } catch (Exception e) {
-            logger.info(String.format("link broken uuid='%s', url='%s', error='%s' stack='%s'",
-                    uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e)));
+            String errorMessage = String.format("link broken uuid='%s', url='%s', error='%s' stack='%s'",
+                    uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e));
+            logger.info(errorMessage);
+            return new CheckResult(false, errorMessage);
         } finally {
             logger.info(String.format("link uuid='%s', url='%s', took '%s' seconds",
                     uuid, url, (System.currentTimeMillis() - start) / 1000));
         }
-
-        return false;
     }
 
     private String getRequestXml(String time) {

@@ -3,10 +3,12 @@ package org.fao.geonet.monitor.onlineresource;
 import org.fao.geonet.test.TestCase;
 import org.jdom.Element;
 
+import java.util.List;
+
 import static org.fao.geonet.monitor.onlineresource.OnlineResourceMonitorService.Status.*;
 
 public class OnlineResourceInfoTest extends TestCase {
-    public static boolean testResult = true;
+    public static CheckResult testResult = new CheckResult(true, null);
 
     public class OnlineResourceCheckerMock implements OnlineResourceCheckerInterface {
         public OnlineResourceCheckerMock() {}
@@ -15,7 +17,7 @@ public class OnlineResourceInfoTest extends TestCase {
         public void setOnlineResource(String uuid, final Element onlineResource) {}
 
         @Override
-        public boolean check() {
+        public CheckResult check() {
             return testResult;
         }
 
@@ -73,6 +75,15 @@ public class OnlineResourceInfoTest extends TestCase {
         attemptChecks(3, 3);
 
         assertEquals(FAILED, onlineResourceInfo.getStatus());
+
+        // Check that error messages are being passed in the CheckResult object for
+        // failures
+        List<CheckInfo> checkInfoList = onlineResourceInfo.getCheckInfoList();
+        for(CheckInfo check : checkInfoList) {
+            if(!check.getCheckResult().isSuccessful()) {
+                assertTrue(check.getCheckResult().getResultReason() != null);
+            }
+        }
     }
 
     public void testGetStatusNoChecks() throws Exception {
@@ -90,12 +101,12 @@ public class OnlineResourceInfoTest extends TestCase {
     private void attemptChecks(int numberOfChecks, int numberOfFailures) {
         int numberOfSuccesses = numberOfChecks - numberOfFailures;
 
-        testResult = true;
+        testResult = new CheckResult(true, null);
         for (int i = 0; i < numberOfSuccesses; i++) {
             onlineResourceInfo.check();
         }
 
-        testResult = false;
+        testResult = new CheckResult(false, "Test failure message");
         for (int i = 0; i < numberOfFailures; i++) {
             onlineResourceInfo.check();
         }

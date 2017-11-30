@@ -27,7 +27,7 @@ public class OnlineResourceCheckerDefault implements OnlineResourceCheckerInterf
     }
 
     @Override
-    public boolean check() {
+    public CheckResult check() {
         return OnlineResourceCheckerUtils.checkHttpUrl(this.uuid, this.url);
     }
 
