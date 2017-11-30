@@ -40,7 +40,7 @@ public class OnlineResourceInfo {
 
     private boolean isFresh() {
         long now = System.currentTimeMillis() / 1000l;
-        long lastCheck = checkInfoList.get(getCheckCount() - 1).timestamp;
+        long lastCheck = checkInfoList.get(getCheckCount() - 1).getTimestamp();
         if (now - lastCheck > OnlineResourceMonitorService.freshness) {
             logger.debug(String.format("Last test is too old, ('%s' seconds ago)", now - lastCheck));
             return false;
