@@ -34,7 +34,7 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
 
             // If the wfs request fails or returns csv without time value
             if (time == null)
-                return new CheckResult(false, "No time value passed.");
+                return new CheckResult(false, "No time value found for layer.");
 
             String requestXml = getRequestXml(time);
 
