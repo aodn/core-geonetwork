@@ -136,7 +136,7 @@ public class MetadataRecordInfo {
 
         String errorString = errorSummary.toString();
         if(errorString.trim().length() > 0) {
-            logger.info(String.format("Record uuid='%s' title='%s' changes status from '%s' to '%s'. Reason/s: %s", uuid, title, prevStatus, newStatus, errorString));
+            logger.info(String.format("Record uuid='%s' title='%s' changes status from '%s' to '%s'. reason=%s", uuid, title, prevStatus, newStatus, errorString));
         } else {
             logger.info(String.format("Record uuid='%s' title='%s' changes status from '%s' to '%s'", uuid, title, prevStatus, newStatus));
         }
