@@ -6,7 +6,6 @@ import net.opengis.wps.v_1_0_0.ExecuteResponse;
 import net.opengis.wps.v_1_0_0.StatusType;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.log4j.Logger;
@@ -22,9 +21,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -51,8 +47,8 @@ public class CallableWpsCheck implements Callable<CheckResult> {
 
         try {
             String requestXml = getRequestXml();
-            int timeoutSeconds = OnlineResourceMonitorService.timeout_wps;
-            int pollIntervalSeconds = OnlineResourceMonitorService.poll_interval_wps;
+            int timeoutSeconds = OnlineResourceMonitorService.timeoutSecondsWps;
+            int pollIntervalSeconds = OnlineResourceMonitorService.pollIntervalSecondsWps;
 
             CheckResult result = submitAndWaitToComplete(url, requestXml, timeoutSeconds, pollIntervalSeconds);
 
@@ -97,16 +93,10 @@ public class CallableWpsCheck implements Callable<CheckResult> {
                 "        <wps:LiteralData>LATITUDE,-31.6855,-31.6855;LONGITUDE,114.8291,114.8291</wps:LiteralData>\n" +
                 "      </wps:Data>\n" +
                 "    </wps:Input>\n" +
-                "    <wps:Input>\n" +
-                "      <ows:Identifier>format</ows:Identifier>\n" +
-                "      <wps:Data>\n" +
-                "        <wps:LiteralData>text/csv</wps:LiteralData>\n" +
-                "      </wps:Data>\n" +
-                "    </wps:Input>\n" +
                 "  </wps:DataInputs>\n" +
                 "  <wps:ResponseForm>\n" +
                 "    <wps:ResponseDocument storeExecuteResponse=\"true\" status=\"true\">" +
-                "      <wps:Output asReference=\"true\" mimeType=\"application/x-netcdf\">" +
+                "      <wps:Output asReference=\"true\" mimeType=\"text/csv\">" +
                 "        <ows:Identifier>result</ows:Identifier>" +
                 "      </wps:Output>" +
                 "    </wps:ResponseDocument>" +

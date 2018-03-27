@@ -43,17 +43,23 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT = "OnlineResourceMonitorServiceTimeout";
     public static int timeout;
 
-    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS = "OnlineResourceMonitorServiceTimeoutWPS";
-    public static int timeout_wps;
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS = "OnlineResourceMonitorServiceTimeoutSecondsWPS";
+    public static int timeoutSecondsWps;
 
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_POLL_INTERVAL_WPS = "OnlineResourceMonitorServicePollIntervalSecondsWPS";
-    public static int poll_interval_wps;
+    public static int pollIntervalSecondsWps;
 
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_FRESHNESS = "OnlineResourceMonitorServiceFreshness";
     public static int freshness;
 
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_UNKNOWNASWORKING = "OnlineResourceMonitorServiceUnknownAsWorking";
     private boolean unknownAsWorking;
+
+    public static final String WPS_MINUTES_BETWEEN_CHECKS_INTERVAL = "OnlineResourceMonitorServiceMinutesBetweenChecksWPS";
+    public static int wpsMinutesBetweenChecks;
+
+    public static final String WPS_MINUTES_BETWEEN_RETRY_AFTER_FAILURE = "OnlineResourceMonitorServiceRetryAfterFailIntervalMinutes";
+    public static int wpsMinutesBetweenRetriesAfterFailure;
 
     // Milliseconds between running checks on every record. This is here to
     // prevent undesired hammering of servers
@@ -81,8 +87,10 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
         this.maxFailureRate = Double.parseDouble(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_MAXFAILURERATE, "0.1"));
         this.maxChecks = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_MAXCHECKS, "10"));
         this.timeout = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT, "15"));
-        this.timeout_wps = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS, "180"));
-        this.poll_interval_wps = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_POLL_INTERVAL_WPS, "20"));
+        this.timeoutSecondsWps = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS, "1200"));
+        this.wpsMinutesBetweenChecks = Integer.parseInt(serviceConfig.getValue(WPS_MINUTES_BETWEEN_CHECKS_INTERVAL, "1440"));
+        this.wpsMinutesBetweenRetriesAfterFailure = Integer.parseInt(serviceConfig.getValue(WPS_MINUTES_BETWEEN_RETRY_AFTER_FAILURE, "60"));
+        this.pollIntervalSecondsWps = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_POLL_INTERVAL_WPS, "20"));
         this.freshness = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_FRESHNESS, "3600"));
         this.unknownAsWorking = Boolean.parseBoolean(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_UNKNOWNASWORKING, "true"));
         this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
