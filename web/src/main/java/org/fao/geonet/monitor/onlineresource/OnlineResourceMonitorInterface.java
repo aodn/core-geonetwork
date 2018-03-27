@@ -9,9 +9,9 @@ public interface OnlineResourceMonitorInterface extends Runnable {
     public boolean isHealthy(String recordUuid);
 
     public void init(
-        ApplicationContext applicationContext,
-        ResourceManager resourceManager,
-        GeonetContext geonetContext,
-        ServiceConfig serviceConfig
+            ApplicationContext applicationContext,
+            ResourceManager resourceManager,
+            GeonetContext geonetContext,
+            ServiceConfig serviceConfig
     );
 }

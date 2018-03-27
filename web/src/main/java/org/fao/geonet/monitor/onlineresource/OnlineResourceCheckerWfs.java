@@ -37,7 +37,7 @@ public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
                 String errorMessage = String.format("WFS GetFeature link broken for uuid='%s', url='%s', error='bad response code %d'",
                         this.uuid, this.url, connection.getResponseCode());
                 logger.info(errorMessage);
-                return new CheckResult(false, errorMessage);
+                return new CheckResult(CheckResultEnum.FAIL, errorMessage);
             }
 
             // text/xml; subtype=gml/2.1.2
@@ -51,13 +51,13 @@ public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
                     if (e.getTagName().equals("wfs:FeatureCollection")
                         && ((Element)e.getFirstChild().getNextSibling()).getTagName().equals("gml:featureMember")) {
                         // ok
-                        return new CheckResult(true, null);
+                        return new CheckResult(CheckResultEnum.SUCCESS, null);
                     } else {
                         String errorMessage = String.format(
                                 "WFS GetFeature request does not return a FeatureCollection for uuid='%s', url='%s', error='wfs response not recognized'",
                                 this.uuid, this.url);
                         logger.info(errorMessage);
-                        return new CheckResult(false, errorMessage);
+                        return new CheckResult(CheckResultEnum.FAIL, errorMessage);
                     }
                 } finally {
                     if (is != null) {
@@ -69,7 +69,7 @@ public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
                         "WFS GetFeature request returns non-xml content for uuid='%s', url='%s', error='unexpected content-type %s'",
                         this.uuid, this.url, connection.getContentType());
                 logger.info(errorMessage);
-                return new CheckResult(false, errorMessage);
+                return new CheckResult(CheckResultEnum.FAIL, errorMessage);
             }
 
         } catch (Exception e) {
@@ -77,7 +77,7 @@ public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
                     "WFS GetFeature request results in exception for uuid='%s', url='%s', error='%s' stack='%s'",
                     this.uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e));
             logger.info(errorMessage);
-            return new CheckResult(false, errorMessage);
+            return new CheckResult(CheckResultEnum.FAIL, errorMessage);
         }
     }
 }

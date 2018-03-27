@@ -8,7 +8,7 @@ import java.util.List;
 import static org.fao.geonet.monitor.onlineresource.OnlineResourceMonitorService.Status.*;
 
 public class OnlineResourceInfoTest extends TestCase {
-    public static CheckResult testResult = new CheckResult(true, null);
+    public static CheckResult testResult = new CheckResult(CheckResultEnum.SUCCESS, null);
 
     public class OnlineResourceCheckerMock implements OnlineResourceCheckerInterface {
         public OnlineResourceCheckerMock() {}
@@ -80,7 +80,7 @@ public class OnlineResourceInfoTest extends TestCase {
         // failures
         List<CheckInfo> checkInfoList = onlineResourceInfo.getCheckInfoList();
         for(CheckInfo check : checkInfoList) {
-            if(!check.getCheckResult().isSuccessful()) {
+            if(check.getCheckResult().getResult() == CheckResultEnum.FAIL) {
                 assertTrue(check.getCheckResult().getResultReason() != null);
             }
         }
@@ -101,12 +101,12 @@ public class OnlineResourceInfoTest extends TestCase {
     private void attemptChecks(int numberOfChecks, int numberOfFailures) {
         int numberOfSuccesses = numberOfChecks - numberOfFailures;
 
-        testResult = new CheckResult(true, null);
+        testResult = new CheckResult(CheckResultEnum.SUCCESS, null);
         for (int i = 0; i < numberOfSuccesses; i++) {
             onlineResourceInfo.check();
         }
 
-        testResult = new CheckResult(false, "Test failure message");
+        testResult = new CheckResult(CheckResultEnum.FAIL, "Test failure message");
         for (int i = 0; i < numberOfFailures; i++) {
             onlineResourceInfo.check();
         }

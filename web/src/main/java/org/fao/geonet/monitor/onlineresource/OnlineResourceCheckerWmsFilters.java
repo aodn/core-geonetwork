@@ -84,7 +84,7 @@ public class OnlineResourceCheckerWmsFilters extends OnlineResourceCheckerDefaul
                 String errorMessage = String.format("link broken uuid='%s', url='%s', error='bad response code %d'",
                         this.uuid, this.url, connection.getResponseCode());
                 logger.info(errorMessage);
-                return new CheckResult(false, errorMessage);
+                return new CheckResult(CheckResultEnum.FAIL, errorMessage);
             }
 
             is = connection.getInputStream();
@@ -101,13 +101,13 @@ public class OnlineResourceCheckerWmsFilters extends OnlineResourceCheckerDefaul
                     throw new Exception(String.format("Filter '%s' not working. URL= %s",property, getFilterValuesUrl(property)));
                 }
             }
-            return new CheckResult(true, null);
+            return new CheckResult(CheckResultEnum.SUCCESS, null);
         }
         catch (Exception e) {
             String errorMessage = String.format("link broken uuid='%s', url='%s', error='%s'",
                     this.uuid, this.url, e.getMessage());
             logger.info(errorMessage);
-            return new CheckResult(false, errorMessage);
+            return new CheckResult(CheckResultEnum.FAIL, errorMessage);
         }
         finally {
             if (is != null) {
@@ -118,7 +118,7 @@ public class OnlineResourceCheckerWmsFilters extends OnlineResourceCheckerDefaul
                     String errorMessage = String.format("link broken uuid='%s', url='%s', error='%s'",
                             this.uuid, this.url, e.getMessage());
                     logger.info(errorMessage);
-                    return new CheckResult(false, errorMessage);
+                    return new CheckResult(CheckResultEnum.FAIL, errorMessage);
                 }
             }
             logger.info(String.format("link uuid='%s', url='%s', took '%s' seconds",

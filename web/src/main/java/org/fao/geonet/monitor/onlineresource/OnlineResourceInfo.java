@@ -1,8 +1,11 @@
 package org.fao.geonet.monitor.onlineresource;
 
 import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.fao.geonet.monitor.onlineresource.CheckResultEnum.FAIL;
 
 public class OnlineResourceInfo {
     private static Logger logger = Logger.getLogger(OnlineResourceInfo.class);
@@ -30,7 +33,7 @@ public class OnlineResourceInfo {
         int failedCount = 0;
 
         for (final CheckInfo checkInfo : checkInfoList) {
-            if (!checkInfo.getCheckResult().isSuccessful()) {
+            if (checkInfo.getCheckResult().getResult() == FAIL) {
                 failedCount++;
             }
         }

@@ -46,6 +46,9 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS = "OnlineResourceMonitorServiceTimeoutWPS";
     public static int timeout_wps;
 
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_POLL_INTERVAL_WPS = "OnlineResourceMonitorServicePollIntervalSecondsWPS";
+    public static int poll_interval_wps;
+
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_FRESHNESS = "OnlineResourceMonitorServiceFreshness";
     public static int freshness;
 
@@ -79,6 +82,7 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
         this.maxChecks = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_MAXCHECKS, "10"));
         this.timeout = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT, "15"));
         this.timeout_wps = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS, "180"));
+        this.poll_interval_wps = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_POLL_INTERVAL_WPS, "20"));
         this.freshness = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_FRESHNESS, "3600"));
         this.unknownAsWorking = Boolean.parseBoolean(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_UNKNOWNASWORKING, "true"));
         this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
@@ -172,7 +176,7 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
 
     private void reindex(Map<String, MetadataRecordInfo> records) {
         logger.info("Link Monitor Service is reindexing...");
-
+        logger.info("# Metadata records = " + records.size());
         for (final String uuid : records.keySet()) {
 
             MetadataRecordInfo metadataRecordInfo = records.get(uuid);
@@ -181,13 +185,13 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
 
             if (recordMap.containsKey(uuid)) {
                 if (recordMap.get(uuid).getLastUpdated() < updated) {
-                    logger.debug(String.format("Updating metadata record title=%s uuid=%s ", title, uuid));
+                    logger.info(String.format("Updating metadata record title=%s uuid=%s ", title, uuid));
                     metadataRecordInfo.setLastUpdated(updated);
                     recordMap.put(uuid, metadataRecordInfo);
                 }
             } else {
                 // New recordMap
-                logger.debug(String.format("New metadata record title=%s uuid=%s ", title, uuid));
+                logger.info(String.format("New metadata record title=%s uuid=%s ", title, uuid));
                 recordMap.put(uuid, new MetadataRecordInfo(this, uuid, title, updated));
             }
         }

@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.io.InputStream;
 
 public class OnlineResourceCheckerWmsGetCapabilities extends OnlineResourceCheckerDefault {
 
@@ -38,17 +38,17 @@ public class OnlineResourceCheckerWmsGetCapabilities extends OnlineResourceCheck
                 String errorMessage = String.format("link broken uuid='%s', url='%s', error='bad response code %d'",
                         this.uuid, this.url, connection.getResponseCode());
                 logger.info(errorMessage);
-                return new CheckResult(false, errorMessage);
+                return new CheckResult(CheckResultEnum.FAIL, errorMessage);
             } else {
                 is = connection.getInputStream();
                 OnlineResourceCheckerUtils.parseXML(is);
-                return new CheckResult(true, null);
+                return new CheckResult(CheckResultEnum.SUCCESS, null);
             }
         } catch (Exception e) {
             String errorMessage = String.format("link broken uuid='%s', url='%s', error='%s' stack='%s'",
                     uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e));
             logger.info(errorMessage);
-            return new CheckResult(false, errorMessage);
+            return new CheckResult(CheckResultEnum.FAIL, errorMessage);
         } finally {
             if(is != null) {
                 try {
@@ -57,7 +57,7 @@ public class OnlineResourceCheckerWmsGetCapabilities extends OnlineResourceCheck
                     String errorMessage = String.format("link broken uuid='%s', url='%s', error='%s' stack='%s'",
                             uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e));
                     logger.info(errorMessage);
-                    return new CheckResult(false, errorMessage);
+                    return new CheckResult(CheckResultEnum.FAIL, errorMessage);
                 }
             }
             logger.info(String.format("link uuid='%s', url='%s', took '%s' seconds",
