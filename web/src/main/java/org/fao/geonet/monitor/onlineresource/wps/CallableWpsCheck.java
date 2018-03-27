@@ -54,9 +54,6 @@ public class CallableWpsCheck implements Callable<CheckResult> {
             int timeoutSeconds = OnlineResourceMonitorService.timeout_wps;
             int pollIntervalSeconds = OnlineResourceMonitorService.poll_interval_wps;
 
-            // TODO: hard coded URL!!!
-            url = "https://cbcjr5kjq1.execute-api.ap-southeast-2.amazonaws.com/LATEST/wps";
-
             CheckResult result = submitAndWaitToComplete(url, requestXml, timeoutSeconds, pollIntervalSeconds);
 
             if(result != null) {
