@@ -3,7 +3,11 @@ package org.fao.geonet.monitor.onlineresource.wps;
 import net.opengis.ows.v_1_1_0.ExceptionReport;
 import net.opengis.ows.v_1_1_0.ExceptionType;
 import net.opengis.wps.v_1_0_0.ExecuteResponse;
+import net.opengis.wps.v_1_0_0.OutputDataType;
 import net.opengis.wps.v_1_0_0.StatusType;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -22,6 +26,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -33,13 +38,15 @@ public class CallableWpsCheck implements Callable<CheckResult> {
     private final Logger logger = Logger.getLogger(CallableWpsCheck.class);
     private String url;
     private String uuid;
-    private String layer;
+    private String layerName;
+
+    public static final String EXPECTED_PROCESS_OUTPUT_NAME = "result";
 
 
     CallableWpsCheck(String url, String uuid, String layer) {
         this.url = url;
         this.uuid = uuid;
-        this.layer = layer;
+        this.layerName = layer;
     }
 
     public CheckResult call() throws Exception {
@@ -53,20 +60,20 @@ public class CallableWpsCheck implements Callable<CheckResult> {
             CheckResult result = submitAndWaitToComplete(url, requestXml, timeoutSeconds, pollIntervalSeconds);
 
             if(result != null) {
-                logger.info("WPS CHECK RESULT [" + result.getResult().toString() + "], REASON [" + result.getResultReason() + "]");
+                logInfo("WPS CHECK RESULT [" + result.getResult().toString() + "], REASON [" + result.getResultReason() + "]");
                 return result;
             } else {
-                logger.error("NULL WPS check result returned!");
+                logError("NULL WPS check result returned!", null);
                 return new CheckResult(CheckResultEnum.FAIL, "Unable to determine check result.");
             }
         } catch (Exception e) {
             String errorMessage = String.format("link broken uuid='%s', url='%s', error='%s' stack='%s'",
-                    uuid, url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e));
+                    this.uuid, this.url, e.getMessage(), OnlineResourceCheckerUtils.exceptionToString(e));
             logger.info(errorMessage);
             return new CheckResult(CheckResultEnum.FAIL, errorMessage);
         } finally {
             logger.info(String.format("link uuid='%s', url='%s', took '%s' seconds",
-                    uuid, url, (System.currentTimeMillis() - start) / 1000));
+                    this.uuid, this.url, (System.currentTimeMillis() - start) / 1000));
         }
     }
 
@@ -78,7 +85,7 @@ public class CallableWpsCheck implements Callable<CheckResult> {
                 "    <wps:Input>\n" +
                 "      <ows:Identifier>layer</ows:Identifier>\n" +
                 "      <wps:Data>\n" +
-                "        <wps:LiteralData>" + layer + "</wps:LiteralData>\n" +
+                "        <wps:LiteralData>" + this.layerName + "</wps:LiteralData>\n" +
                 "      </wps:Data>\n" +
                 "    </wps:Input>\n" +
                 "    <wps:Input>\n" +
@@ -112,9 +119,7 @@ public class CallableWpsCheck implements Callable<CheckResult> {
             DateTime now;
 
             String statusUrl = submitHttpPost(url, requestXml);
-            logger.info("Submitted request to [" + url + "].  Status URL [" + statusUrl + "]");
-
-            System.out.println("Waiting for process to complete...");
+            logInfo("Submitted request to [" + url + "].  Status URL [" + statusUrl + "]");
 
             boolean completed  = false;
             //  Poll the status URL & wait for the document to contain a
@@ -124,9 +129,9 @@ public class CallableWpsCheck implements Callable<CheckResult> {
                 //  Calculate elapsed seconds
                 DateTime loopStart = new DateTime();
                 Seconds elapsedSeconds = Seconds.secondsBetween(start, loopStart);
-                logger.info("Seconds elapsed waiting: " + elapsedSeconds.getSeconds());
+                logInfo("Seconds elapsed: " + elapsedSeconds.getSeconds());
                 if(elapsedSeconds.getSeconds() > timeoutSeconds) {
-                    logger.error("Process execution time [" + elapsedSeconds.getSeconds() + "s] has exceeded the timeout [" + timeoutSeconds + "s]");
+                    logError("Process execution time [" + elapsedSeconds.getSeconds() + "s] has exceeded the timeout [" + timeoutSeconds + "s]", null);
                     completed = true;
                     return new CheckResult(CheckResultEnum.FAIL, "Process execution timed out after [" + elapsedSeconds.getSeconds() + " seconds]");
                 }
@@ -140,21 +145,18 @@ public class CallableWpsCheck implements Callable<CheckResult> {
                     if (response.isSetStatus()) {
                         StatusType responseStatus = response.getStatus();
                         if (responseStatus.isSetProcessSucceeded()) {
-                            logger.info("  -  Process status : SUCCEEDED");
                             completed = true;
-                            return new CheckResult(CheckResultEnum.SUCCESS, "Process execution successful.");
-                        }
 
-                        if (responseStatus.isSetProcessAccepted()) {
-                            logger.info("  -  Process status : ACCEPTED");
-                        }
-
-                        if (responseStatus.isSetProcessPaused()) {
-                            logger.info("  -  Process status : PAUSED");
+                            //  Verify that the file returned has some data in it.
+                            if(verifyOutputContainsData(response)) {
+                                return new CheckResult(CheckResultEnum.SUCCESS, "Process execution successful.");
+                            } else {
+                                return new CheckResult(CheckResultEnum.FAIL, "No data was returned from the aggregation.");
+                            }
                         }
 
                         if (responseStatus.isSetProcessFailed()) {
-                            logger.info("  -  Process status : FAILED");
+                            logInfo("Process status : FAILED");
                             completed = true;
                             ExceptionReport exceptionReport = responseStatus.getProcessFailed().getExceptionReport();
                             List<ExceptionType> exceptions = exceptionReport.getException();
@@ -162,11 +164,11 @@ public class CallableWpsCheck implements Callable<CheckResult> {
                             for (ExceptionType exception : exceptions) {
                                 exceptionStringBuilder.append("  -  Process exception : Code [" + exception.getExceptionCode() + "], Text [" + exception.getExceptionText() + "], Locator [" + exception.getLocator() + "]\n");
                             }
-                            logger.error("  Exception in process: " + exceptionStringBuilder.toString());
+                            logError("Exception in process: " + exceptionStringBuilder.toString(), null);
                             return new CheckResult(CheckResultEnum.FAIL, exceptionStringBuilder.toString());
                         }
                     } else {
-                        logger.info("  -  Process status not set.");
+                        logInfo("Process status not set.");
                     }
                 } else {
                     return new CheckResult(CheckResultEnum.FAIL, "Null execute response returned.");
@@ -176,7 +178,7 @@ public class CallableWpsCheck implements Callable<CheckResult> {
                 now = new DateTime();
                 elapsedSeconds = Seconds.secondsBetween(loopStart, now);
                 int adjustedSleepSeconds = pollIntervalSeconds - elapsedSeconds.getSeconds();
-                logger.info("Sleeping for [" + adjustedSleepSeconds + "]...");
+
                 Thread.sleep(adjustedSleepSeconds * 1000);
             }
         } catch(Exception ex) {
@@ -196,10 +198,10 @@ public class CallableWpsCheck implements Callable<CheckResult> {
         int responseCode = httpClient.executeMethod(postMethod);
 
         if(responseCode != SC_OK) {
-            logger.error("HTTP POST to [" + postUrl + "] unsuccessful.  Response code: " + responseCode);
+            logError("HTTP POST to [" + postUrl + "] unsuccessful.  Response code: " + responseCode, null);
             throw new HttpException("HTTP POST to [" + postUrl + "] unsuccessful.  Response code: " + responseCode);
         } else {
-            logger.info("HTTP POST to [" + postUrl + "] successful.");
+            logInfo("HTTP POST to [" + postUrl + "] successful.");
         }
 
         //  Unmarshal the XML response + return the status location
@@ -219,8 +221,72 @@ public class CallableWpsCheck implements Callable<CheckResult> {
             return (ExecuteResponse) jaxbUnmarshaller.unmarshal(url);
 
         } catch(Exception ex) {
-            logger.error("Unable to unmarshall execute response: " + ex.getMessage(), ex);
+            logError("Unable to unmarshall execute response: " + ex.getMessage(), ex);
             throw ex;
         }
+    }
+
+
+    private void logInfo(String message) {
+        logger.info("Check WPS layer [" + this.layerName + "]: " + message);
+    }
+
+    private void logError(String message, Throwable ex) {
+        String errorMessage = "Check WPS layer [" + this.layerName + "]: " + message;
+        if(ex != null) {
+            logger.error(errorMessage, ex);
+        } else {
+            logger.error(errorMessage);
+        }
+    }
+
+
+    private boolean verifyOutputContainsData(ExecuteResponse response) throws IOException {
+        //  Get the file referred to in the Output, read it & verify that it contains at least one
+        //  row of data.
+
+        logInfo("Checking that output contains data.");
+
+        if(response != null && response.getProcessOutputs() != null) {
+            List<OutputDataType> outputs = response.getProcessOutputs().getOutput();
+            if(outputs != null && outputs.size() > 0) {
+                for(OutputDataType output : outputs) {
+                    if(output.getIdentifier().getValue().equalsIgnoreCase(EXPECTED_PROCESS_OUTPUT_NAME)) {
+
+                        logInfo("Output [" + EXPECTED_PROCESS_OUTPUT_NAME + "] returned.");
+                        if(output.getReference() != null && output.getReference().getHref() != null) {
+                            String fileReference = output.getReference().getHref();
+                            URL fileURL = new URL(fileReference);
+
+                            try {
+
+                                CSVParser parser = CSVParser.parse(fileURL, Charset.defaultCharset(), CSVFormat.DEFAULT);
+                                List<CSVRecord> records = parser.getRecords();
+
+                                //  We are expecting a header row and at least one data row (so 2 rows)
+                                if(records.size() < 2) {
+                                    logError("No data returned.  Rows in file: " + records.size(), null);
+                                    return false;
+                                }
+
+                                for(CSVRecord record : records) {
+                                    if(record.getRecordNumber() == 2) {
+                                        logInfo("First data row: " + record.toString());
+                                        return true;
+                                    }
+                                }
+
+                            } catch (IOException ioex) {
+                                ioex.printStackTrace();
+                                logError("Unable to parse CSV output [" + fileReference + "]: " + ioex.getMessage(), ioex);
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }

@@ -8,7 +8,7 @@ import org.fao.geonet.monitor.onlineresource.OnlineResourceCheckerUtils;
 import org.fao.geonet.monitor.onlineresource.OnlineResourceMonitorService;
 import org.jdom.Element;
 import org.joda.time.LocalDateTime;
-import org.joda.time.Period;
+import org.joda.time.Minutes;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,42 +17,38 @@ import java.util.concurrent.Future;
 public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
 
     private static Logger logger = Logger.getLogger(OnlineResourceCheckerWps.class);
-    private String layer;
+    private String layerName;
     Future<CheckResult> resultFuture;
-
-    //  TODO:  Make configurable
-    public static final int MINUTES_BETWEEN_CHECKS = 1440;
+    LocalDateTime lastRun;
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
     private int minutesBetweenChecks;
 
     public OnlineResourceCheckerWps() {
         this.minutesBetweenChecks = OnlineResourceMonitorService.wpsMinutesBetweenChecks;
     }
 
-    LocalDateTime lastRun;
-    ExecutorService executorService = Executors.newSingleThreadExecutor();
-
     @Override
     public void setOnlineResource(String uuid, final Element onlineResource) {
         super.setOnlineResource(uuid, onlineResource);
-        layer = OnlineResourceCheckerUtils.parseOnlineResource(onlineResource, OnlineResourceCheckerUtils.NAME_XPATH);
+        this.layerName = OnlineResourceCheckerUtils.parseOnlineResource(onlineResource, OnlineResourceCheckerUtils.NAME_XPATH);
     }
 
     @Override
     public CheckResult check() {
 
         //  If there is a check running and it has completed - report the result
-        if(resultFuture != null) {
-            if(resultFuture.isDone()) {
+        if(this.resultFuture != null) {
+            if(this.resultFuture.isDone()) {
                 try {
-                    CheckResult result = resultFuture.get();
-                    resultFuture = null;
+                    CheckResult result = this.resultFuture.get();
+                    this.resultFuture = null;
 
                     adjustCheckRunInterval(result.getResult());
 
                     return result;
                 } catch (Exception ex) {
                     //  Something odd has happened.
-                    logger.error("Exception getting check result: " + ex.getMessage(), ex);
+                    logError("Exception getting check result: " + ex.getMessage(), ex);
 
                     adjustCheckRunInterval(CheckResultEnum.FAIL);
 
@@ -62,17 +58,9 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
                 return new CheckResult(CheckResultEnum.PENDING, null);
             }
         } else {
+
             //  No check is running
-            //  Has enough time elapsed to perform the next check?
-            LocalDateTime now = new LocalDateTime();
-            if(lastRun == null || new Period(lastRun, now).getMinutes() > this.minutesBetweenChecks) {
-
-                lastRun = now;
-
-                //  Run an asynchronous check.  Until the result has been determined (a separate thread will go off and run the check)
-                //  the check will return PENDING as the result.
-                resultFuture = executorService.submit(new CallableWpsCheck(url, uuid, layer));
-            }
+            runCheckIfReady();
 
             return new CheckResult(CheckResultEnum.PENDING, null);
         }
@@ -84,19 +72,57 @@ public class OnlineResourceCheckerWps extends OnlineResourceCheckerDefault {
         //  These WPS checks were designed to only run every 24 hours - meaning that a layer would not be rechecked
         //  after a failure for another 24 hours.  Once a failure has happened we will set the retry interval to 1 hour &
         //  if a successful check result is detected, then we'll set the interval back out to the longer interval.
-
         if(result == CheckResultEnum.SUCCESS) {
             if(this.minutesBetweenChecks != OnlineResourceMonitorService.wpsMinutesBetweenChecks) {
-                logger.info("Adjusted WPS run interval to [" + this.minutesBetweenChecks + "] minutes following a SUCCESSFUL check result.");
                 this.minutesBetweenChecks = OnlineResourceMonitorService.wpsMinutesBetweenChecks;
+                logInfo("Adjusted WPS run interval to [" + this.minutesBetweenChecks + "] minutes following a SUCCESSFUL check result.");
             }
         }
 
         if(result == CheckResultEnum.FAIL) {
             if(this.minutesBetweenChecks != OnlineResourceMonitorService.wpsMinutesBetweenRetriesAfterFailure) {
-                logger.info("Adjusted WPS run interval to [" + this.minutesBetweenChecks + "] minutes following a FAILED check result.");
                 this.minutesBetweenChecks = OnlineResourceMonitorService.wpsMinutesBetweenRetriesAfterFailure;
+                logInfo("Adjusted WPS run interval to [" + this.minutesBetweenChecks + "] minutes following a FAILED check result.");
             }
         }
+    }
+
+
+    /**
+     * Start a checking thread if this is the first time the check has been run or if the time since the last
+     * check exceeds the configured time between checks.
+     */
+    private void runCheckIfReady() {
+
+        LocalDateTime now = new LocalDateTime();
+        int minutesElapsedSinceLastRun = 0;
+
+        if(lastRun != null) {
+            Minutes elapsedMinutes = Minutes.minutesBetween(this.lastRun, now);
+            minutesElapsedSinceLastRun = elapsedMinutes.getMinutes();
+        }
+
+        logInfo("Minutes since last check = " + minutesElapsedSinceLastRun + ", Minutes between checks = " + minutesBetweenChecks);
+
+        //  If the check hasn't yet been run - or the time since the last run is greater than
+        //  or equal to the configured interval.
+        if(this.lastRun == null || minutesElapsedSinceLastRun >= this.minutesBetweenChecks) {
+            this.lastRun = new LocalDateTime();
+
+            logInfo("Starting new check.");
+
+            //  Run an asynchronous check.  Until the result has been determined (a separate thread will go off and run the check)
+            //  the check will return PENDING as the result.
+            this.resultFuture = executorService.submit(new CallableWpsCheck(this.url, this.uuid, this.layerName));
+        }
+    }
+
+
+    private void logInfo(String message) {
+        logger.info("Check WPS layer [" + this.layerName + "]: " + message);
+    }
+
+    private void logError(String message, Throwable ex) {
+        logger.error("Check WPS layer [" + this.layerName + "]: " + message, ex);
     }
 }
