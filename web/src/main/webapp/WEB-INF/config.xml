@@ -375,10 +375,10 @@
         <param name="OnlineResourceMonitorServicePercentWorkingThreshold" value="90"/>
         <param name="OnlineResourceMonitorServiceMaxChecks" value="10"/>
         <param name="OnlineResourceMonitorServiceTimeout" value="15"/>
-		<param name="OnlineResourceMonitorServiceTimeoutSecondsWPS" value="1200"/>
-		<param name="OnlineResourceMonitorServiceMinutesBetweenChecksWPS" value="1440"/>
-		<param name="OnlineResourceMonitorServiceRetryAfterFailIntervalMinutes" value="60"/>
-		<param name="OnlineResourceMonitorServicePollIntervalSecondsWPS" value="20"/>
+        <param name="OnlineResourceMonitorServiceTimeoutSecondsWPS" value="1200"/>
+        <param name="OnlineResourceMonitorServiceMinutesBetweenChecksWPS" value="1440"/>
+        <param name="OnlineResourceMonitorServiceRetryAfterFailIntervalMinutes" value="60"/>
+        <param name="OnlineResourceMonitorServicePollIntervalSecondsWPS" value="20"/>
         <param name="OnlineResourceMonitorServiceFreshness" value="3600"/>
         <param name="OnlineResourceMonitorServiceUnknownAsWorking" value="true"/>
         <param name="OnlineResourceMonitorServiceBetweenChecksIntervalMs" value="2000"/>
