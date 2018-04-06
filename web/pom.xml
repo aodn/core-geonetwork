@@ -357,6 +357,11 @@
             <artifactId>netcdf</artifactId>
             <version>4.0.patch</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.4</version>
+        </dependency>
 
         <!-- Monitoring libraries -->
         <dependency>
@@ -423,6 +428,11 @@
             <groupId>net.sf.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.ogc</groupId>
+            <artifactId>wps-v_1_0_0-schema</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

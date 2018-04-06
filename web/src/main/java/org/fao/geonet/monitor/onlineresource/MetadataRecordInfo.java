@@ -101,6 +101,7 @@ public class MetadataRecordInfo {
         for (final OnlineResourceInfo onlineResourceInfo : onlineResourceInfoList) {
             onlineResourceInfo.check();
         }
+
         status = evaluateStatus();
         ReportStatusChange(prevStatus, getStatus());
     }
@@ -125,7 +126,7 @@ public class MetadataRecordInfo {
                 List<CheckInfo> infoList = onlineResourceInfo.getCheckInfoList();
                 for(CheckInfo currentCheckInfo : infoList) {
                     CheckResult checkResult = currentCheckInfo.getCheckResult();
-                    if(!checkResult.isSuccessful()) {
+                    if(checkResult.getResult() == CheckResultEnum.FAIL) {
                         if(checkResult.getResultReason() != null) {
                             errorSummary.append("[" + checkResult.getResultReason() + "] ");
                         }
@@ -150,6 +151,7 @@ public class MetadataRecordInfo {
 
         for (final String beanId : onlineResourceCheckerClasses.keySet()) {
             if (onlineResourceCheckerClasses.get(beanId).canHandle(onlineResourceType)) {
+
                 try {
                     Class onlineResourceCheckerClass = onlineResourceCheckerClasses.get(beanId).getClass();
                     OnlineResourceCheckerInterface onlineResourceCheckerInterface = (OnlineResourceCheckerInterface) onlineResourceCheckerClass.newInstance();
@@ -158,8 +160,8 @@ public class MetadataRecordInfo {
                     onlineResourceInfoList.add(new OnlineResourceInfo(onlineResourceCheckerInterface));
                     logger.debug(String.format("Configuring checker '%s' for '%s'", onlineResourceCheckerInterface.toString(), onlineResourceType));
                     ++count;
-                }
-                catch (Exception e) {
+
+                } catch (Exception e) {
                     logger.error("Error could not find the onlineResource: ", e);
                 }
             }

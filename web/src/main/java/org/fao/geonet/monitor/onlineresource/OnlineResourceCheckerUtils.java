@@ -4,15 +4,13 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
-
 import org.w3c.dom.Document;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.io.PrintWriter;
-
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -34,14 +32,14 @@ public class OnlineResourceCheckerUtils {
             if (connection.getResponseCode() != 200) {
                 String errorMessage = String.format("link broken uuid='%s', url='%s', error='bad response code %d'", uuid, url, connection.getResponseCode());
                 logger.info(errorMessage);
-                return new CheckResult(false, errorMessage);
+                return new CheckResult(CheckResultEnum.FAIL, errorMessage);
             } else {
-                return new CheckResult(true, null);
+                return new CheckResult(CheckResultEnum.SUCCESS, null);
             }
         } catch (Exception e) {
             String errorMessage = String.format("link broken uuid='%s', url='%s', error='%s', stack='%s'", uuid, url, e.getMessage(), exceptionToString(e));
             logger.info(errorMessage);
-            return new CheckResult(false, errorMessage);
+            return new CheckResult(CheckResultEnum.FAIL, errorMessage);
         }
     }
 

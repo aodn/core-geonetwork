@@ -81,6 +81,14 @@
     </property>
   </bean>
 
+  <bean id="OnlineResourceCheckerWps" class="org.fao.geonet.monitor.onlineresource.wps.OnlineResourceCheckerWps">
+    <property name="onlineResourceTypes">
+      <set>
+        <value>OGC:WPS--gogoduck</value>
+      </set>
+    </property>
+  </bean>
+
   <bean id="OIDRegister" class="org.jzkit.a2j.codec.util.OIDRegister">
     <constructor-arg index="0"><value>/a2j.properties</value></constructor-arg>
   </bean>
@@ -104,8 +112,8 @@
   <bean id="TransformationService" class="org.jzkit.search.util.RecordConversion.FragmentTransformerService" init-method="init">
     <constructor-arg index="0"><ref bean="JZKitConfig"/></constructor-arg>
   </bean>
- 
- 
+
+
 
   <bean id="RecordBuilderService" class="org.jzkit.search.util.RecordBuilder.RecordBuilderService" init-method="init"/>
 

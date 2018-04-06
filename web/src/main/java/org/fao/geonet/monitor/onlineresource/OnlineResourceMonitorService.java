@@ -43,14 +43,23 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT = "OnlineResourceMonitorServiceTimeout";
     public static int timeout;
 
-    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS = "OnlineResourceMonitorServiceTimeoutWPS";
-    public static int timeout_wps;
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS = "OnlineResourceMonitorServiceTimeoutSecondsWPS";
+    public static int timeoutSecondsWps;
+
+    public static final String ONLINE_RESOURCE_MONITOR_SERVICE_POLL_INTERVAL_WPS = "OnlineResourceMonitorServicePollIntervalSecondsWPS";
+    public static int pollIntervalSecondsWps;
 
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_FRESHNESS = "OnlineResourceMonitorServiceFreshness";
     public static int freshness;
 
     public static final String ONLINE_RESOURCE_MONITOR_SERVICE_UNKNOWNASWORKING = "OnlineResourceMonitorServiceUnknownAsWorking";
     private boolean unknownAsWorking;
+
+    public static final String WPS_MINUTES_BETWEEN_CHECKS_INTERVAL = "OnlineResourceMonitorServiceMinutesBetweenChecksWPS";
+    public static int wpsMinutesBetweenChecks;
+
+    public static final String WPS_MINUTES_BETWEEN_RETRY_AFTER_FAILURE = "OnlineResourceMonitorServiceRetryAfterFailIntervalMinutes";
+    public static int wpsMinutesBetweenRetriesAfterFailure;
 
     // Milliseconds between running checks on every record. This is here to
     // prevent undesired hammering of servers
@@ -78,7 +87,10 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
         this.maxFailureRate = Double.parseDouble(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_MAXFAILURERATE, "0.1"));
         this.maxChecks = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_MAXCHECKS, "10"));
         this.timeout = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT, "15"));
-        this.timeout_wps = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS, "180"));
+        this.timeoutSecondsWps = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_TIMEOUT_WPS, "1200"));
+        this.wpsMinutesBetweenChecks = Integer.parseInt(serviceConfig.getValue(WPS_MINUTES_BETWEEN_CHECKS_INTERVAL, "1440"));
+        this.wpsMinutesBetweenRetriesAfterFailure = Integer.parseInt(serviceConfig.getValue(WPS_MINUTES_BETWEEN_RETRY_AFTER_FAILURE, "60"));
+        this.pollIntervalSecondsWps = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_POLL_INTERVAL_WPS, "20"));
         this.freshness = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_FRESHNESS, "3600"));
         this.unknownAsWorking = Boolean.parseBoolean(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_UNKNOWNASWORKING, "true"));
         this.betweenChecksIntervalMs = Integer.parseInt(serviceConfig.getValue(ONLINE_RESOURCE_MONITOR_SERVICE_BETWEENCHECKSINTERVALMS, "100"));
@@ -172,7 +184,7 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
 
     private void reindex(Map<String, MetadataRecordInfo> records) {
         logger.info("Link Monitor Service is reindexing...");
-
+        logger.info("# Metadata records = " + records.size());
         for (final String uuid : records.keySet()) {
 
             MetadataRecordInfo metadataRecordInfo = records.get(uuid);
@@ -181,13 +193,13 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
 
             if (recordMap.containsKey(uuid)) {
                 if (recordMap.get(uuid).getLastUpdated() < updated) {
-                    logger.debug(String.format("Updating metadata record title=%s uuid=%s ", title, uuid));
+                    logger.info(String.format("Updating metadata record title=%s uuid=%s ", title, uuid));
                     metadataRecordInfo.setLastUpdated(updated);
                     recordMap.put(uuid, metadataRecordInfo);
                 }
             } else {
                 // New recordMap
-                logger.debug(String.format("New metadata record title=%s uuid=%s ", title, uuid));
+                logger.info(String.format("New metadata record title=%s uuid=%s ", title, uuid));
                 recordMap.put(uuid, new MetadataRecordInfo(this, uuid, title, updated));
             }
         }
