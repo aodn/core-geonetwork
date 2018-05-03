@@ -97,7 +97,7 @@ public class CallableWpsCheck implements Callable<CheckResult> {
                 "    <wps:Input>\n" +
                 "      <ows:Identifier>subset</ows:Identifier>\n" +
                 "      <wps:Data>\n" +
-                "        <wps:LiteralData>LATITUDE,-31.6855,-31.6855;LONGITUDE,114.8291,114.8291</wps:LiteralData>\n" +
+                "        <wps:LiteralData>LATITUDE,-31.6855,-31.6855;LONGITUDE,114.8291,114.8291;DEPTH,0,100</wps:LiteralData>\n" +
                 "      </wps:Data>\n" +
                 "    </wps:Input>\n" +
                 "  </wps:DataInputs>\n" +
