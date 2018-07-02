@@ -1,51 +1,94 @@
 <rdf:RDF 
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:dcterms="http://purl.org/dc/terms/"
-  xmlns:skos="http://www.w3.org/2004/02/skos/core#">
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:aodnorg="http://ontology.aodn.org.au/def/organisation/">
 
     <skos:ConceptScheme rdf:about="http://www.my.com/test_vocabulary">
         <dcterms:title xml:lang="en">Test classification scheme</dcterms:title>
-        <skos:hasTopConcept rdf:resource="http://www.my.com/#sea_surface_temperature"/>
-        <skos:hasTopConcept rdf:resource="http://www.my.com/#air_sea_flux"/>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/test_vocabulary/#sea_surface_temperature"/>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/test_vocabulary/#air_sea_flux"/>
     </skos:ConceptScheme>
     
     <!-- term with broader term in classification scheme with broader term -->
 
-    <skos:Concept rdf:about="http://www.my.com/#sea_surface_temperature">
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#sea_surface_temperature">
         <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
         <skos:prefLabel xml:lang="en">sea surface temperature</skos:prefLabel>
-        <skos:broadMatch rdf:resource="http://www.my.com/#ocean_temperature"/>
+        <skos:broadMatch rdf:resource="http://www.my.com/test_classification/#ocean_temperature"/>
     </skos:Concept>
 
     <!-- term with two broader terms in classification scheme -->
 
-    <skos:Concept rdf:about="http://www.my.com/#air_sea_flux">
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#air_sea_flux">
         <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
         <skos:prefLabel xml:lang="en">air sea flux</skos:prefLabel>
-        <skos:broadMatch rdf:resource="http://www.my.com/#physical_air"/>
-        <skos:broadMatch rdf:resource="http://www.my.com/#physical_water"/>
+        <skos:broadMatch rdf:resource="http://www.my.com/test_classification/#physical_air"/>
+        <skos:broadMatch rdf:resource="http://www.my.com/test_classification/#physical_water"/>
     </skos:Concept>
 
     <!-- term with no broader terms in classification scheme -->
 
-    <skos:Concept rdf:about="http://www.my.com/#longitude">
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#longitude">
         <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
         <skos:prefLabel xml:lang="en">longitude</skos:prefLabel>
     </skos:Concept>
 
     <!-- term with broader terms in vocabulary and in classification scheme -->
 
-    <skos:Concept rdf:about="http://www.my.com/#hubble">
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#hubble">
         <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
         <skos:prefLabel xml:lang="en">hubble telescope</skos:prefLabel>
-        <skos:broader rdf:resource="http://www.my.com/#orbitting_satellite"/>
+        <skos:broader rdf:resource="http://www.my.com/test_vocabulary/#orbitting_satellite"/>
     </skos:Concept>
 
-    <skos:Concept rdf:about="http://www.my.com/#orbitting_satellite">
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#orbitting_satellite">
         <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
         <skos:prefLabel xml:lang="en">orbitting satellite</skos:prefLabel>
-        <skos:narrower rdf:resource="http://www.my.com/#hubble"/>
-        <skos:broadMatch rdf:resource="http://www.my.com/#satellite"/>
+        <skos:narrower rdf:resource="http://www.my.com/test_vocabulary/#hubble"/>
+        <skos:broadMatch rdf:resource="http://www.my.com/test_classification/#satellite"/>
+    </skos:Concept>
+
+    <!-- organisation classification tests -->
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#aatams">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">Animal Tracking Facility, Integrated Marine Observing System (IMOS)</skos:prefLabel>
+        <skos:altLabel xml:lang="en">AATAMS</skos:altLabel>
+        <aodnorg:displayLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Animal Tracking Facility</aodnorg:displayLabel>
+        <skos:broader rdf:resource="http://www.my.com/test_vocabulary/#imos"/>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#soop">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">Ships of Opportunity Facility, Integrated Marine Observing System (IMOS)</skos:prefLabel>
+        <skos:altLabel xml:lang="en">SOOP</skos:altLabel>
+        <skos:altLabel xml:lang="en">Ships of Opportunity Facility</skos:altLabel>
+        <skos:altLabel xml:lang="en">Ships of Opportunity Facility (SOOP)</skos:altLabel>
+        <skos:broader rdf:resource="http://www.my.com/test_vocabulary/#imos"/>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#imos">
+        <skos:prefLabel xml:lang="en">Integrated Marine Observing System (IMOS)</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:narrower rdf:resource="http://www.my.com/test_vocabulary/#aatams"/>
+        <skos:narrower rdf:resource="http://www.my.com/test_vocabulary/#soop"/>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#aims1">
+        <skos:prefLabel xml:lang="en">Australian Institute of Marine Science (AIMS), Department of Industry and Science, Australian Government</skos:prefLabel>
+        <skos:altLabel xml:lang="en">Australian Institute of Marine Science (AIMS)</skos:altLabel>
+        <dcterms:isReplacedBy xml:lang="en">Australian Institute of Marine Science (AIMS), Department of Industry, Innovation and Science, Australian Government</dcterms:isReplacedBy>
+        <aodnorg:displayLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australian Institute of Marine Science (AIMS) 1</aodnorg:displayLabel>
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#aims2">
+        <skos:prefLabel xml:lang="en">Australian Institute of Marine Science (AIMS), Department of Industry, Innovation and Science, Australian Government</skos:prefLabel>
+        <skos:altLabel xml:lang="en">Australian Institute of Marine Science (AIMS)</skos:altLabel>
+        <dcterms:replaces xml:lang="en">>Australian Institute of Marine Science (AIMS), Department of Industry and Science, Australian Government</dcterms:replaces>
+        <aodnorg:displayLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australian Institute of Marine Science (AIMS) 2</aodnorg:displayLabel>
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
     </skos:Concept>
 
 </rdf:RDF>
