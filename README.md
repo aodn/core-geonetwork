@@ -11,7 +11,6 @@ IntelliJ Setup
 * Select core-geonetwork directory created above
 * Select Import project from external model
 * Select Maven
-* Check Search for Projects Recursively
 * Check Import Maven projects automatically
 * Check create module groups for multi-module maven projects
 * Hit next and continue hitting next until project is created
