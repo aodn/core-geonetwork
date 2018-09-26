@@ -133,6 +133,7 @@ public class Transport
 		host    = url.getHost();
 		port    = url.getPort();
 		address = url.getPath();
+		protocol = url.getProtocol();
 
 		if (port == -1)
 			port = url.getDefaultPort();
@@ -237,6 +238,7 @@ public class Transport
 
 		httpMethod.setPath(address);
 		httpMethod.setDoAuthentication(useAuthent());
+		httpMethod.setRequestHeader("Host", host);
 
 		return httpMethod;
 	}
