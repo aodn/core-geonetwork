@@ -1,12 +1,14 @@
 package org.fao.geonet.monitor.onlineresource;
 
+import au.com.bytecode.opencsv.CSVReader;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 
 public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
@@ -18,7 +20,7 @@ public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
 
         super.setOnlineResource(uuid, onlineResource);
         String name = OnlineResourceCheckerUtils.parseOnlineResource(onlineResource, OnlineResourceCheckerUtils.NAME_XPATH);
-        url += "?service=WFS&version=1.0.0&request=GetFeature&maxFeatures=1&outputFormat=gml2&typeName=" + name;
+        url += "?service=WFS&version=1.0.0&request=GetFeature&maxFeatures=1&outputFormat=csv&typeName=" + name;
     }
 
     @Override
@@ -40,21 +42,24 @@ public class OnlineResourceCheckerWfs extends OnlineResourceCheckerDefault {
                 return new CheckResult(CheckResultEnum.FAIL, errorMessage);
             }
 
-            // text/xml; subtype=gml/2.1.2
-            if (connection.getContentType().contains("text/xml")) {
+            // text/csv
+            if (connection.getContentType().contains("text/csv")) {
                 InputStream is = null;
+
                 try {
                     is = connection.getInputStream();
-                    Document doc = OnlineResourceCheckerUtils.parseXML(is);
-                    Element e = doc.getDocumentElement();
+                    CSVReader reader = new CSVReader(new BufferedReader(new InputStreamReader(is)));
+                    List<String[]> records = reader.readAll();
 
-                    if (e.getTagName().equals("wfs:FeatureCollection")
-                        && ((Element)e.getFirstChild().getNextSibling()).getTagName().equals("gml:featureMember")) {
-                        // ok
+                    if (records.size() == 2
+                        && records.get(0).length > 0
+                        && records.get(0).length == records.get(1).length
+                    ) {
                         return new CheckResult(CheckResultEnum.SUCCESS, null);
                     } else {
                         String errorMessage = String.format(
-                                "WFS GetFeature request does not return a FeatureCollection for uuid='%s', url='%s', error='wfs response not recognized'",
+                                "WFS GetFeature request returns an empty or invalid csv file uuid='%s', url='%s'," +
+                                    " error='wfs response not recognized'",
                                 this.uuid, this.url);
                         logger.info(errorMessage);
                         return new CheckResult(CheckResultEnum.FAIL, errorMessage);
