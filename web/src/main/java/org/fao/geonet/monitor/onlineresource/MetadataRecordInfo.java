@@ -15,6 +15,8 @@ public class MetadataRecordInfo {
     private final String uuid;
     private String title;
     private long lastUpdated;
+    public long failTime = 0;
+
 
     private List<OnlineResourceInfo> onlineResourceInfoList;
 
@@ -62,7 +64,7 @@ public class MetadataRecordInfo {
     }
 
     public boolean isHealthy(boolean unknownAsWorking) {
-        return isHealthy(unknownAsWorking, getStatus());
+        return isHealthy(unknownAsWorking, status);
     }
 
     public long getLastUpdated() {
@@ -73,9 +75,6 @@ public class MetadataRecordInfo {
 
     public String getTitle() { return title;}
 
-    private OnlineResourceMonitorService.Status getStatus() {
-        return status;
-    }
 
     private OnlineResourceMonitorService.Status evaluateStatus() {
         List<OnlineResourceMonitorService.Status> statusList = new ArrayList<OnlineResourceMonitorService.Status>();
@@ -96,19 +95,64 @@ public class MetadataRecordInfo {
         }
     }
 
+    public void setFailTime(Long milliSeconds) {
+        failTime = milliSeconds;
+    }
+
+    public long getFailTime() {
+        return failTime;
+    }
+
+    public long getElapsedFailTime() {
+
+        if (failTime == 0) {
+            return failTime;
+        }
+        return System.currentTimeMillis() - failTime;
+    }
+
     public void check() {
-        OnlineResourceMonitorService.Status prevStatus = getStatus();
+        OnlineResourceMonitorService.Status prevStatus = status;
         for (final OnlineResourceInfo onlineResourceInfo : onlineResourceInfoList) {
             onlineResourceInfo.check();
         }
 
         status = evaluateStatus();
-        ReportStatusChange(prevStatus, getStatus());
+        setFailTimeState(prevStatus);
+        ReportStatusChange(prevStatus, status);
+    }
+
+    private void setFailTimeState(OnlineResourceMonitorService.Status prevStatus) {
+
+        if (status == OnlineResourceMonitorService.Status.FAILED && getFailTime() == 0) {
+            setFailTime(System.currentTimeMillis());
+            logger.info(String.format(
+                    "Setting FAILED for uuid='%s', title='%s', failTime='%s' ",
+                    uuid, title, getFailTime()
+            ));
+        }
+        else if (status == OnlineResourceMonitorService.Status.WORKING &&
+                prevStatus == OnlineResourceMonitorService.Status.FAILED) {
+
+            logger.info(String.format(
+                    "Setting WORKING for uuid='%s', title='%s', failTime='%s', failTimeDuration='%s'",
+                    uuid, title, getFailTime(), getElapsedFailTime()
+            ));
+            setFailTime(Long.valueOf(0));
+        }
     }
 
     private void ReportStatusChange(OnlineResourceMonitorService.Status prevStatus, OnlineResourceMonitorService.Status newStatus) {
         if (prevStatus == newStatus) {
-            logger.info(String.format("Record uuid='%s', title='%s' status is unchanged '%s'", uuid, title, newStatus));
+
+            if (newStatus == OnlineResourceMonitorService.Status.FAILED) {
+                logger.info(String.format("Record uuid='%s', title='%s' status is unchanged '%s', failTime='%s', failTimeDuration='%s'",
+                        uuid, title, newStatus, getFailTime(), getElapsedFailTime()));
+            }
+            else {
+                logger.info(String.format("Record uuid='%s', title='%s' status is unchanged '%s'", uuid, title, newStatus));
+            }
+
             return;
         }
 
