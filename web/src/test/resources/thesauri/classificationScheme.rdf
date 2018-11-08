@@ -5,56 +5,71 @@
 
     <skos:ConceptScheme rdf:about="http://www.my.com/test_classification">
         <dcterms:title xml:lang="en">Test vocabulary</dcterms:title>
-        <skos:hasTopConcept rdf:resource="http://www.my.com/#ocean"/>
-        <skos:hasTopConcept rdf:resource="http://www.my.com/#physical_air"/>
-        <skos:hasTopConcept rdf:resource="http://www.my.com/#physical_water"/>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/test_classification/test_classification/#ocean"/>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/test_classification/#physical_air"/>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/test_classification/#physical_water"/>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/test_classification/#imos"/>
     </skos:ConceptScheme>
     
     <!-- term with broader term with broader term -->
 
-    <skos:Concept rdf:about="http://www.my.com/#ocean_temperature">
-        <skos:inScheme rdf:resource="http://www.my.com/test_classification"/>
+    <skos:Concept rdf:about="http://www.my.com/test_classification/#ocean_temperature">
+        <skos:inScheme rdf:resource="http://www.my.com/test_classification/test_classification"/>
         <skos:prefLabel xml:lang="en">ocean temperature</skos:prefLabel>
-        <skos:broader rdf:resource="http://www.my.com/#ocean"/>
-        <skos:narrowMatch rdf:resource="http://www.my.com/#sea_surface_temperature"/>
+        <skos:broader rdf:resource="http://www.my.com/test_classification/#ocean"/>
+        <skos:narrowMatch rdf:resource="http://www.my.com/test_vocabulary/#sea_surface_temperature"/>
     </skos:Concept>
 
-    <skos:Concept rdf:about="http://www.my.com/#ocean">
-        <skos:inScheme rdf:resource="http://www.my.com/test_classification"/>
+    <skos:Concept rdf:about="http://www.my.com/test_classification/#ocean">
+        <skos:inScheme rdf:resource="http://www.my.com/test_classification/test_classification"/>
         <skos:prefLabel xml:lang="en">ocean</skos:prefLabel>
-        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification"/>
-        <skos:narrower rdf:resource="http://www.my.com/#ocean_temperature"/>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification/test_classification"/>
+        <skos:narrower rdf:resource="http://www.my.com/test_classification/#ocean_temperature"/>
     </skos:Concept>
 
     <!-- term with two broader terms -->
 
-    <skos:Concept rdf:about="http://www.my.com/#physical_air">
-        <skos:inScheme rdf:resource="http://www.my.com/test_classification"/>
+    <skos:Concept rdf:about="http://www.my.com/test_classification/#physical_air">
+        <skos:inScheme rdf:resource="http://www.my.com/test_classification/test_classification"/>
         <skos:prefLabel xml:lang="en">physical - air</skos:prefLabel>
-        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification"/>
-        <skos:narrowMatch rdf:resource="http://www.my.com/#air_sea_flux"/>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification/test_classification"/>
+        <skos:narrowMatch rdf:resource="http://www.my.com/test_vocabulary/#air_sea_flux"/>
     </skos:Concept>
 
-    <skos:Concept rdf:about="http://www.my.com/#physical_water">
+    <skos:Concept rdf:about="http://www.my.com/test_classification/#physical_water">
         <skos:prefLabel xml:lang="en">physical - water</skos:prefLabel>
-        <skos:topConceptOf rdf:resource="http://www.my.com/test_classsification"/>
-        <skos:narrowMatch rdf:resource="http://www.my.com/#air_sea_flux"/>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification/test_classsification"/>
+        <skos:narrowMatch rdf:resource="http://www.my.com/test_vocabulary/#air_sea_flux"/>
     </skos:Concept>
 
     <!-- term with broader terms in vocabulary and in classification scheme -->
 
-    <skos:Concept rdf:about="http://www.my.com/#satellite">
-        <skos:inScheme rdf:resource="http://www.my.com/test_classification"/>
+    <skos:Concept rdf:about="http://www.my.com/test_classification/#satellite">
+        <skos:inScheme rdf:resource="http://www.my.com/test_classification/test_classification"/>
         <skos:prefLabel xml:lang="en">satellite</skos:prefLabel>
-        <skos:broader rdf:resource="http://www.my.com/#space_junk"/>
-        <skos:narrowMatch rdf:resource="http://www.my.com/#orbitting_satellite"/>
+        <skos:broader rdf:resource="http://www.my.com/test_classification/#space_junk"/>
+        <skos:narrowMatch rdf:resource="http://www.my.com/test_vocabulary/#orbitting_satellite"/>
     </skos:Concept>
 
-    <skos:Concept rdf:about="http://www.my.com/#space_junk">
-        <skos:inScheme rdf:resource="http://www.my.com/test_classification"/>
+    <skos:Concept rdf:about="http://www.my.com/test_classification/#space_junk">
+        <skos:inScheme rdf:resource="http://www.my.com/test_classification/test_classification"/>
         <skos:prefLabel xml:lang="en">space junk</skos:prefLabel>
-        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification"/>
-        <skos:narrower rdf:resource="http://www.my.com/#satellite"/>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification/test_classification"/>
+        <skos:narrower rdf:resource="http://www.my.com/test_classification/#satellite"/>
+    </skos:Concept>
+
+    <!-- organisation facet test data -->
+
+    <skos:Concept rdf:about="http://www.my.com/test_classification/#imos">
+        <skos:inScheme rdf:resource="http://www.my.com/test_classification/test_classification"/>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification/test_classification"/>
+        <skos:relatedMatch rdf:resource="http://www.my.com/test_vocabulary/#imos"/>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_classification/#aims">
+        <skos:inScheme rdf:resource="http://www.my.com/test_classification/test_classification"/>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification/test_classification"/>
+        <skos:relatedMatch rdf:resource="http://www.my.com/test_vocabulary/#aims2"/>
     </skos:Concept>
 
 </rdf:RDF>
