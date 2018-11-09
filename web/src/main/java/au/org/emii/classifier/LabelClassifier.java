@@ -26,13 +26,41 @@ public class LabelClassifier implements Classifier {
 
     @Override
     public List<CategoryPath> classify(String value) {
-        AodnTerm term = vocabularyThesaurus.getTermWithLabel(value);
+        List<AodnTerm> matchingTerms = vocabularyThesaurus.getTermWithLabel(value);
 
-        if (term == null) {
+        if (matchingTerms.isEmpty()) {
             logger.error("Could not find '" + value + "' in " + vocabularyThesaurus.getThesaurusTitle());
             return new ArrayList<CategoryPath>();
         }
 
+        AodnTerm term = getBestMatch(matchingTerms, value);
+
         return termClassifier.classify(term);
+    }
+
+    private AodnTerm getBestMatch(List<AodnTerm> matchingTerms, String label) {
+        // If there's only one return that
+
+        if (matchingTerms.size() == 1) {
+            return matchingTerms.get(0);
+        }
+
+        // Otherwise, return any term found which has not been replaced by another term
+
+        for (AodnTerm aodnTerm: matchingTerms) {
+            if (aodnTerm.getReplaces() != null && aodnTerm.getReplacedBy() == null) {
+                return aodnTerm;
+            }
+        }
+
+        // Otherwise, log a warning and return the first
+
+        AodnTerm term = matchingTerms.get(0);
+
+        logger.warn("Multiple matching terms found for '" + label + "' in '"
+            + vocabularyThesaurus.getThesaurusTitle() + "' returning '" + term.getPrefLabel() + "'");
+
+        return term;
+
     }
 }

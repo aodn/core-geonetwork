@@ -1,5 +1,8 @@
 package au.org.emii.classifier;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * An AODN vocab term
  */
@@ -7,14 +10,15 @@ package au.org.emii.classifier;
 public class AodnTerm {
     private String uri;
     private String prefLabel;
-    private String altLabel;
+    private List<String> altLabels;
     private String displayLabel;
+    private String replaces;
+    private String replacedBy;
 
-    public AodnTerm(String uri, String prefLabel, String altLabel, String displayLabel) {
+    public AodnTerm(String uri, String prefLabel) {
         this.uri = uri;
         this.prefLabel = prefLabel;
-        this.altLabel = altLabel;
-        this.displayLabel = displayLabel;
+        this.altLabels = new ArrayList<String>();
     }
 
     public String getUri() {
@@ -25,21 +29,39 @@ public class AodnTerm {
         return prefLabel;
     }
 
-    public String getAltLabel() {
-        return altLabel;
+    public void setAltLabels(List<String> altLabels) {
+        if (altLabels == null) {
+            throw new IllegalArgumentException("altLabels cannot be null");
+
+        }
+        this.altLabels = new ArrayList<String>(altLabels);
+    }
+
+    public List<String> getAltLabels() {
+        return new ArrayList<String>(altLabels);
+    }
+
+    public void setDisplayLabel(String displayLabel) {
+        this.displayLabel = displayLabel;
     }
 
     public String getDisplayLabel() {
         return displayLabel;
     }
 
-    public String getCategoryLabel() {
-        if (displayLabel != null) {
-            return displayLabel;
-        } else if (altLabel != null) {
-            return altLabel;
-        } else {
-            return prefLabel;
-        }
+    public void setReplaces(String replaces) {
+        this.replaces = replaces;
+    }
+
+    public String getReplaces() {
+        return replaces;
+    }
+
+    public String getReplacedBy() {
+        return replacedBy;
+    }
+
+    public void setReplacedBy(String replacedBy) {
+        this.replacedBy = replacedBy;
     }
 }

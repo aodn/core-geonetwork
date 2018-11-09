@@ -35,7 +35,7 @@ public class AodnTermClassifier {
      */
 
     public List<CategoryPath> classify(AodnTerm term) {
-        CategoryPath termPath = new CategoryPath(term.getCategoryLabel());  // Category path for this term
+        CategoryPath termPath = new CategoryPath(getCategoryLabel(term));  // Category path for this term
         return getPathsForVocabularyTerm(term, termPath);
     }
 
@@ -55,14 +55,14 @@ public class AodnTermClassifier {
         // Add all top level category paths for broader terms in the vocabulary thesaurus
 
         for (AodnTerm broaderTerm : vocabularyThesaurus.getRelatedTerms(term, SkosRelation.BROADER)) {
-            CategoryPath broaderTermPath = CategoryHelper.addParentCategory(broaderTerm.getCategoryLabel(), termPath);
+            CategoryPath broaderTermPath = CategoryHelper.addParentCategory(getCategoryLabel(broaderTerm), termPath);
             result.addAll(getPathsForVocabularyTerm(broaderTerm, broaderTermPath));
         }
 
         // Add all top level category paths for broader match terms in the classification scheme
 
         for (AodnTerm broaderTerm: classificationThesaurus.getRelatedTerms(term, SkosRelation.BROADER_MATCH)) {
-            CategoryPath broaderTermPath = CategoryHelper.addParentCategory(broaderTerm.getCategoryLabel(), termPath);
+            CategoryPath broaderTermPath = CategoryHelper.addParentCategory(getCategoryLabel(broaderTerm), termPath);
             result.addAll(getPathsForClassificationSchemeTerm( broaderTerm, broaderTermPath));
         }
 
@@ -91,7 +91,7 @@ public class AodnTermClassifier {
         if (classificationThesaurus.hasRelatedTerms(term, SkosRelation.BROADER)) {
             // Add all top level category paths for broader terms
             for (AodnTerm broaderTerm : classificationThesaurus.getRelatedTerms(term, SkosRelation.BROADER)) {
-                CategoryPath broaderTermPath = CategoryHelper.addParentCategory(broaderTerm.getCategoryLabel(), termPath);
+                CategoryPath broaderTermPath = CategoryHelper.addParentCategory(getCategoryLabel(broaderTerm), termPath);
                 result.addAll(getPathsForClassificationSchemeTerm(broaderTerm, broaderTermPath));
             }
         } else {
@@ -102,4 +102,13 @@ public class AodnTermClassifier {
         return result;
     }
 
+    private String getCategoryLabel(AodnTerm term) {
+        if (term.getDisplayLabel() != null) {
+            return term.getDisplayLabel();
+        } else if (term.getAltLabels().size() == 1) {
+            return term.getAltLabels().get(0);
+        } else {
+            return term.getPrefLabel();
+        }
+    }
 }
