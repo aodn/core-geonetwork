@@ -35,10 +35,10 @@ public class AodnThesaurus {
             Query<AodnTerm> query = QueryBuilder.builder()
                 .distinct(true)
                 .select(Selectors.ID, true)
+                .select(ALT_LABEL_SELECTOR, false)
                 .select(PREF_LABEL_SELECTOR, false)
                 .select(DISPLAY_LABEL_SELECTOR, false)
-                .select(REPLACED_BY_SELECTOR, false)
-                .where(notReplaced().and(idEquals(uri)))
+                .where(idEquals(uri))
                 .interpreter(new AodnTermResultInterpreter())
                 .build();
 
@@ -62,9 +62,9 @@ public class AodnThesaurus {
                 .distinct(true)
                 .select(Selectors.ID, true)
                 .select(PREF_LABEL_SELECTOR, false)
+                .select(ALT_LABEL_SELECTOR, false)
                 .select(DISPLAY_LABEL_SELECTOR, false)
                 .select(REPLACED_BY_SELECTOR, false)
-                .select(ALT_LABEL_SELECTOR, false)
                 .where(notReplaced().and(prefLabelEquals(label).or(altLabelEquals(label))))
                 .interpreter(new AodnTermResultInterpreter())
                 .build();
@@ -91,9 +91,8 @@ public class AodnThesaurus {
             .select(Selectors.ID, true)
             .select(relatedToTermSelector(aodnTerm, relationshipType), true)
             .select(PREF_LABEL_SELECTOR, false)
+            .select(ALT_LABEL_SELECTOR, false)
             .select(DISPLAY_LABEL_SELECTOR, false)
-            .select(REPLACED_BY_SELECTOR, false)
-            .where(notReplaced())
             .interpreter(new AodnTermResultInterpreter())
             .build();
 

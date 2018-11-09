@@ -49,7 +49,7 @@ public class LabelClassifierTest {
     @Test
     public void testMultipleAlternateLabelLookup() {
         List<CategoryPath> result = labelClassifier.classify("SOOP");
-        assertCategoryListEquals(result, "Integrated Marine Observing System (IMOS)/Ships of Opportunity Facility, Integrated Marine Observing System (IMOS)");
+        assertCategoryListEquals(result, "Integrated Marine Observing System (IMOS)/SOOP");
     }
 
     @Test
@@ -62,6 +62,12 @@ public class LabelClassifierTest {
     public void testReplacedByTerm() {
         List<CategoryPath> result = labelClassifier.classify("Australian Institute of Marine Science (AIMS)");
         assertCategoryListEquals(result, "Australian Institute of Marine Science (AIMS) 2");
+    }
+
+    @Test
+    public void testUsesAltLabelIfPresent() {
+        List<CategoryPath> result = labelClassifier.classify("Argo Floats Facility");
+        assertCategoryListEquals(result, "Integrated Marine Observing System (IMOS)/Argo Floats Facility");
     }
 
 }
