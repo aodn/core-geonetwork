@@ -17,9 +17,10 @@ public class AodnTermResultInterpreter extends ResultInterpreter<AodnTerm> {
     @Override
     public AodnTerm createFromRow(Thesaurus thesaurus, QueryResultsTable resultsTable, int row) {
         String uri = getColumnValue(resultsTable, row, "id");
+        String altLabel = getColumnValue(resultsTable, row, "altLabel");
         String prefLabel = getColumnValue(resultsTable, row, "prefLabel");
         String displayLabel = getColumnValue(resultsTable, row, "displayLabel");
-        return new AodnTerm(uri, prefLabel, displayLabel);
+        return new AodnTerm(uri, prefLabel, altLabel, displayLabel);
     }
 
     private String getColumnValue(QueryResultsTable resultsTable, int row, String columnName) {

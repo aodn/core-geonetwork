@@ -73,6 +73,7 @@
         <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
         <skos:narrower rdf:resource="http://www.my.com/test_vocabulary/#aatams"/>
         <skos:narrower rdf:resource="http://www.my.com/test_vocabulary/#soop"/>
+        <skos:narrower rdf:resource="http://www.my.com/test_vocabulary/#argo"/>
     </skos:Concept>
 
     <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#aims1">
@@ -89,6 +90,15 @@
         <dcterms:replaces xml:lang="en">>Australian Institute of Marine Science (AIMS), Department of Industry and Science, Australian Government</dcterms:replaces>
         <aodnorg:displayLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australian Institute of Marine Science (AIMS) 2</aodnorg:displayLabel>
         <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+    </skos:Concept>
+
+    <!-- uses altLabel test -->
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#argo">
+        <skos:prefLabel xml:lang="en">Argo Floats Facility, Integrated Marine Observing System (IMOS)</skos:prefLabel>
+        <skos:altLabel xml:lang="en">Argo Floats Facility</skos:altLabel>
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:broader rdf:resource="http://www.my.com/test_vocabulary/#imos"/>
     </skos:Concept>
 
 </rdf:RDF>
