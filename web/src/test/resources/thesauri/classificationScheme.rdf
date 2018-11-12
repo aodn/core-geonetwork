@@ -69,7 +69,9 @@
     <skos:Concept rdf:about="http://www.my.com/test_classification/#aims">
         <skos:inScheme rdf:resource="http://www.my.com/test_classification/test_classification"/>
         <skos:topConceptOf rdf:resource="http://www.my.com/test_classification/test_classification"/>
+        <skos:relatedMatch rdf:resource="http://www.my.com/test_vocabulary/#aims1"/>
         <skos:relatedMatch rdf:resource="http://www.my.com/test_vocabulary/#aims2"/>
+        <skos:relatedMatch rdf:resource="http://www.my.com/test_vocabulary/#aims3"/>
     </skos:Concept>
 
 </rdf:RDF>

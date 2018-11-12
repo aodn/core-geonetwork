@@ -65,6 +65,7 @@
         <skos:altLabel xml:lang="en">SOOP</skos:altLabel>
         <skos:altLabel xml:lang="en">Ships of Opportunity Facility</skos:altLabel>
         <skos:altLabel xml:lang="en">Ships of Opportunity Facility (SOOP)</skos:altLabel>
+        <skos:displayLabel xml:lang="en">Ships of Opportunity Facility (SOOP)</skos:displayLabel>
         <skos:broader rdf:resource="http://www.my.com/test_vocabulary/#imos"/>
     </skos:Concept>
 
@@ -87,8 +88,17 @@
     <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#aims2">
         <skos:prefLabel xml:lang="en">Australian Institute of Marine Science (AIMS), Department of Industry, Innovation and Science, Australian Government</skos:prefLabel>
         <skos:altLabel xml:lang="en">Australian Institute of Marine Science (AIMS)</skos:altLabel>
-        <dcterms:replaces xml:lang="en">>Australian Institute of Marine Science (AIMS), Department of Industry and Science, Australian Government</dcterms:replaces>
+        <dcterms:replaces xml:lang="en">Australian Institute of Marine Science (AIMS), Department of Industry and Science, Australian Government</dcterms:replaces>
+        <dcterms:isReplacedBy xml:lang="en">Australian Institute of Marine Science (AIMS), Department of Industry, Australian Government</dcterms:isReplacedBy>
         <aodnorg:displayLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australian Institute of Marine Science (AIMS) 2</aodnorg:displayLabel>
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#aims3">
+        <skos:prefLabel xml:lang="en">Australian Institute of Marine Science (AIMS), Department of Industry, Australian Government</skos:prefLabel>
+        <skos:altLabel xml:lang="en">Australian Institute of Marine Science (AIMS)</skos:altLabel>
+        <dcterms:replaces xml:lang="en">Australian Institute of Marine Science (AIMS), Department of Industry, Innovation and Science, Australian Government</dcterms:replaces>
+        <aodnorg:displayLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Australian Institute of Marine Science (AIMS) 3</aodnorg:displayLabel>
         <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
     </skos:Concept>
 

@@ -1,5 +1,6 @@
 package au.org.emii.classifier;
 
+import org.apache.log4j.Logger;
 import org.fao.geonet.kernel.Thesaurus;
 import org.fao.geonet.kernel.rdf.Query;
 import org.fao.geonet.kernel.rdf.QueryBuilder;
@@ -10,11 +11,12 @@ import org.fao.geonet.kernel.rdf.WhereClause;
 import org.fao.geonet.kernel.rdf.Wheres;
 import org.jdom.Namespace;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Wraps access to the underlying GeoNetwork Thesauri returning AODN vocabulary terms instead of KeywordBeans (to include
- * displayLabels) and provides AODN specific lookup methods
+ * Provide AODN specific lookup methods methods on a wrapped GeoNetwork thesaurus returning AODN terms
+ * instead of KeywordBeans
  */
 
 public class AodnThesaurus {
@@ -28,54 +30,44 @@ public class AodnThesaurus {
         this.thesaurus = thesaurus;
     }
 
-    public AodnTerm getTerm(String uri) {
-        try {
-            List<AodnTerm> aodnTerms;
-
-            Query<AodnTerm> query = QueryBuilder.builder()
-                .distinct(true)
-                .select(Selectors.ID, true)
-                .select(ALT_LABEL_SELECTOR, false)
-                .select(PREF_LABEL_SELECTOR, false)
-                .select(DISPLAY_LABEL_SELECTOR, false)
-                .where(idEquals(uri))
-                .interpreter(new AodnTermResultInterpreter())
-                .build();
-
-            aodnTerms = query.execute(thesaurus);
-
-            if (aodnTerms.isEmpty()) {
-                return null;
-            }
-
-            return aodnTerms.get(0);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public String getThesaurusTitle() {
+        return thesaurus.getTitle();
     }
 
-    public AodnTerm getTermWithLabel(String label) {
-        try {
-            List<AodnTerm> aodnTerms;
+    public AodnTerm getTerm(String uri) {
+        Query<AodnTerm> query = QueryBuilder.builder()
+            .distinct(true)
+            .select(Selectors.ID, true)
+            .select(PREF_LABEL_SELECTOR, false)
+            .select(DISPLAY_LABEL_SELECTOR, false)
+            .where(idEquals(uri))
+            .interpreter(new AodnTermResultInterpreter())
+            .build();
 
+        List<AodnTerm> aodnTerms = getTerms(query);
+
+        if (aodnTerms.isEmpty()) {
+            return null;
+        }
+
+        return aodnTerms.get(0);
+    }
+
+    public List<AodnTerm> getTermWithLabel(String label) {
+        try {
             Query<AodnTerm> query = QueryBuilder.builder()
                 .distinct(true)
                 .select(Selectors.ID, true)
                 .select(PREF_LABEL_SELECTOR, false)
                 .select(ALT_LABEL_SELECTOR, false)
                 .select(DISPLAY_LABEL_SELECTOR, false)
+                .select(REPLACES_SELECTOR, false)
                 .select(REPLACED_BY_SELECTOR, false)
-                .where(notReplaced().and(prefLabelEquals(label).or(altLabelEquals(label))))
+                .where(prefLabelEquals(label).or(altLabelEquals(label)))
                 .interpreter(new AodnTermResultInterpreter())
                 .build();
 
-            aodnTerms = query.execute(thesaurus);
-
-            if (aodnTerms.isEmpty()) {
-                return null;
-            }
-
-            return aodnTerms.get(0);
+            return getTerms(query);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -91,21 +83,44 @@ public class AodnThesaurus {
             .select(Selectors.ID, true)
             .select(relatedToTermSelector(aodnTerm, relationshipType), true)
             .select(PREF_LABEL_SELECTOR, false)
-            .select(ALT_LABEL_SELECTOR, false)
             .select(DISPLAY_LABEL_SELECTOR, false)
             .interpreter(new AodnTermResultInterpreter())
             .build();
 
+        return getTerms(query);
+    }
+
+    private List<AodnTerm> getTerms(Query<AodnTerm> query) {
         try {
-            return query.execute(thesaurus);
+            List<AodnTerm> result = new ArrayList<AodnTerm>();
+
+            // Add alternate labels to terms
+
+            for (AodnTerm term: query.execute(thesaurus)) {
+                List<String> altLabels = getAltLabels(term.getUri());
+                term.setAltLabels(altLabels);
+                result.add(term);
+            }
+
+            return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String getThesaurusTitle() {
-        return thesaurus.getTitle();
+    private List<String> getAltLabels(String uri) throws java.io.IOException, org.openrdf.sesame.query.MalformedQueryException, org.openrdf.sesame.query.QueryEvaluationException, org.openrdf.sesame.config.AccessDeniedException {
+        Query<String> altLabelQuery = QueryBuilder.builder()
+            .distinct(true)
+            .select(Selectors.ID, true)
+            .select(ALT_LABEL_SELECTOR, false)
+            .where(idEquals(uri).and(ALT_LABEL_BOUND))
+            .interpreter(new AltLabelResultInterpreter())
+            .build();
+
+        return altLabelQuery.execute(thesaurus);
     }
+
+    /* SERQL selectors */
 
     private static final Selector PREF_LABEL_SELECTOR =
         new Selector("prefLabel", "{id} skos:prefLabel {prefLabel}", SKOS_NAMESPACE)
@@ -113,24 +128,28 @@ public class AodnThesaurus {
 
     private static final Selector DISPLAY_LABEL_SELECTOR =
         new Selector("displayLabel", "{id} DisplayLabelRelation {displayLabel}")
-            .where(Wheres.ilike("localName(DisplayLabelRelation)", "displayLabel"));
+              .where(Wheres.ilike("localName(DisplayLabelRelation)", "displayLabel"));
 
     private static final Selector REPLACED_BY_SELECTOR =
         new Selector("replacedBy", "{id} dcterms:isReplacedBy {replacedBy}", DCTERMS_NAMESPACE);
 
+    private static final Selector REPLACES_SELECTOR =
+        new Selector("replaces", "{id} dcterms:replaces {replaces}", DCTERMS_NAMESPACE);
+
     private static final Selector ALT_LABEL_SELECTOR =
         new Selector("altLabel", "{id} skos:altLabel {altLabel}", SKOS_NAMESPACE)
-              .where(Wheres.ilike("lang(altLabel)", LANG_CODE));
+          .where(Wheres.ilike("lang(altLabel)", LANG_CODE));
 
     private static Selector relatedToTermSelector(AodnTerm term, SkosRelation relationType) {
         // Return any terms referencing this term with the opposite relationType e.g. to find
         // broader terms look for terms referencing this term as a narrower term
-        return new Selector("\"relatedConcept\"", "{id} skos:" + relationType.opposite() + " {<" + term.getUri() + ">}", SKOS_NAMESPACE);
+        return new Selector("\"relatedConcept\"", "{id} skos:" + relationType.opposite()
+            + " {<" + term.getUri() + ">}", SKOS_NAMESPACE);
     }
 
-    private static Where notReplaced() {
-        return new WhereClause("replacedBy = null");
-    }
+    /* SERQL where clauses */
+
+    private static final Where ALT_LABEL_BOUND = bound("altLabel");
 
     private static Where idEquals(String uri) {
         return Wheres.ID(uri);
@@ -142,6 +161,10 @@ public class AodnThesaurus {
 
     private Where prefLabelEquals(String label) {
         return Wheres.like("prefLabel", label);
+    }
+
+    private static Where bound(String columnName) {
+        return new WhereClause(columnName + " != null");
     }
 
 }
