@@ -107,6 +107,7 @@
     <skos:Concept rdf:about="http://www.my.com/test_vocabulary/#argo">
         <skos:prefLabel xml:lang="en">Argo Floats Facility, Integrated Marine Observing System (IMOS)</skos:prefLabel>
         <skos:altLabel xml:lang="en">Argo Floats Facility</skos:altLabel>
+        <aodnorg:displayLabel xml:lang="en">Argo Floats Facility</aodnorg:displayLabel>
         <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
         <skos:broader rdf:resource="http://www.my.com/test_vocabulary/#imos"/>
     </skos:Concept>

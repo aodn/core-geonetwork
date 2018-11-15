@@ -3,6 +3,7 @@ package au.org.emii.classifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.facet.taxonomy.CategoryPath;
 import org.fao.geonet.kernel.search.facet.CategoryHelper;
 
@@ -17,6 +18,8 @@ import org.fao.geonet.kernel.search.facet.CategoryHelper;
  */
 
 public class AodnTermClassifier {
+
+    private static Logger logger = Logger.getLogger(AodnTermClassifier.class);
 
     private final AodnThesaurus vocabularyThesaurus;  // vocabulary in which the term is defined
     private final AodnThesaurus classificationThesaurus;  // Classification scheme defining the portal facet hierarchy for
@@ -36,7 +39,14 @@ public class AodnTermClassifier {
 
     public List<CategoryPath> classify(AodnTerm term) {
         CategoryPath termPath = new CategoryPath(getCategoryLabel(term));  // Category path for this term
-        return getPathsForVocabularyTerm(term, termPath);
+        List<CategoryPath> categoryPaths = getPathsForVocabularyTerm(term, termPath);
+
+        if (categoryPaths.size() == 0) {
+            logger.warn(String.format("No category paths found for uri='%s', prefLabel='%s', vocabulary='%s'",
+                term.getUri(), term.getPrefLabel(), vocabularyThesaurus.getThesaurusTitle()));
+        }
+
+        return categoryPaths;
     }
 
     /**
