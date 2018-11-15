@@ -105,8 +105,6 @@ public class AodnTermClassifier {
     private String getCategoryLabel(AodnTerm term) {
         if (term.getDisplayLabel() != null) {
             return term.getDisplayLabel();
-        } else if (term.getAltLabels().size() == 1) {
-            return term.getAltLabels().get(0);
         } else {
             return term.getPrefLabel();
         }
