@@ -29,7 +29,8 @@ public class LabelClassifier implements Classifier {
         List<AodnTerm> matchingTerms = vocabularyThesaurus.getTermWithLabel(value);
 
         if (matchingTerms.isEmpty()) {
-            logger.error("Could not find '" + value + "' in " + vocabularyThesaurus.getThesaurusTitle());
+            logger.warn(String.format("Could not find term with label='%s' in vocabulary='%s'",
+                value, vocabularyThesaurus.getThesaurusTitle()));
             return new ArrayList<CategoryPath>();
         }
 

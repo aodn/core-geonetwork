@@ -29,7 +29,8 @@ public class UriClassifier implements Classifier  {
         AodnTerm term = vocabularyThesaurus.getTerm(value);
 
         if (term == null) {
-            logger.error("Could not find '" + value + "' in " + vocabularyThesaurus.getThesaurusTitle());
+            logger.warn(String.format("Could not find term with uri='%s' in vocabulary='%s'",
+                value, vocabularyThesaurus.getThesaurusTitle()));
             return new ArrayList<CategoryPath>();
         }
 
