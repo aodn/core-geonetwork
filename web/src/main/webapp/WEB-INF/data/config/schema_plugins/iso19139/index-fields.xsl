@@ -252,6 +252,25 @@
 				<xsl:for-each select="gmd:type/gmd:MD_KeywordTypeCode/@codeListValue">
 					<Field name="keywordType" string="{string(.)}" store="true" index="true"/>
 				</xsl:for-each>
+
+				<!-- Index platforms -->
+
+				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='AODN Platform Vocabulary'">
+					<xsl:for-each select="gmd:keyword/*">
+						<Field name="platform" string="{text()}" store="true" index="true"/>
+						<Field name="platformUri" string="{@xlink:href}" store="true" index="true"/>
+					</xsl:for-each>
+				</xsl:if>
+
+				<!-- Index parameters -->
+
+				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='AODN Discovery Parameter Vocabulary'">
+					<xsl:for-each select="gmd:keyword/*">
+						<Field name="longParamName" string="{text()}" store="true" index="true"/>
+						<Field name="parameterUri" string="{@xlink:href}" store="true" index="true"/>
+					</xsl:for-each>
+				</xsl:if>
+
 			</xsl:for-each>
 	
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -265,6 +284,13 @@
 				<Field name="responsibleParty" string="{concat($role, '|resource|', ., '|', $logo, '|', $email)}" store="true" index="false"/>
 				
 			</xsl:for-each>
+
+			<!-- Index organisation and organisational unit -->
+
+			<xsl:for-each-group select="(gmd:pointOfContact|gmd:citation/*/gmd:citedResponsibleParty)/gmd:CI_ResponsibleParty/gmd:organisationName/*/text()" group-by=".">
+				<Field name="orgUnit" string="{string(current-grouping-key())}" store="true" index="true"/>
+				<Field name="orgName" string="{string(current-grouping-key())}" store="true" index="true"/>
+			</xsl:for-each-group>
 
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->		
 	
