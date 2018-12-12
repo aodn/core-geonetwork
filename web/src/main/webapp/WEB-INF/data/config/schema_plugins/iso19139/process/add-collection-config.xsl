@@ -50,33 +50,34 @@
             <xsl:apply-templates select="gmd:credit"/>
             <xsl:apply-templates select="gmd:status"/>
             <xsl:apply-templates select="gmd:pointOfContact"/>
-            <xsl:apply-templates select="gmd:spatialRepresentationType"/>
-            <xsl:apply-templates select="gmd:spatialResolution"/>
-            <xsl:apply-templates select="gmd:temporalResolution"/>
-            <xsl:apply-templates select="gmd:topicCategory"/>
-            <xsl:apply-templates select="gmd:extent"/>
-            <xsl:apply-templates select="gmd:additionalDocumentation"/>
-            <xsl:apply-templates select="gmd:processingLevel"/>
             <xsl:apply-templates select="gmd:resourceMaintenance"/>
             <xsl:apply-templates select="gmd:graphicOverview"/>
             <xsl:apply-templates select="gmd:resourceFormat"/>
             <xsl:apply-templates select="gmd:descriptiveKeywords"/>
-
+            
             <xsl:call-template name="add-descriptive-keywords">
                 <xsl:with-param name="thesaurus-title">AODN Discovery Parameter Vocabulary</xsl:with-param>
                 <xsl:with-param name="thesaurus-uri">http://vocab.aodn.org.au/def/discovery_parameter/1</xsl:with-param>
                 <xsl:with-param name="vocab-terms" select="$collection-config/parameter"/>
             </xsl:call-template>
-
+            
             <xsl:call-template name="add-descriptive-keywords">
                 <xsl:with-param name="thesaurus-title">AODN Platform Vocabulary</xsl:with-param>
                 <xsl:with-param name="thesaurus-uri">http://vocab.aodn.org.au/def/platform/1</xsl:with-param>
                 <xsl:with-param name="vocab-terms" select="$collection-config/platform"/>
             </xsl:call-template>
-
-            <xsl:apply-templates select="resourceSpecificUsage"/>
-            <xsl:apply-templates select="resourceConstraints"/>
-            <xsl:apply-templates select="associatedResource"/>
+            
+            <xsl:apply-templates select="gmd:resourceSpecificUsage"/>
+            <xsl:apply-templates select="gmd:resourceConstraints"/>
+            <xsl:apply-templates select="gmd:aggregationInfo"/>
+            <xsl:apply-templates select="gmd:spatialRepresentationType"/>
+            <xsl:apply-templates select="gmd:spatialResolution"/>
+            <xsl:apply-templates select="gmd:language"/>
+            <xsl:apply-templates select="gmd:characterSet"/>
+            <xsl:apply-templates select="gmd:topicCategory"/>
+            <xsl:apply-templates select="gmd:environmentDescription"/>
+            <xsl:apply-templates select="gmd:extent"/>
+            <xsl:apply-templates select="gmd:supplementalInformation"/>
         </xsl:copy>
     </xsl:template>
 
@@ -109,8 +110,8 @@
 
     <xsl:template match="gmd:MD_Distribution">
         <xsl:copy>
-            <xsl:apply-templates select="gmd:description"/>
             <xsl:apply-templates select="gmd:distributionFormat"/>
+            <xsl:apply-templates select="gmd:distributor"/>
             <xsl:apply-templates select="gmd:transferOptions"/>
 
             <xsl:call-template name="add-transfer-options">
@@ -169,10 +170,9 @@
             <xsl:apply-templates select="gmd:presentationForm"/>
             <xsl:apply-templates select="gmd:series"/>
             <xsl:apply-templates select="gmd:otherCitationDetails"/>
+            <xsl:apply-templates select="gmd:collectiveTitle"/>
             <xsl:apply-templates select="gmd:ISBN"/>
             <xsl:apply-templates select="gmd:ISSN"/>
-            <xsl:apply-templates select="gmd:onlineResource"/>
-            <xsl:apply-templates select="gmd:graphic"/>
         </xsl:copy>    
     </xsl:template>
 
