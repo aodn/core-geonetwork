@@ -17,11 +17,13 @@ public class LabelClassifier implements Classifier {
 
     private final AodnThesaurus vocabularyThesaurus; // vocabulary in which the term is defined
     private final AodnTermClassifier termClassifier; // classifier used to create CategoryPaths for a term
+    private final String indexKey; // classifier indexKey
 
-    public LabelClassifier(ThesaurusFinder thesaurusFinder, String vocabularyScheme, String classificationScheme) {
+    public LabelClassifier(ThesaurusFinder thesaurusFinder, String vocabularyScheme, String classificationScheme, String indexKey) {
         vocabularyThesaurus = new AodnThesaurus(thesaurusFinder.getThesaurusByConceptScheme(vocabularyScheme));
         AodnThesaurus classificationThesaurus = new AodnThesaurus(thesaurusFinder.getThesaurusByConceptScheme(classificationScheme));
         termClassifier = new AodnTermClassifier(vocabularyThesaurus, classificationThesaurus);
+        this.indexKey = indexKey;
     }
 
     @Override
@@ -29,8 +31,8 @@ public class LabelClassifier implements Classifier {
         List<AodnTerm> matchingTerms = vocabularyThesaurus.getTermWithLabel(value);
 
         if (matchingTerms.isEmpty()) {
-            logger.warn(String.format("Could not find term with label='%s' in vocabulary='%s'",
-                value, vocabularyThesaurus.getThesaurusTitle()));
+            logger.warn(String.format("Could not find term with label='%s' in vocabulary='%s' discoveryParams='%s=%s'",
+                    value, vocabularyThesaurus.getThesaurusTitle(), indexKey, value));
             return new ArrayList<CategoryPath>();
         }
 
