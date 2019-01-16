@@ -1,14 +1,7 @@
 package au.org.emii.classifier;
 
-import org.apache.log4j.Logger;
 import org.fao.geonet.kernel.Thesaurus;
-import org.fao.geonet.kernel.rdf.Query;
-import org.fao.geonet.kernel.rdf.QueryBuilder;
-import org.fao.geonet.kernel.rdf.Selector;
-import org.fao.geonet.kernel.rdf.Selectors;
-import org.fao.geonet.kernel.rdf.Where;
-import org.fao.geonet.kernel.rdf.WhereClause;
-import org.fao.geonet.kernel.rdf.Wheres;
+import org.fao.geonet.kernel.rdf.*;
 import org.jdom.Namespace;
 
 import java.util.ArrayList;
