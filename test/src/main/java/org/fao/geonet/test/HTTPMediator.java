@@ -245,13 +245,13 @@ public class HTTPMediator extends ServerMediator {
 				setupGetParams();
 				httpMethod = new GetMethod();
 				httpMethod.setQueryString(alGetParams.toArray(new NameValuePair[1]));
-				System.out.println("GET params:" + httpMethod.getQueryString());
+//				System.out.println("GET params:" + httpMethod.getQueryString());
 			} else {
 				Element params = getPostParams();
 				PostMethod post = new PostMethod();
 				postData = Xml.getString(new Document(params));
 				post.setRequestEntity(new StringRequestEntity(postData, "application/xml", "UTF8"));
-				System.out.println("POST params:" + Xml.getString(params));
+//				System.out.println("POST params:" + Xml.getString(params));
 				httpMethod = post;
 			}
 
