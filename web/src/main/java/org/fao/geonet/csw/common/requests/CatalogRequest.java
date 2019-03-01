@@ -505,7 +505,7 @@ public abstract class CatalogRequest
 			httpMethod = new GetMethod();
 			httpMethod.setPath(path);
 			httpMethod.setQueryString(alGetParams.toArray(new NameValuePair[1]));
-			System.out.println("GET params:"+httpMethod.getQueryString());
+//			System.out.println("GET params:"+httpMethod.getQueryString());
 			if (useSOAP)
 				httpMethod.addRequestHeader("Accept", "application/soap+xml");
 		}
