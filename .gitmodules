@@ -12,5 +12,5 @@
 	url = https://github.com/geonetwork/core-geoserver.git
 [submodule "schemaPlugins"]
 	path = schemaPlugins
-	url = git@github.com:aodn/schema-plugins
+	url = https://github.com/aodn/schema-plugins.git
 	branch = master
