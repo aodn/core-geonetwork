@@ -4,7 +4,7 @@ pipeline {
     agent none
 
     stages {
-        stage('git_setup') {
+        stage('clean') {
             agent { label 'master' }
             steps {
                 sh 'git clean -fdx'
@@ -16,12 +16,9 @@ pipeline {
         stage('container') {
             agent {
                 dockerfile {
-                    args '-v ${HOME}/.m2:/home/jenkins/.m2 -v ${HOME}/.svn:/home/jenkins/.svn'
+                    args '-v ${HOME}/.m2:/home/builder/.m2 -v ${HOME}/.svn:/home/builder/.svn'
+                    additionalBuildArgs '--build-arg BUILDER_UID=${JENKINS_UID:-9999}'
                 }
-            }
-            environment {
-                HOME = '/home/jenkins'
-                JAVA_TOOL_OPTIONS = '-Duser.home=/home/jenkins'
             }
             stages {
                 stage('package') {
