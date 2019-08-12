@@ -115,7 +115,7 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
             } finally {
                 lock.unlock();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Failed to run resource check. Online Resource Monitor may terminate:" + e, e);
         }
     }
