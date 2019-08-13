@@ -102,16 +102,22 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
     @Override
     public void run() {
         try {
-            if (lock.tryLock()) {
-                check();
+            if (lock.tryLock()) {  // If not locked by another thread increment hold count, return true
+                try {
+                    check();
+                } catch (Throwable e) {
+                    logger.error("Online Resource Monitor error: " + e + " This error is ignored.", e);
+                } finally {
+                    // If this thread has the lock, decrement hold count and release lock when count is 0.
+                    // If this thread does not have the lock throw IllegalMonitorStateException
+                    lock.unlock();
+                }
             } else {
-                logger.info("Check is already in progress, skipping...");
-                logger.info(String.format("You might want to tune '%s'", Geonet.Config.ONLINE_RESOURCE_MONITOR_FIXEDDELAYSECONDS));
+                logger.warn("Check is already in progress, skipping...");
+                logger.warn(String.format("You might want to tune '%s'", Geonet.Config.ONLINE_RESOURCE_MONITOR_FIXEDDELAYSECONDS));
             }
-        } catch(Throwable e) {
-            logger.error("Online Resource Monitor error: " + e + " This error is ignored.", e);
-        } finally {
-            lock.unlock();
+        } catch (Throwable e) {
+            logger.error("Failed to run resource check. Online Resource Monitor may terminate:" + e, e);
         }
     }
 
