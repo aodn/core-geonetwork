@@ -4,15 +4,6 @@ pipeline {
     agent none
 
     stages {
-        stage('clean') {
-            agent { label 'master' }
-            steps {
-                sh 'git clean -fdx'
-                sh 'git submodule sync'
-                sh 'git submodule update --init --recursive'
-            }
-        }
-        
         stage('container') {
             agent {
                 dockerfile {
@@ -21,6 +12,24 @@ pipeline {
                 }
             }
             stages {
+                stage('submodule') {
+                    steps {
+                        sh 'git submodule sync'
+                        sh 'git submodule update --init --recursive'
+                    }
+                }
+                stage('set_version_build') {
+                    when { not { branch "master" } }
+                    steps {
+                        sh './bumpversion.sh build'
+                    }
+                }
+                stage('set_version_release') {
+                    when { branch "master" }
+                    steps {
+                        sh './bumpversion.sh release'
+                    }
+                }
                 stage('package') {
                     steps {
                         sh 'mvn -B clean package -Dfindbugs.skip=true -Dmaven.test.skip=true -Dmaven.junit.jvmargs=-Xmx512m'
