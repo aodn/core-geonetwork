@@ -625,8 +625,8 @@ public class Geonetwork implements ApplicationHandler {
 		final ScheduledFuture<?> future = scheduledExecutorService.scheduleWithFixedDelay(gc.getOnlineResourceMonitor(), onlineResourceMonitorInitialDelay, onlineResourceMonitorFixedDelay, TimeUnit.SECONDS);
 
 		scheduledExecutorService.execute(new Runnable() {
-			@Override
-			public void run() {
+		@Override
+		public void run() {
 				try {
 					future.get();
 				} catch (InterruptedException e) {
