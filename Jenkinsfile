@@ -19,15 +19,17 @@ pipeline {
                     }
                 }
                 stage('set_version_build') {
-                    when { not { branch "master" } }
+                    when { not { branch "2.10.x-imos" } }
                     steps {
                         sh './bumpversion.sh build'
                     }
                 }
                 stage('set_version_release') {
-                    when { branch "master" }
+                    when { branch "2.10.x-imos" }
                     steps {
-                        sh './bumpversion.sh release'
+                        withCredentials([usernamePassword(credentialsId: env.GIT_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                            sh './bumpversion.sh release'
+                        }
                     }
                 }
                 stage('package') {
