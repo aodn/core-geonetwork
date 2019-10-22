@@ -2,7 +2,7 @@
 
 set -eux
 
-RELEASE_BRANCH=master
+RELEASE_BRANCH="2.10.x-imos"
 
 _get_maven_version() {
   # extract version from pom.xml
