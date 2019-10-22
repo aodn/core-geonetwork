@@ -7,7 +7,7 @@ pipeline {
         stage('container') {
             agent {
                 dockerfile {
-                    args '-v ${HOME}/.m2:/home/builder/.m2 -v ${HOME}/.svn:/home/builder/.svn'
+                    args '-v ${HOME}/.m2:/home/builder/.m2 -v ${HOME}/.svn:/home/builder/.svn -v ${HOME}/bin:${HOME}/bin'
                     additionalBuildArgs '--build-arg BUILDER_UID=$(id -u)'
                 }
             }
