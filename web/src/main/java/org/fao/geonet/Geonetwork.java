@@ -33,9 +33,7 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import javax.servlet.ServletContext;
 
@@ -623,8 +621,31 @@ public class Geonetwork implements ApplicationHandler {
             return;
         }
 
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        scheduledExecutorService.scheduleWithFixedDelay(gc.getOnlineResourceMonitor(), onlineResourceMonitorInitialDelay, onlineResourceMonitorFixedDelay, TimeUnit.SECONDS);
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
+        final ScheduledFuture<?> future = scheduledExecutorService.scheduleWithFixedDelay(gc.getOnlineResourceMonitor(), onlineResourceMonitorInitialDelay, onlineResourceMonitorFixedDelay, TimeUnit.SECONDS);
+
+        scheduledExecutorService.execute(new Runnable() {
+        @Override
+        public void run() {
+            try {
+                    future.get();
+                } catch (InterruptedException e) {
+                    logger.error("Scheduled ORM execution was interrupted:" + e.getMessage());
+                    e.printStackTrace();
+                } catch (CancellationException e) {
+                    logger.error("Scheduled ORM execution was cancelled:" + e.getMessage());
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    logger.error("Uncaught exception in scheduled ORM execution:" + e.getMessage());
+                    e.printStackTrace();
+                } catch (Throwable t) {
+                    logger.error("Error or exception in scheduled ORM execution:" + t.getMessage());
+                    t.printStackTrace();
+                } finally {
+                    logger.error("Failed to run resource check. Online Resource Monitor may terminate");
+                }
+            }
+        });
     }
 
     /**
