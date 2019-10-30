@@ -1,6 +1,6 @@
 IntelliJ Setup
 --------------
-
+  
 ### Clone project files
 
     git clone --recursive git@github.com:aodn/core-geonetwork.git
