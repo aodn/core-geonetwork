@@ -39,9 +39,11 @@ pipeline {
                 }
             }
             post {
-                success {
-                    archiveArtifacts artifacts: '**/geonetwork.war', fingerprint: true, onlyIfSuccessful: true
-                }
+                 success {
+                     dir('web/target/') {
+                         archiveArtifacts artifacts: 'geonetwork.war', fingerprint: true, onlyIfSuccessful: true
+                     }
+                 }
             }
         }
     }
