@@ -18,20 +18,21 @@ pipeline {
                         sh 'git submodule update --init --recursive'
                     }
                 }
-                stage('set_version_build') {
-                    when { not { branch "2.10.x-imos" } }
-                    steps {
-                        sh './bumpversion.sh build'
-                    }
-                }
-                stage('set_version_release') {
-                    when { branch "2.10.x-imos" }
-                    steps {
-                        withCredentials([usernamePassword(credentialsId: env.GIT_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                            sh './bumpversion.sh release'
-                        }
-                    }
-                }
+// NOTE: commented due to version bumping issues (and not bumped on old Jenkins)
+//                stage('set_version_build') {
+//                    when { not { branch "2.10.x-imos" } }
+//                    steps {
+//                        sh './bumpversion.sh build'
+//                    }
+//                }
+//                stage('set_version_release') {
+//                    when { branch "2.10.x-imos" }
+//                    steps {
+//                        withCredentials([usernamePassword(credentialsId: env.GIT_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+//                            sh './bumpversion.sh release'
+//                        }
+//                    }
+//                }
                 stage('package') {
                     steps {
                         sh 'mvn -B clean package -Dfindbugs.skip=true -Dmaven.test.skip=true -Dmaven.junit.jvmargs=-Xmx512m'
