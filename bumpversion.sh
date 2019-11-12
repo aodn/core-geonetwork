@@ -30,7 +30,7 @@ _update_git() {
 
 _bumpversion() {
   local suffix=$1; shift
-  _set_maven_version "$suffix" &>/dev/null
+  _set_maven_version "$suffix"
   local new_version=$(_get_maven_version)
   echo "${new_version}"
 }
@@ -54,7 +54,7 @@ main() {
     release
   elif [ "x${mode}" == "xbuild" ]; then
     build
-  fi
+  fi &>bumpversion.log
 
   exit 0
 }
