@@ -10,7 +10,7 @@ import java.util.List;
 import java.net.*;
 
 /**
- * This class is used to determine the category paths (facets) to be indexed for an AODN term given its URI
+ * This class is used to determine the category paths (facets) to be indexed for an AODN term given its URI or Label
  */
 
 public class UriLabelClassifier implements Classifier  {
