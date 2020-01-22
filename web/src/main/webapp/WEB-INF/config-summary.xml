@@ -70,17 +70,17 @@
 			<param name="classificationScheme" type="java.lang.String" value="http://vocab.aodn.org.au/def/organisation_classes/1"/>
 			<param name="indexKey" type="java.lang.String" value="orgUnit"/>
 		</dimension>
-		<dimension name="platformCategories" indexKey="platformUri" label="Platform" classifier="au.org.emii.classifier.UriClassifier">
+		<dimension name="platformCategories" indexKey="platformKeyword" label="Platform" classifier="au.org.emii.classifier.UriLabelClassifier">
 			<param name="thesaurusFinder" type="org.fao.geonet.kernel.ThesaurusFinder"/> 
-			<param name="vocabularyScheme" type="java.lang.String" value="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
-			<param name="classificationScheme" type="java.lang.String" value="http://vocab.aodn.org.au/PlatformClassificationScheme/SchemeNumber1"/>
-			<param name="indexKey" type="java.lang.String" value="platformUri"/>
+			<param name="vocabularyScheme" type="java.lang.String" value="http://vocab.aodn.org.au/def/platform/1"/>
+			<param name="classificationScheme" type="java.lang.String" value="http://vocab.aodn.org.au/def/platform_classes/1"/>
+			<param name="indexKey" type="java.lang.String" value="platformKeyword"/>
 		</dimension>
-		<dimension name="parameterCategories" indexKey="parameterUri" label="Measured parameter" classifier="au.org.emii.classifier.UriClassifier">
+		<dimension name="parameterCategories" indexKey="parameterKeyword" label="Measured parameter" classifier="au.org.emii.classifier.UriLabelClassifier">
 			<param name="thesaurusFinder" type="org.fao.geonet.kernel.ThesaurusFinder"/> 
-			<param name="vocabularyScheme" type="java.lang.String" value="http://vocab.aodn.org.au/ParameterClassificationScheme/SchemeNumber1"/>
-			<param name="classificationScheme" type="java.lang.String" value="http://vocab.aodn.org.au/ParameterClassificationScheme/SchemeNumber1"/>
-			<param name="indexKey" type="java.lang.String" value="parameterUri"/>
+			<param name="vocabularyScheme" type="java.lang.String" value="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
+			<param name="classificationScheme" type="java.lang.String" value="http://vocab.aodn.org.au/def/parameter_classes/1"/>
+			<param name="indexKey" type="java.lang.String" value="parameterKeyword"/>
 		</dimension>
 		<dimension name="temporalResolutionCategories" label="Temporal Resolution" indexKey="temporalAggregation"/>
 	</dimensions>

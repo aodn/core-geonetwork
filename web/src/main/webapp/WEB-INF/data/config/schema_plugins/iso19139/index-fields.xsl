@@ -255,19 +255,33 @@
 
 				<!-- Index platforms -->
 
-				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='AODN Platform Vocabulary'">
+				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='theme.aodn_aodn-platform-vocabulary.rdf'">
 					<xsl:for-each select="gmd:keyword/*">
 						<Field name="platform" string="{text()}" store="true" index="true"/>
-						<Field name="platformUri" string="{@xlink:href}" store="true" index="true"/>
+						<xsl:choose>
+							<xsl:when test="@xlink:href">
+								<Field name="platformKeyword" string="{@xlink:href}" store="true" index="true"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<Field name="platformKeyword" string="{text()}" store="true" index="true"/>
+							</xsl:otherwise>
+						</xsl:choose>
 					</xsl:for-each>
 				</xsl:if>
 
 				<!-- Index parameters -->
 
-				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='AODN Discovery Parameter Vocabulary'">
+				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='theme.aodn_aodn-discovery-parameter-vocabulary.rdf'">
 					<xsl:for-each select="gmd:keyword/*">
 						<Field name="longParamName" string="{text()}" store="true" index="true"/>
-						<Field name="parameterUri" string="{@xlink:href}" store="true" index="true"/>
+						<xsl:choose>
+							<xsl:when test="@xlink:href">
+								<Field name="parameterKeyword" string="{@xlink:href}" store="true" index="true"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<Field name="parameterKeyword" string="{text()}" store="true" index="true"/>
+							</xsl:otherwise>
+						</xsl:choose>
 					</xsl:for-each>
 				</xsl:if>
 
