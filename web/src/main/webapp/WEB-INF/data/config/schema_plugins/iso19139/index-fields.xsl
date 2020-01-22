@@ -255,7 +255,7 @@
 
 				<!-- Index platforms -->
 
-				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='theme.aodn_aodn-platform-vocabulary.rdf'">
+				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='AODN Platform Vocabulary'">
 					<xsl:for-each select="gmd:keyword/*">
 						<Field name="platform" string="{text()}" store="true" index="true"/>
 						<xsl:choose>
@@ -271,7 +271,7 @@
 
 				<!-- Index parameters -->
 
-				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='theme.aodn_aodn-discovery-parameter-vocabulary.rdf'">
+				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='AODN Discovery Parameter Vocabulary'">
 					<xsl:for-each select="gmd:keyword/*">
 						<Field name="longParamName" string="{text()}" store="true" index="true"/>
 						<xsl:choose>
