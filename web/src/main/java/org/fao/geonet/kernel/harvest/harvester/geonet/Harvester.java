@@ -106,7 +106,7 @@ class Harvester
 
 		log.info("Retrieving information from : "+ params.host);
 
-		req.setAddress(params.getServletPath() +"/srv/en/"+ Geonet.Service.XML_INFO);
+		req.setAddress(params.getServletPath() +"/srv/eng/"+ Geonet.Service.XML_INFO);
 		req.clearParams();
 		req.addParam("type", "sources");
 		req.addParam("type", "groups");
@@ -186,7 +186,7 @@ class Harvester
 
 	private Element doSearch(XmlRequest request, Search s) throws OperationAbortedEx
 	{
-		request.setAddress(params.getServletPath() +"/srv/en/"+ Geonet.Service.XML_SEARCH);
+		request.setAddress(params.getServletPath() +"/srv/eng/"+ Geonet.Service.XML_SEARCH);
 		
 		try
 		{
