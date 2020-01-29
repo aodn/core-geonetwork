@@ -80,8 +80,12 @@ public class Aligner
 		result  = new GeonetResult();
 
 		//--- save remote categories and groups into hashmaps for a fast access
-
-		List list = remoteInfo.getChild("groups").getChildren("group");
+		Element groups = remoteInfo.getChild("groups");
+		if(groups == null){
+			// Check if GN3 format
+			groups = remoteInfo.getChild("group");
+		}
+		List list = groups.getChildren("group");
 		setupLocEntity(list, hmRemoteGroups);
 	}
 
