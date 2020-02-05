@@ -153,8 +153,7 @@ public class Aligner
 		{
 			result.totalMetadata++;
 
-			if (!dataMan.existsSchema(ri.schema))
-			{
+			if (!dataMan.existsSchema(ri.schema) && !ri.schema.startsWith("iso19115-3.2018")) {
                 if(log.isDebugEnabled())
                     log.debug("  - Metadata skipped due to unknown schema. uuid:"+ ri.uuid
 						 	+", schema:"+ ri.schema);
@@ -223,7 +222,7 @@ public class Aligner
 
 		try
 		{
-			MEFLib.visit(mefFile, new MEFVisitor(), new IMEFVisitor()
+			MEFLib.visit(mefFile, new MEFVisitor("iso19139", ri), new IMEFVisitor()
 			{
 				public void handleMetadata(Element mdata, int index) throws Exception
 				{
@@ -523,7 +522,7 @@ public class Aligner
 
 			try
 			{
-				MEFLib.visit(mefFile, new MEFVisitor(), new IMEFVisitor()
+				MEFLib.visit(mefFile, new MEFVisitor("iso19139", ri), new IMEFVisitor()
 				{
 					public void handleMetadata(Element mdata, int index) throws Exception
 					{
@@ -777,6 +776,12 @@ public class Aligner
 		request.clearParams();
 		request.addParam("uuid",   uuid);
 		request.addParam("format", (params.mefFormatFull ? "full" : "partial"));
+
+		// Request MEF2 format - if remote node is old
+		// it will ignore this parameter and return a MEF1 format
+		// which will be handle in addMetadata/updateMetadata.
+		request.addParam("version", "2");
+		request.addParam("relation", "false");
 
 		request.setAddress(params.getServletPath() +"/srv/eng/"+ Geonet.Service.MEF_EXPORT);
 

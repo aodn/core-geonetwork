@@ -25,6 +25,7 @@ package org.fao.geonet.kernel.mef;
 
 import jeeves.exceptions.BadFormatEx;
 import jeeves.utils.Xml;
+import org.fao.geonet.kernel.harvest.harvester.RecordInfo;
 import org.jdom.Element;
 
 import java.io.File;
@@ -44,6 +45,17 @@ import static org.fao.geonet.kernel.mef.MEFConstants.FILE_METADATA;
  * MEF version 1 visitor to process and load MEF files.
  */
 public class MEFVisitor implements IVisitor {
+
+	private RecordInfo recordInfo;
+	private String preferredSchema;
+
+	public MEFVisitor(){}
+
+	public MEFVisitor(String preferredSchema, RecordInfo ri){
+		this.preferredSchema = preferredSchema;
+		this.recordInfo = ri;
+	}
+
 	public void visit(File mefFile, IMEFVisitor v) throws Exception {
 		Element info = handleXml(mefFile, v);
 		handleBin(mefFile, v, info, 0);
@@ -65,13 +77,23 @@ public class MEFVisitor implements IVisitor {
 
 		try {
 			while ((entry = zis.getNextEntry()) != null) {
-				String name = entry.getName();
 
-				if (name.equals(FILE_METADATA))
-					md = Xml.loadStream(isb);
-				else if (name.equals(FILE_INFO))
+				if(entry.isDirectory()){
+					continue;
+				}
+
+				String fullName = entry.getName();
+				String simpleName = new File(fullName).getName();
+
+				if(this.recordInfo.schema.startsWith(this.preferredSchema)) {
+					if (simpleName.equals(FILE_METADATA))
+						md = Xml.loadStream(isb);
+				} else if (simpleName.endsWith(this.preferredSchema + ".xml")){
+						this.recordInfo.schema = this.preferredSchema;
+						md = Xml.loadStream(isb);
+				}
+				if (simpleName.equals(FILE_INFO))
 					info = Xml.loadStream(isb);
-
 				zis.closeEntry();
 			}
 		} finally {
