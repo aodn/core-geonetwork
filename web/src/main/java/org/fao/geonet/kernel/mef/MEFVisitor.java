@@ -48,11 +48,13 @@ public class MEFVisitor implements IVisitor {
 
 	private RecordInfo recordInfo;
 	private String preferredSchema;
+	private String preferredMetadataFile;
 
 	public MEFVisitor(){}
 
 	public MEFVisitor(String preferredSchema, RecordInfo ri){
 		this.preferredSchema = preferredSchema;
+		this.preferredMetadataFile = "metadata-" + preferredSchema + ".xml";
 		this.recordInfo = ri;
 	}
 
@@ -73,7 +75,9 @@ public class MEFVisitor implements IVisitor {
 		ZipEntry entry;
 
 		Element md = null;
+		Element preferredMd = null;
 		Element info = null;
+		String originalSchema = this.recordInfo.schema;
 
 		try {
 			while ((entry = zis.getNextEntry()) != null) {
@@ -85,13 +89,14 @@ public class MEFVisitor implements IVisitor {
 				String fullName = entry.getName();
 				String simpleName = new File(fullName).getName();
 
-				if(this.recordInfo.schema.startsWith(this.preferredSchema)) {
-					if (simpleName.equals(FILE_METADATA))
-						md = Xml.loadStream(isb);
-				} else if (simpleName.endsWith(this.preferredSchema + ".xml")){
-						this.recordInfo.schema = this.preferredSchema;
-						md = Xml.loadStream(isb);
+				if (simpleName.equals(FILE_METADATA))
+					md = Xml.loadStream(isb);
+
+				if (simpleName.equals(this.preferredMetadataFile)) {
+					this.recordInfo.schema = this.preferredSchema;
+					preferredMd = Xml.loadStream(isb);
 				}
+
 				if (simpleName.equals(FILE_INFO))
 					info = Xml.loadStream(isb);
 				zis.closeEntry();
@@ -99,6 +104,9 @@ public class MEFVisitor implements IVisitor {
 		} finally {
 			safeClose(zis);
 		}
+
+		if(preferredMd != null && originalSchema.equals("iso19115-3.2018"))
+			md = preferredMd;
 
 		if (md == null)
 			throw new BadFormatEx("Missing metadata file : " + FILE_METADATA);
