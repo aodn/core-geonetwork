@@ -94,51 +94,105 @@ ker.createRequestFromObject = function(params)
 	- xmlResponse : 'true' if the response is XML. 'false' for text (default is 'true').
 */
 
-ker.send = function(service, request, onSuccessFnc, xmlResponse)
-{
+ker.send2 = function(service, request, onSuccessFnc, xmlResponse) {
+
 	if (xmlResponse != false)
 		xmlResponse = true;
 
-	var opt = 
-	{
-		method: 'post',
-		postBody: request,
-		requestHeaders: ['Content-type', 'application/xml'],
-
-		onSuccess: function(t) 
+	var opt =
 		{
-			ker.showAjaxWait(false);
+			method: 'post',
+			postBody: request,
+			requestHeaders: ['Content-type', 'application/xml'],
 
-			if (onSuccessFnc)
-				if (xmlResponse)	onSuccessFnc(xml.ieFix(t.responseXML.firstChild));
-					else				onSuccessFnc(t.responseText);
-
-		},
-		
-		on404: function(t) 
-		{
-			ker.showAjaxWait(false);			
-			alert('Error 404: service "' + t.statusText + '" was not found.');
-		},
-		
-		onFailure: function(t) 
-		{
-			ker.showAjaxWait(false);
-			
-			if (t.status >= 400 && t.status <= 500)
+			onSuccess: function(t)
 			{
+				ker.showAjaxWait(false);
+
 				if (onSuccessFnc)
 					if (xmlResponse)	onSuccessFnc(xml.ieFix(t.responseXML.firstChild));
+					else				onSuccessFnc(t.responseText);
+
+			},
+
+			on404: function(t)
+			{
+				ker.showAjaxWait(false);
+				alert('Error 404: service "' + t.statusText + '" was not found.');
+			},
+
+			onFailure: function(t)
+			{
+				ker.showAjaxWait(false);
+
+				if (t.status >= 400 && t.status <= 500)
+				{
+					if (onSuccessFnc)
+						if (xmlResponse)	onSuccessFnc(xml.ieFix(t.responseXML.firstChild));
 						else				onSuccessFnc(t.responseText);
+				}
+				else
+					alert('Error ' + t.status + ' -- ' + t.statusText);
 			}
-			else		
-				alert('Error ' + t.status + ' -- ' + t.statusText);
 		}
-	}
 
 	ker.showAjaxWait(true);
-		
+
 	new Ajax.Request(Env.locService +'/'+ service, opt);
+}
+
+ker.send = function(service, request, onSuccessFnc, xmlResponse)
+{
+
+	if (xmlResponse != false)
+		xmlResponse = true;	
+
+	if (service == 'xml.forward') {
+		parser = new DOMParser();
+		xmlDoc = parser.parseFromString(request,"text/xml");
+		var url = xmlDoc.getElementsByTagName('url')[0].innerHTML;
+		var forwardedService = url.substring(url.lastIndexOf('/') + 1);
+		if (forwardedService === 'xml.info') {
+			var serverType = xmlDoc.getElementsByTagName('type')[0].innerHTML;
+			var infoType = xmlDoc.getElementsByTagName('type')[1].innerHTML;
+			if (serverType == 'geonetwork' && (infoType == 'sources' || infoType == 'groupsIncludingSystemGroups' || infoType == 'groups')) {
+				ker.showAjaxWait(true);
+				var client = new XMLHttpRequest();
+				client.overrideMimeType('text/xml');
+				client.onload = function() {
+					xmlDoc2 = parser.parseFromString(client.response, "text/xml");
+					var version = xmlDoc2.getElementsByTagName('version')[0].innerHTML;
+					if (version.substring(0, 1) == '3') {
+						var client2 = new XMLHttpRequest();
+						client2.overrideMimeType('text/xml');
+						client2.onload = function (t) {
+							ker.showAjaxWait(false);
+							if (onSuccessFnc) {
+								if (xmlResponse) {
+									onSuccessFnc(xml.ieFix(client2.responseXML.firstChild));
+								} else {
+									onSuccessFnc(client2.responseText);
+								}
+							}
+						}
+						client2.open("GET", url + "?type=" + infoType, true);
+						client2.send();
+					} else {
+						ker.send2(service, request, onSuccessFnc, xmlResponse);
+					}
+				}
+				client.onerror = function(t) {
+					// CORS may prevent the info?type=site on geonetwork 2 hosts so we try again using the original ker.send()
+					ker.send2(service, request, onSuccessFnc, xmlResponse);
+				}
+				client.open("GET", url + "?type=site", true);
+				client.send();
+			}
+		}
+	} else {
+		ker.send2(service, request, onSuccessFnc, xmlResponse);
+	}
+
 }
 
 //=====================================================================================
