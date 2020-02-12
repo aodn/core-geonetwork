@@ -93,7 +93,6 @@ public class MEFVisitor implements IVisitor {
 					md = Xml.loadStream(isb);
 
 				if (simpleName.equals(this.preferredMetadataFile)) {
-					this.recordInfo.schema = this.preferredSchema;
 					preferredMd = Xml.loadStream(isb);
 				}
 
@@ -106,6 +105,7 @@ public class MEFVisitor implements IVisitor {
 		}
 
 		if(preferredMd != null && originalSchema.equals("iso19115-3.2018"))
+			this.recordInfo.schema = this.preferredSchema;
 			md = preferredMd;
 
 		if (md == null)
