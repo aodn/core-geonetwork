@@ -156,7 +156,7 @@ ker.send = function(service, request, onSuccessFnc, xmlResponse)
 				.then(function () {
 					getRemoteSources(requestParts.url, onSuccessFnc, xmlResponse);
 				})
-				.catch(function () {
+				['catch'](function () {
 					ker.send2(service, request, onSuccessFnc, xmlResponse);
 				});
 		} else {
