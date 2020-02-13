@@ -155,7 +155,9 @@ ker.send = function(service, request, onSuccessFnc, xmlResponse)
 		if (forwardedService === 'xml.info') {
 			var serverType = xmlDoc.getElementsByTagName('type')[0].innerHTML;
 			var infoType = xmlDoc.getElementsByTagName('type')[1].innerHTML;
-			if (serverType == 'geonetwork' && (infoType == 'sources' || infoType == 'groupsIncludingSystemGroups' || infoType == 'groups')) {
+			if (serverType == 'geonetwork' && (infoType == 'groupsIncludingSystemGroups' || infoType == 'groups')) {
+				ker.send2('xml.info', "<request><type>groupsIncludingSystemGroups</type></request>", onSuccessFnc, xmlResponse);
+			} else if (serverType == 'geonetwork' && infoType == 'sources') {
 				ker.showAjaxWait(true);
 				var client = new XMLHttpRequest();
 				client.overrideMimeType('text/xml');
