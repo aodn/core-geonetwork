@@ -148,48 +148,19 @@ ker.send = function(service, request, onSuccessFnc, xmlResponse)
 		xmlResponse = true;	
 
 	if (service == 'xml.forward') {
-		parser = new DOMParser();
-		xmlDoc = parser.parseFromString(request,"text/xml");
-		var url = xmlDoc.getElementsByTagName('url')[0].innerHTML;
-		var forwardedService = url.substring(url.lastIndexOf('/') + 1);
-		if (forwardedService === 'xml.info') {
-			var serverType = xmlDoc.getElementsByTagName('type')[0].innerHTML;
-			var infoType = xmlDoc.getElementsByTagName('type')[1].innerHTML;
-			if (serverType == 'geonetwork' && (infoType == 'groupsIncludingSystemGroups' || infoType == 'groups')) {
-				ker.send2('xml.info', "<request><type>groupsIncludingSystemGroups</type></request>", onSuccessFnc, xmlResponse);
-			} else if (serverType == 'geonetwork' && infoType == 'sources') {
-				ker.showAjaxWait(true);
-				var client = new XMLHttpRequest();
-				client.overrideMimeType('text/xml');
-				client.onload = function() {
-					xmlDoc2 = parser.parseFromString(client.response, "text/xml");
-					var version = xmlDoc2.getElementsByTagName('version')[0].innerHTML;
-					if (version.substring(0, 1) == '3') {
-						var client2 = new XMLHttpRequest();
-						client2.overrideMimeType('text/xml');
-						client2.onload = function (t) {
-							ker.showAjaxWait(false);
-							if (onSuccessFnc) {
-								if (xmlResponse) {
-									onSuccessFnc(xml.ieFix(client2.responseXML.firstChild));
-								} else {
-									onSuccessFnc(client2.responseText);
-								}
-							}
-						}
-						client2.open("GET", url + "?type=" + infoType, true);
-						client2.send();
-					} else {
-						ker.send2(service, request, onSuccessFnc, xmlResponse);
-					}
-				}
-				client.onerror = function(t) {
-					// CORS may prevent the info?type=site on geonetwork 2 hosts so we try again using the original ker.send()
+		var requestParts = getRequestParts(request);
+		if (isGeonetworkGroupsRequest(requestParts)) {
+			ker.send2('xml.info', "<request><type>groupsIncludingSystemGroups</type></request>", onSuccessFnc, xmlResponse);
+		} else if (isGeonetworkSourcesRequest(requestParts)) {
+			getRemoteGeonetworkVersion(requestParts.url)
+				.then(function () {
+					getRemoteSources(requestParts.url, onSuccessFnc, xmlResponse);
+				})
+				.catch(function () {
 					ker.send2(service, request, onSuccessFnc, xmlResponse);
-				}
-				client.open("GET", url + "?type=site", true);
-				client.send();
-			}
+				});
+		} else {
+			ker.send2(service, request, onSuccessFnc, xmlResponse);
 		}
 	} else {
 		ker.send2(service, request, onSuccessFnc, xmlResponse);
@@ -373,4 +344,78 @@ function waitLoop()
 }
 
 //=====================================================================================
+}
+
+function getRequestParts(request) {
+
+	var requestParts = {};
+
+	parser = new DOMParser();
+	xmlDoc = parser.parseFromString(request,"text/xml");
+	requestParts.url = xmlDoc.getElementsByTagName('url')[0].innerHTML;
+	requestParts.forwardedService = requestParts.url.substring(requestParts.url.lastIndexOf('/') + 1);
+	requestParts.serverType = xmlDoc.getElementsByTagName('type')[0].innerHTML;
+	requestParts.infoType = xmlDoc.getElementsByTagName('type')[1].innerHTML;
+
+	return requestParts
+
+}
+
+function isGeonetworkGroupsRequest(request) {
+
+	return (request.forwardedService === 'xml.info' &&
+		request.serverType === 'geonetwork' &&
+		(request.infoType == 'groupsIncludingSystemGroups' || request.infoType == 'groups'));
+
+}
+
+function isGeonetworkSourcesRequest(request) {
+
+	return (request.serverType == 'geonetwork' && request.infoType == 'sources');
+
+}
+
+function getRemoteSources(url, onSuccessFnc, xmlResponse) {
+
+	var xhr = new XMLHttpRequest();
+	xhr.overrideMimeType('text/xml');
+	xhr.onload = function (t) {
+		ker.showAjaxWait(false);
+		if (onSuccessFnc) {
+			if (xmlResponse) {
+				onSuccessFnc(xml.ieFix(xhr.responseXML.firstChild));
+			} else {
+				onSuccessFnc(xhr.responseText);
+			}
+		}
+	}
+	xhr.open("GET", url + "?type=sources", true);
+	xhr.send();
+
+}
+
+function getRemoteGeonetworkVersion(url) {
+
+	ker.showAjaxWait(true);
+	var promise =  new Promise(function (resolve, reject) {
+		var xhr = new XMLHttpRequest();
+		xhr.overrideMimeType('text/xml');
+		xhr.open("GET", url + "?type=site", true);
+		xhr.onload = function () {
+			xmlDoc2 = parser.parseFromString(xhr.response, "text/xml");
+			var version = xmlDoc2.getElementsByTagName('version')[0].innerHTML;
+			if (version.substring(0, 1) == '3') {
+				resolve();
+			} else {
+				reject();
+			}
+		}
+		xhr.onerror = function (t) {
+			reject();
+		}
+		xhr.send();
+	});
+
+	return promise;
+
 }
