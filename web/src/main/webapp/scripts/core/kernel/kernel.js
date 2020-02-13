@@ -152,7 +152,7 @@ ker.send = function(service, request, onSuccessFnc, xmlResponse)
 		if (isGeonetworkGroupsRequest(requestParts)) {
 			ker.send2('xml.info', "<request><type>groupsIncludingSystemGroups</type></request>", onSuccessFnc, xmlResponse);
 		} else if (isGeonetworkSourcesRequest(requestParts)) {
-			getRemoteGeonetworkVersion(requestParts.url)
+			isGeonetworkVersion3(requestParts.url)
 				.then(function () {
 					getRemoteSources(requestParts.url, onSuccessFnc, xmlResponse);
 				})
@@ -394,7 +394,7 @@ function getRemoteSources(url, onSuccessFnc, xmlResponse) {
 
 }
 
-function getRemoteGeonetworkVersion(url) {
+function isGeonetworkVersion3(url) {
 
 	ker.showAjaxWait(true);
 	var promise =  new Promise(function (resolve, reject) {
