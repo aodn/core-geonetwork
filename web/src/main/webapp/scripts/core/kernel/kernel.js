@@ -94,51 +94,78 @@ ker.createRequestFromObject = function(params)
 	- xmlResponse : 'true' if the response is XML. 'false' for text (default is 'true').
 */
 
-ker.send = function(service, request, onSuccessFnc, xmlResponse)
-{
+ker.send2 = function(service, request, onSuccessFnc, xmlResponse) {
+
 	if (xmlResponse != false)
 		xmlResponse = true;
 
-	var opt = 
-	{
-		method: 'post',
-		postBody: request,
-		requestHeaders: ['Content-type', 'application/xml'],
-
-		onSuccess: function(t) 
+	var opt =
 		{
-			ker.showAjaxWait(false);
+			method: 'post',
+			postBody: request,
+			requestHeaders: ['Content-type', 'application/xml'],
 
-			if (onSuccessFnc)
-				if (xmlResponse)	onSuccessFnc(xml.ieFix(t.responseXML.firstChild));
-					else				onSuccessFnc(t.responseText);
-
-		},
-		
-		on404: function(t) 
-		{
-			ker.showAjaxWait(false);			
-			alert('Error 404: service "' + t.statusText + '" was not found.');
-		},
-		
-		onFailure: function(t) 
-		{
-			ker.showAjaxWait(false);
-			
-			if (t.status >= 400 && t.status <= 500)
+			onSuccess: function(t)
 			{
+				ker.showAjaxWait(false);
+
 				if (onSuccessFnc)
 					if (xmlResponse)	onSuccessFnc(xml.ieFix(t.responseXML.firstChild));
+					else				onSuccessFnc(t.responseText);
+
+			},
+
+			on404: function(t)
+			{
+				ker.showAjaxWait(false);
+				alert('Error 404: service "' + t.statusText + '" was not found.');
+			},
+
+			onFailure: function(t)
+			{
+				ker.showAjaxWait(false);
+
+				if (t.status >= 400 && t.status <= 500)
+				{
+					if (onSuccessFnc)
+						if (xmlResponse)	onSuccessFnc(xml.ieFix(t.responseXML.firstChild));
 						else				onSuccessFnc(t.responseText);
+				}
+				else
+					alert('Error ' + t.status + ' -- ' + t.statusText);
 			}
-			else		
-				alert('Error ' + t.status + ' -- ' + t.statusText);
 		}
-	}
 
 	ker.showAjaxWait(true);
-		
+
 	new Ajax.Request(Env.locService +'/'+ service, opt);
+}
+
+ker.send = function(service, request, onSuccessFnc, xmlResponse)
+{
+
+	if (xmlResponse != false)
+		xmlResponse = true;	
+
+	if (service == 'xml.forward') {
+		var requestParts = getRequestParts(request);
+		if (isGeonetworkGroupsRequest(requestParts)) {
+			ker.send2('xml.info', "<request><type>groupsIncludingSystemGroups</type></request>", onSuccessFnc, xmlResponse);
+		} else if (isGeonetworkSourcesRequest(requestParts)) {
+			isGeonetworkVersion3(requestParts.url)
+				.then(function () {
+					getRemoteSources(requestParts.url, onSuccessFnc, xmlResponse);
+				})
+				['catch'](function () {
+					ker.send2(service, request, onSuccessFnc, xmlResponse);
+				});
+		} else {
+			ker.send2(service, request, onSuccessFnc, xmlResponse);
+		}
+	} else {
+		ker.send2(service, request, onSuccessFnc, xmlResponse);
+	}
+
 }
 
 //=====================================================================================
@@ -317,4 +344,78 @@ function waitLoop()
 }
 
 //=====================================================================================
+}
+
+function getRequestParts(request) {
+
+	var requestParts = {};
+
+	parser = new DOMParser();
+	xmlDoc = parser.parseFromString(request,"text/xml");
+	requestParts.url = xmlDoc.getElementsByTagName('url')[0].innerHTML;
+	requestParts.forwardedService = requestParts.url.substring(requestParts.url.lastIndexOf('/') + 1);
+	requestParts.serverType = xmlDoc.getElementsByTagName('type')[0].innerHTML;
+	requestParts.infoType = xmlDoc.getElementsByTagName('type')[1].innerHTML;
+
+	return requestParts
+
+}
+
+function isGeonetworkGroupsRequest(request) {
+
+	return (request.forwardedService === 'xml.info' &&
+		request.serverType === 'geonetwork' &&
+		(request.infoType == 'groupsIncludingSystemGroups' || request.infoType == 'groups'));
+
+}
+
+function isGeonetworkSourcesRequest(request) {
+
+	return (request.serverType == 'geonetwork' && request.infoType == 'sources');
+
+}
+
+function getRemoteSources(url, onSuccessFnc, xmlResponse) {
+
+	var xhr = new XMLHttpRequest();
+	xhr.overrideMimeType('text/xml');
+	xhr.onload = function (t) {
+		ker.showAjaxWait(false);
+		if (onSuccessFnc) {
+			if (xmlResponse) {
+				onSuccessFnc(xml.ieFix(xhr.responseXML.firstChild));
+			} else {
+				onSuccessFnc(xhr.responseText);
+			}
+		}
+	}
+	xhr.open("GET", url + "?type=sources", true);
+	xhr.send();
+
+}
+
+function isGeonetworkVersion3(url) {
+
+	ker.showAjaxWait(true);
+	var promise =  new Promise(function (resolve, reject) {
+		var xhr = new XMLHttpRequest();
+		xhr.overrideMimeType('text/xml');
+		xhr.open("GET", url + "?type=site", true);
+		xhr.onload = function () {
+			xmlDoc2 = parser.parseFromString(xhr.response, "text/xml");
+			var version = xmlDoc2.getElementsByTagName('version')[0].innerHTML;
+			if (version.substring(0, 1) == '3') {
+				resolve();
+			} else {
+				reject();
+			}
+		}
+		xhr.onerror = function (t) {
+			reject();
+		}
+		xhr.send();
+	});
+
+	return promise;
+
 }
