@@ -104,9 +104,10 @@ public class MEFVisitor implements IVisitor {
 			safeClose(zis);
 		}
 
-		if(preferredMd != null && originalSchema.equals("iso19115-3.2018"))
+		if(preferredMd != null && originalSchema.equals("iso19115-3.2018")) {
 			this.recordInfo.schema = this.preferredSchema;
 			md = preferredMd;
+		}
 
 		if (md == null)
 			throw new BadFormatEx("Missing metadata file : " + FILE_METADATA);
