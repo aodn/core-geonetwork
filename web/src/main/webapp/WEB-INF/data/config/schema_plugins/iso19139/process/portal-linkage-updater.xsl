@@ -1,9 +1,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:gco="http://www.isotc211.org/2005/gco"
     xmlns:gmd="http://www.isotc211.org/2005/gmd"
-    xmlns:mcp="http://bluenet3.antcrc.utas.edu.au/mcp"
     xmlns:geonet="http://www.fao.org/geonetwork"
-    exclude-result-prefixes="mcp geonet"
+    exclude-result-prefixes="geonet"
     version="2.0">
     
     <xsl:output indent="yes"/>
@@ -68,9 +67,14 @@
     </xsl:template>
 
     <!-- Add point of truth online resource element to the first transferOptions -->
-    <!-- element in the MD_Distribution section if pot_url provided              -->
+    <!-- element in the MD_Distribution section if pot_url provided and it       -->
+    <!-- doesn't exist already             -->
 
-    <xsl:template match="gmd:MD_Distribution[$pot_url]/gmd:transferOptions[1]/gmd:MD_DigitalTransferOptions[1]">
+    <xsl:variable name="has-pot" select="//gmd:MD_Distribution//gmd:protocol/*/text()[.='WWW:LINK-1.0-http--metadata-URL']"/>
+
+    <xsl:variable name="add-pot" select="$pot_url and not($has-pot)"/>
+
+    <xsl:template match="gmd:MD_Distribution[$add-pot]/gmd:transferOptions[1]/gmd:MD_DigitalTransferOptions[1]">
         <xsl:copy>
             <xsl:apply-templates select="node()"/>
             <gmd:onLine>
