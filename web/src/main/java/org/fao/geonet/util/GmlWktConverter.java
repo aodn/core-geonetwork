@@ -83,6 +83,14 @@ public class GmlWktConverter {
 		return toWkt(gml, parser);
 	}
 
+	static public String gmlAnyToWkt(String gml) {
+		if (gml.contains("http://www.opengis.net/gml/3.2")) {
+			return gml32ToWkt(gml);
+		} else {
+			return gmlToWkt(gml);
+		}
+	}
+
 	private static String toWkt(String gml, Parser parser) {
 		GmlWktConverter converter = new GmlWktConverter(parser);
 		return converter.toWkt(gml);

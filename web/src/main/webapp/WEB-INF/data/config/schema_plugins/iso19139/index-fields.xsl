@@ -6,6 +6,8 @@
 										xmlns:geonet="http://www.fao.org/geonetwork"
 										xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 										xmlns:gmx="http://www.isotc211.org/2005/gmx"
+										xmlns:converter="java:org.fao.geonet.util.GmlWktConverter"
+										xmlns:saxon="http://saxon.sf.net/"
 										xmlns:xlink="http://www.w3.org/1999/xlink"
                                         xmlns:skos="http://www.w3.org/2004/02/skos/core#">
 
@@ -25,6 +27,8 @@
 
 
 	<!-- ========================================================================================= -->
+
+  <xsl:output name="serialisation-output-format" method="xml" omit-xml-declaration="yes"/>
 
   <xsl:param name="thesauriDir"/>
   <xsl:param name="inspire">false</xsl:param>
@@ -197,6 +201,11 @@
 				<xsl:for-each select="gmd:geographicElement/gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code/gco:CharacterString">
 					<Field name="geoDescCode" string="{string(.)}" store="true" index="true"/>
 				</xsl:for-each>
+
+				<xsl:for-each select="gmd:geographicElement/gmd:EX_BoundingPolygon/gmd:polygon">
+					<xsl:variable name="gml" select="saxon:serialize(., 'serialisation-output-format')"/>
+					<Field name="geoPolygon" string="{converter:gmlAnyToWkt($gml)}" store="true" index="false"/>
+				</xsl:for-each>>
 
 				<xsl:for-each select="gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent">
 					<xsl:for-each select="gml:TimePeriod">
@@ -540,7 +549,7 @@
                     <Field name="link" string="{concat($title, '|', $desc, '|',
 						$linkage, '|OGC:WMS|application/vnd.ogc.wms_xml')}" store="true" index="false"/>
                 </xsl:if>
-			</xsl:for-each>  
+			</xsl:for-each>
 		</xsl:for-each>
 
 		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
