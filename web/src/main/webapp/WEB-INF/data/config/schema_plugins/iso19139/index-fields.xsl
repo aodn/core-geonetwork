@@ -375,6 +375,16 @@
 					<Field name="conditionApplyingToAccessAndUse" string="{string(.)}" store="true" index="true"/>
 					<Field name="useLimitation" string="{string(.)}" store="true" index="true"/>
 				</xsl:for-each>
+				<!-- Index creative commons in 19139 records transformed from -3 records in GN3 -->
+				<!-- These elements are actually invalid in 19139 but it suits us to use them -->
+				<!-- until we upgrade catalogue-portal to GN3 where we won't need them or they are mapped -->
+				<!-- correctly to other resource constraints elements above -->
+				<xsl:for-each select="gmd:MD_LegalConstraints[contains(gmd:reference/*/gmd:citedResponsibleParty//gmd:linkage/*/text(), 'http://creativecommons.org')]">
+					<Field name="jurisdictionLink" string="{gmd:reference/*/gmd:citedResponsibleParty//gmd:linkage/*/text()}" store="true" index="false" />
+					<Field name="licenseName" string="{gmd:reference/*/gmd:title/*/text()}" store="true" index="false" />
+					<Field name="licenseLink" string="{gmd:reference/*/gmd:onlineResource//gmd:linkage/*/text()}" store="true" index="false" />
+					<Field name="imageLink" string="{gmd:graphic//gmd:linkage/*/text()}" store="true" index="false" />
+				</xsl:for-each>
 			</xsl:for-each>
 			
 			
