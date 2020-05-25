@@ -899,20 +899,8 @@
   <!-- ================================================================== -->
   <repositories>
     <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>geotools</id>
-      <name>Geotools repository</name>
-      <url>http://download.osgeo.org/webdav/geotools/</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>boundless</id>
-      <name>Boundless repository</name>
-      <url>http://repo.boundlessgeo.com/main/</url>
+        <id>osgeo</id>
+        <url>https://repo.osgeo.org/repository/geotools-releases/</url>
     </repository>
     <repository>
       <snapshots>
@@ -960,6 +948,11 @@
       <url>http://maven.seasar.org/maven2</url>
     </repository>
 
+    <!-- hatbox dependency -->
+    <repository>
+      <id>geomajas</id>
+      <url>http://maven.geomajas.org/</url>
+    </repository>
   </repositories>
 
 	<pluginRepositories>
