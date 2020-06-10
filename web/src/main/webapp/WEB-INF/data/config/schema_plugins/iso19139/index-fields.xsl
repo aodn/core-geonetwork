@@ -33,6 +33,21 @@
   <xsl:param name="thesauriDir"/>
   <xsl:param name="inspire">false</xsl:param>
   
+  <!-- Mapping of all creative commons license names used in the AODN to license links -->
+  
+  <xsl:variable name="licenses">
+	<license name="Creative Commons Attribution 2.5 Australia License" link="http://creativecommons.org/licenses/by/2.5/au/"/>
+	<license name="Creative Commons Attribution 3.0 Australia License" link="http://creativecommons.org/licenses/by/3.0/au/"/>
+	<license name="Creative Commons Attribution 3.0 New Zealand License" link="http://creativecommons.org/licenses/by/3.0/nz/"/>
+	<license name="Creative Commons Attribution 4.0 International License" link="http://creativecommons.org/licenses/by/4.0/"/>
+	<license name="Creative Commons Attribution-Noncommercial 2.5 Australia License" link="http://creativecommons.org/licenses/by-nc/2.5/au/"/>
+	<license name="Creative Commons Attribution-NonCommercial 3.0 Australia License" link="http://creativecommons.org/licenses/by-nc/3.0/au/"/>
+	<license name="Creative Commons Attribution-NonCommercial 4.0 International License" link="http://creativecommons.org/licenses/by-nc/4.0/"/>
+	<license name="Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License" link="http://creativecommons.org/licenses/by-nc-sa/4.0/"/>
+	<license name="Creative Commons Attribution-Share Alike 2.5 Australia License" link="http://creativecommons.org/licenses/by-sa/2.5/au/"/>
+	<license name="Creative Commons Attribution-ShareAlike 4.0 International License" link="http://creativecommons.org/licenses/by-sa/4.0/"/>
+  </xsl:variable>
+  
   <xsl:variable name="inspire-thesaurus" select="if ($inspire!='false') then document(concat('file:///', $thesauriDir, '/external/thesauri/theme/inspire-theme.rdf')) else ''"/>
   <xsl:variable name="inspire-theme" select="if ($inspire!='false') then $inspire-thesaurus//skos:Concept else ''"/>
   
@@ -380,10 +395,14 @@
 				<!-- until we upgrade catalogue-portal to GN3 where we won't need them or they are mapped -->
 				<!-- correctly to other resource constraints elements above -->
 				<xsl:for-each select="gmd:MD_LegalConstraints[contains(gmd:reference/*/gmd:citedResponsibleParty//gmd:linkage/*/text(), 'http://creativecommons.org')]">
-					<Field name="jurisdictionLink" string="{gmd:reference/*/gmd:citedResponsibleParty//gmd:linkage/*/text()}" store="true" index="false" />
-					<Field name="licenseName" string="{gmd:reference/*/gmd:title/*/text()}" store="true" index="false" />
-					<Field name="licenseLink" string="{gmd:reference/*/gmd:onlineResource//gmd:linkage/*/text()}" store="true" index="false" />
-					<Field name="imageLink" string="{gmd:graphic//gmd:linkage/*/text()}" store="true" index="false" />
+				    <xsl:variable name="jurisdictionLink" select="gmd:reference/*/gmd:citedResponsibleParty//gmd:linkage/*/text()"/>
+				    <xsl:variable name="licenseName" select="gmd:reference/*/gmd:title/*/text()"/>
+					<xsl:variable name="licenseLink" select="$licenses/license[@name=$licenseName]/@link"/>
+					<xsl:variable name="imageLink" select="gmd:graphic//gmd:linkage/*/text()"/>
+					<Field name="jurisdictionLink" string="{$jurisdictionLink}" store="true" index="false" />
+					<Field name="licenseName" string="{$licenseName}" store="true" index="false" />
+					<Field name="licenseLink" string="{$licenseLink}" store="true" index="false" />
+					<Field name="imageLink" string="{$imageLink}" store="true" index="false" />
 				</xsl:for-each>
 			</xsl:for-each>
 			
