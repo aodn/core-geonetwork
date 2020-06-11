@@ -294,13 +294,19 @@
 					</xsl:for-each>
 				</xsl:if>
 
+				<!-- Index IMOS organisational units -->
+
+				<xsl:if test="gmd:thesaurusName/*/gmd:title/*/text()='AODN Organisation Vocabulary'">
+					<xsl:for-each select="gmd:keyword/*">
+						<Field name="orgUnit" string="{string(.)}" store="true" index="true"/>
+					</xsl:for-each>
+				</xsl:if>
+
 			</xsl:for-each>
 	
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
             <xsl:variable name="email" select="/gmd:MD_Metadata/gmd:contact[1]/gmd:CI_ResponsibleParty[1]/gmd:contactInfo[1]/gmd:CI_Contact[1]/gmd:address[1]/gmd:CI_Address[1]/gmd:electronicMailAddress[1]/gco:CharacterString[1]"/>
             <xsl:for-each select="gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString|gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmx:Anchor">
-				<Field name="orgName" string="{string(.)}" store="true" index="true"/>
-				
 				<xsl:variable name="role" select="../../gmd:role/*/@codeListValue"/>
 				<xsl:variable name="logo" select="../..//gmx:FileName/@src"/>
 			
@@ -539,6 +545,7 @@
                 <!-- ignore WMS links without protocol (are indexed below with mimetype application/vnd.ogc.wms_xml) -->
                 <xsl:if test="not($wmsLinkNoProtocol)">
                     <Field name="link" string="{concat($title, '|', $desc, '|', $linkage, '|', $protocol, '|', $mimetype)}" store="true" index="false"/>
+                    <Field name="layer" string="{$title}" store="false" index="true"/>
                 </xsl:if>
 
 				<!-- Add KML link if WMS -->
