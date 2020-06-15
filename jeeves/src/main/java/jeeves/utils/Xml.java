@@ -511,6 +511,8 @@ public final class Xml
 			transFact.setAttribute(FeatureKeys.LINE_NUMBERING,true);
 			transFact.setAttribute(FeatureKeys.PRE_EVALUATE_DOC_FUNCTION,false);
 			transFact.setAttribute(FeatureKeys.RECOVERY_POLICY,Configuration.RECOVER_SILENTLY);
+			// Add the following to trace xsl execution
+			//transFact.setAttribute(FeatureKeys.TRACE_LISTENER, new net.sf.saxon.trace.XSLTTraceListener());
 			// Add the following to get timing info on xslt transformations
 			//transFact.setAttribute(FeatureKeys.TIMING,true);
 		} catch (IllegalArgumentException e) {
