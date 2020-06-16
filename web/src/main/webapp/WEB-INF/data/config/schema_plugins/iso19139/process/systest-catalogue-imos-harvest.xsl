@@ -14,6 +14,7 @@
     <xsl:variable name="urlSubstitutions">
         <substitution match="https?://geoserver-123.aodn.org.au(:443)?" replaceWith="http://geoserver-systest.aodn.org.au"/>
         <substitution match="https?://thredds.aodn.org.au(:443)?" replaceWith="http://thredds-systest.aodn.org.au"/>
+        <substitution match="https?://catalogue-imos.aodn.org.au(:443)?" replaceWith="https://catalogue-imos.prod.aodn.org.au:443"/>
     </xsl:variable>
 
     <xsl:variable name="urlSubstitutionSelector" select="string-join($urlSubstitutions/substitution/@match, '|')"/>
