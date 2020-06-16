@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
 import org.springframework.context.ApplicationContext;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -206,12 +207,15 @@ public class OnlineResourceMonitorService implements OnlineResourceMonitorInterf
             }
         }
 
-        for (Map.Entry<String, MetadataRecordInfo> record : recordMap.entrySet()) {
+        Iterator<Map.Entry<String, MetadataRecordInfo>> entryIterator = recordMap.entrySet().iterator();
+        
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, MetadataRecordInfo> record = entryIterator.next();
             String title = record.getValue().getTitle();
             if (! records.containsKey(record.getKey())) {
                 // Record was deleted
                 logger.info(String.format("Deleting metadata record title=%s uuid=%s ", title, record.getKey()));
-                recordMap.remove(record.getKey());
+                entryIterator.remove();
             }
         }
         reindexTimestamp = System.currentTimeMillis() / 1000l;
