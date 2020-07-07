@@ -20,6 +20,9 @@ public class MetadataRecordInfo {
 
     private List<OnlineResourceInfo> onlineResourceInfoList;
 
+    private static final String GMD_PREFIX = "gmd";
+    private static final String GMD_NAMESPACE = "http://www.isotc211.org/2005/gmd";
+
     public static String ONLINE_RESOURCES_XPATH = "gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource";
     public static String PROTOCOL_XPATH = "gmd:protocol/gco:CharacterString";
 
@@ -36,10 +39,12 @@ public class MetadataRecordInfo {
     public void getOnlineResources(Element element) {
         try {
             XPath pOnlineResources = XPath.newInstance(ONLINE_RESOURCES_XPATH);
+            pOnlineResources.addNamespace(GMD_PREFIX, GMD_NAMESPACE);
             for (final Object onlineResourceObject : pOnlineResources.selectNodes(element)) {
                 final Element onlineResource = (Element) onlineResourceObject;
 
                 XPath pProtocol = XPath.newInstance(PROTOCOL_XPATH);
+                pProtocol.addNamespace(GMD_PREFIX, GMD_NAMESPACE);
                 Element protocolElement = (Element) pProtocol.selectSingleNode(onlineResource);
 
                 if (protocolElement != null) {
