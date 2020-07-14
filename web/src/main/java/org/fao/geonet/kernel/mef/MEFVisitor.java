@@ -104,7 +104,7 @@ public class MEFVisitor implements IVisitor {
 			safeClose(zis);
 		}
 
-		if(preferredMd != null && originalSchema.equals("iso19115-3.2018")) {
+		if(preferredMd != null && originalSchema.startsWith("iso19115-3")) {
 			this.recordInfo.schema = this.preferredSchema;
 			md = preferredMd;
 		}
