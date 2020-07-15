@@ -153,7 +153,7 @@ public class Aligner
 		{
 			result.totalMetadata++;
 
-			if (!dataMan.existsSchema(ri.schema) && !ri.schema.startsWith("iso19115-3.2018")) {
+			if (!dataMan.existsSchema(ri.schema) && !ri.schema.startsWith("iso19115-3")) {
                 if(log.isDebugEnabled())
                     log.debug("  - Metadata skipped due to unknown schema. uuid:"+ ri.uuid
 						 	+", schema:"+ ri.schema);
