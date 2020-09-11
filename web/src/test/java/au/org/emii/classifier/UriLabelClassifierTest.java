@@ -126,4 +126,17 @@ public class UriLabelClassifierTest {
         List<CategoryPath> result = uriLabelClassifier.classify("Argo Floats Facility");
         assertCategoryListEquals(result, "Integrated Marine Observing System (IMOS)/Argo Floats Facility");
     }
+
+    @Test
+    public void testUsesReplacedByIfPresent() {
+        List<CategoryPath> result = uriLabelClassifier.classify("Commonwealth Scientific and Industrial Research Organisation (CSIRO)");
+        assertCategoryListEquals(result, "Commonwealth Departments and Agencies/Department of Industry, Innovation and Science/Commonwealth Scientific and Industrial Research Organisation (CSIRO)");
+    }
+
+    @Test
+    public void testDoesntUseReplacedByIfNotPresent() {
+        List<CategoryPath> result = uriLabelClassifier.classify("Commonwealth Scientific and Industrial Research Organisation (CSIRO) 2");
+        assertCategoryListEquals(result, "Commonwealth Departments and Agencies/Department of Industry and Science 2/Commonwealth Scientific and Industrial Research Organisation (CSIRO) 2");
+    }
+
 }

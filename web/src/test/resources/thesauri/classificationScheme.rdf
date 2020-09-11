@@ -9,6 +9,7 @@
         <skos:hasTopConcept rdf:resource="http://www.my.com/test_classification/#physical_air"/>
         <skos:hasTopConcept rdf:resource="http://www.my.com/test_classification/#physical_water"/>
         <skos:hasTopConcept rdf:resource="http://www.my.com/test_classification/#imos"/>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/test_classification/#CDA"/>
     </skos:ConceptScheme>
     
     <!-- term with broader term with broader term -->
@@ -74,4 +75,15 @@
         <skos:relatedMatch rdf:resource="http://www.my.com/test_vocabulary/#aims3"/>
     </skos:Concept>
 
+    <!-- replaced by test -->
+
+    <skos:Concept rdf:about="http://www.my.com/test_classification/#CDA">
+        <skos:narrowMatch rdf:resource="http://www.my.com/test_vocabulary#DIS"/>
+        <skos:narrowMatch rdf:resource="http://www.my.com/test_vocabulary#DIIS"/>
+        <skos:narrowMatch rdf:resource="http://www.my.com/test_vocabulary#DIS2"/>
+        <skos:narrowMatch rdf:resource="http://www.my.com/test_vocabulary#DIIS2"/>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_classification/test_classification"/>
+        <skos:prefLabel xml:lang="en">Commonwealth Departments and Agencies</skos:prefLabel>
+        <skos:inScheme rdf:resource="http://www.my.com/test_classification/test_classification"/>
+    </skos:Concept>
 </rdf:RDF>
