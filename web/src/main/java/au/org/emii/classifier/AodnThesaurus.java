@@ -77,6 +77,8 @@ public class AodnThesaurus {
             .select(relatedToTermSelector(aodnTerm, relationshipType), true)
             .select(PREF_LABEL_SELECTOR, false)
             .select(DISPLAY_LABEL_SELECTOR, false)
+            .select(REPLACES_SELECTOR, false)
+            .select(REPLACED_BY_SELECTOR, false)
             .interpreter(new AodnTermResultInterpreter())
             .build();
 

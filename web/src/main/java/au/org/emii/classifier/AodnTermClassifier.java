@@ -64,7 +64,13 @@ public class AodnTermClassifier {
 
         // Add all top level category paths for broader terms in the vocabulary thesaurus
 
-        for (AodnTerm broaderTerm : vocabularyThesaurus.getRelatedTerms(term, SkosRelation.BROADER)) {
+        List<AodnTerm> broaderTerms = vocabularyThesaurus.getRelatedTerms(term, SkosRelation.BROADER);
+
+        for (AodnTerm broaderTerm : broaderTerms) {
+            // Ignore terms which are replaced by other broader terms
+            if (broaderTerm.getReplacedBy() != null && containsReplacement(broaderTerms, broaderTerm)) {
+                continue;
+            }
             CategoryPath broaderTermPath = CategoryHelper.addParentCategory(getCategoryLabel(broaderTerm), termPath);
             result.addAll(getPathsForVocabularyTerm(broaderTerm, broaderTermPath));
         }
@@ -83,6 +89,21 @@ public class AodnTermClassifier {
         }
 
         return result;
+    }
+
+    /**
+     * Check if the list of terms passed contains a replacement for the passed term
+     * @param terms
+     * @param term
+     * @return
+     */
+    private boolean containsReplacement(List<AodnTerm> terms, AodnTerm term) {
+        for (AodnTerm testTerm: terms) {
+            if (term.getReplacedBy().equals(testTerm.getPrefLabel())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

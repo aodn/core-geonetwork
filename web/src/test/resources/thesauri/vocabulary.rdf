@@ -8,6 +8,8 @@
         <dcterms:title xml:lang="en">Test classification scheme</dcterms:title>
         <skos:hasTopConcept rdf:resource="http://www.my.com/test_vocabulary/#sea_surface_temperature"/>
         <skos:hasTopConcept rdf:resource="http://www.my.com/test_vocabulary/#air_sea_flux"/>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/test_vocabulary/#DIS"/>
+        <skos:hasTopConcept rdf:resource="http://www.my.com/test_vocabulary/#DIIS"/>
     </skos:ConceptScheme>
     
     <!-- term with broader term in classification scheme with broader term -->
@@ -110,6 +112,60 @@
         <aodnorg:displayLabel xml:lang="en">Argo Floats Facility</aodnorg:displayLabel>
         <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
         <skos:broader rdf:resource="http://www.my.com/test_vocabulary/#imos"/>
+    </skos:Concept>
+
+    <!-- replaced by tests -->
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary#DIS">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">Department of Industry and Science, Australian Government</skos:prefLabel>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:narrower rdf:resource="http://www.my.com/test_vocabulary#CSIRO"/>
+        <skos:broadMatch rdf:resource="http://www.my.com/test_classification/#CDA"/>
+        <dcterms:isReplacedBy xml:lang="en">Department of Industry, Innovation and Science, Australian Government</dcterms:isReplacedBy>
+        <aodnorg:displayLabel xml:lang="en">Department of Industry and Science</aodnorg:displayLabel>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary#DIIS">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">Department of Industry, Innovation and Science, Australian Government</skos:prefLabel>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_vocabulary"/>
+        <dcterms:replaces xml:lang="en">Department of Industry and Science, Australian Government</dcterms:replaces>
+        <skos:narrower rdf:resource="http://www.my.com/test_vocabulary#CSIRO"/>
+        <skos:broadMatch rdf:resource="http://www.my.com/test_classification/#CDA"/>
+        <aodnorg:displayLabel xml:lang="en">Department of Industry, Innovation and Science</aodnorg:displayLabel>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary#CSIRO">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">Commonwealth Scientific and Industrial Research Organisation (CSIRO)</skos:prefLabel>
+        <skos:broader rdf:resource="http://www.my.com/test_vocabulary#DIS"/>
+        <skos:broader rdf:resource="http://www.my.com/test_vocabulary#DIIS"/>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary#DIS2">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">Department of Industry and Science, Australian Government 2</skos:prefLabel>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:narrower rdf:resource="http://www.my.com/test_vocabulary#CSIRO2"/>
+        <skos:broadMatch rdf:resource="http://www.my.com/test_classification/#CDA"/>
+        <dcterms:isReplacedBy xml:lang="en">Department of Industry, Innovation and Science, Australian Government 2</dcterms:isReplacedBy>
+        <aodnorg:displayLabel xml:lang="en">Department of Industry and Science 2</aodnorg:displayLabel>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary#DIIS2">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">Department of Industry, Innovation and Science, Australian Government 2</skos:prefLabel>
+        <skos:topConceptOf rdf:resource="http://www.my.com/test_vocabulary"/>
+        <dcterms:replaces xml:lang="en">Department of Industry and Science, Australian Government 2</dcterms:replaces>
+        <skos:broadMatch rdf:resource="http://www.my.com/test_classification/#CDA"/>
+        <aodnorg:displayLabel xml:lang="en">Department of Industry, Innovation and Science 2</aodnorg:displayLabel>
+    </skos:Concept>
+
+    <skos:Concept rdf:about="http://www.my.com/test_vocabulary#CSIRO2">
+        <skos:inScheme rdf:resource="http://www.my.com/test_vocabulary"/>
+        <skos:prefLabel xml:lang="en">Commonwealth Scientific and Industrial Research Organisation (CSIRO) 2</skos:prefLabel>
+        <skos:broader rdf:resource="http://www.my.com/test_vocabulary#DIS2"/>
     </skos:Concept>
 
 </rdf:RDF>
