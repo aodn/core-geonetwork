@@ -927,7 +927,7 @@
     <repository>
       <id>mvnrepository.com</id>
       <name>Repository that has juniversalchardet</name>
-      <url>http://mvnrepository.com/artifact</url>
+      <url>https://mvnrepository.com/artifact</url>
     </repository>
     <repository>
       <id>maven.geo-solutions.it</id>
@@ -959,7 +959,7 @@
 	  <pluginRepository>
 			<name>mvnrepository.com</name>
 			<id>mvnrepository.com</id>
-			<url>http://mvnrepository.com/artifact</url>
+			<url>https://mvnrepository.com/artifact</url>
 		</pluginRepository>
 	</pluginRepositories>
 
