@@ -912,7 +912,7 @@
       </snapshots>
       <id>boundless</id>
       <name>Boundless repository</name>
-      <url>http://repo.boundlessgeo.com/main/</url>
+      <url>http://repo.osgeo.org</url>
     </repository>
     <repository>
       <snapshots>
@@ -939,7 +939,7 @@
     <repository>
       <id>mvnrepository.com</id>
       <name>Repository that has juniversalchardet</name>
-      <url>http://mvnrepository.com/artifact</url>
+      <url>https://mvnrepository.com/artifact</url>
     </repository>
     <repository>
       <id>maven.geo-solutions.it</id>
@@ -966,7 +966,7 @@
 	  <pluginRepository>
 			<name>mvnrepository.com</name>
 			<id>mvnrepository.com</id>
-			<url>http://mvnrepository.com/artifact</url>
+			<url>https://mvnrepository.com/artifact</url>
 		</pluginRepository>
 	</pluginRepositories>
 
